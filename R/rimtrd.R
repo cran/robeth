@@ -9,16 +9,16 @@ sg <- double(np)
 sh <- double(np)
 ip <- integer(np)
 f.res <- .Fortran("rimtrd",
-x=to.double(x),
+x=as.double(x),
 n=to.integer(n),
 np=to.integer(np),
 mdx=to.integer(mdx),
 intch=to.integer(intch),
 tau=to.single(tau),
 k=to.integer(k),
-sf=to.double(sf),
-sg=to.double(sg),
-sh=to.double(sh),
+sf=as.double(sf),
+sg=as.double(sg),
+sh=as.double(sh),
 ip=to.integer(ip))
 list(x=f.res$x,k=f.res$k,sf=f.res$sf,sg=f.res$sg,sh=f.res$sh,ip=f.res$ip)
 }

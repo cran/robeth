@@ -6,7 +6,10 @@
 \description{
  See Marazzi A. (1993), p.170}
 \usage{
-airefq(t, expsi = psi, exu = ucv, exw = www, itype = .dFvGet()$ite, mu, sigmx = 1, upper = .dFvGet()$upr, til = .dFvGet()$tli, tau = .dFvGet()$tua, nobs = nrow(t), maxit = .dFvGet()$mxe, tol = .dFvGet()$tlo, init = .dFvGet()$ini, nitmon = .dFvGet()$ntm)
+airefq(t, expsi = psi, exu = ucv, exw = www, itype = .dFvGet()$ite, mu, sigmx = 1, 
+       upper = .dFvGet()$upr, til = .dFvGet()$tli, tau = .dFvGet()$tua, nobs = nrow(t), 
+       maxit = .dFvGet()$mxe, tol = .dFvGet()$tlo, init = .dFvGet()$ini, 
+       nitmon = .dFvGet()$ntm)
 }
 \arguments{
   \item{t}{ See reference}

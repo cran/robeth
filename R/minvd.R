@@ -5,7 +5,7 @@ nn <- length(r)
 if (missing(r)) r <- double(nn)
 ising <- integer(1)
 f.res <- .Fortran("minvd",
-r=to.double(r),
+r=as.double(r),
 n=to.integer(n),
 nn=to.integer(nn),
 tau=to.single(tau),

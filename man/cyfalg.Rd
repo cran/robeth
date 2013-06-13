@@ -5,7 +5,9 @@
 \description{
  See Marazzi A. (1993), p.232}
 \usage{
-cyfalg(x, a, t, exu = ucv, exv = vcv, exw = wcv, nobs = nrow(x), tau = .dFvGet()$tua, maxit = .dFvGet()$mxf, nitmon = .dFvGet()$ntm, iloc = .dFvGet()$ilc, icnv = .dFvGet()$icv, tol = .dFvGet()$tlo)
+cyfalg(x, a, t, exu = ucv, exv = vcv, exw = wcv, nobs = nrow(x), tau = .dFvGet()$tua, 
+       maxit = .dFvGet()$mxf, nitmon = .dFvGet()$ntm, iloc = .dFvGet()$ilc, 
+       icnv = .dFvGet()$icv, tol = .dFvGet()$tlo)
 }
 \arguments{
   \item{x}{ See reference}

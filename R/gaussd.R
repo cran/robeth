@@ -4,8 +4,8 @@ if (missing(x)) messagena("x")
 p <- double(1)
 f.res <- .Fortran("gaussd",
 kode=to.integer(kode),
-x=to.double(x),
-p=to.double(p))
+x=as.double(x),
+p=as.double(p))
 list(p=f.res$p)
 }
 

@@ -6,8 +6,8 @@ nn <- length(a)
 ny <- length(y)
 if (missing(y)) y <- double(ny)
 f.res <- .Fortran("mlyd",
-a=to.double(a),
-y=to.double(y),
+a=as.double(a),
+y=as.double(y),
 n=to.integer(n),
 nn=to.integer(nn),
 ny=to.integer(ny),

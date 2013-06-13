@@ -4,11 +4,11 @@ if (missing(x)) messagena("x")
 mdx <- length(x)
 xnrm <- double(1)
 f.res <- .Fortran("nrm2d",
-x=to.double(x),
+x=as.double(x),
 n=to.integer(n),
 incx=to.integer(incx),
 mdx=to.integer(mdx),
-xnrm=to.double(xnrm))
+xnrm=as.double(xnrm))
 list(xnrm=f.res$xnrm)
 }
 

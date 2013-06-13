@@ -41,14 +41,14 @@ c=to.single(c),
 nitt=to.integer(nitt),
 nita=to.integer(nita),
 sigma=to.single(sigma),
-a=to.double(a),
+a=as.double(a),
 theta=to.single(theta),
 ci=to.single(ci),
 dist=to.single(dist),
 rw1=to.single(rw1),
 rw2=to.single(rw2),
 iw1=to.integer(iw1),
-dw1=to.double(dw1))
+dw1=as.double(dw1))
 list(nitt=f.res$nitt,nita=f.res$nita,sigma=f.res$sigma,a=f.res$a,
 theta=f.res$theta,ci=f.res$ci,dist=f.res$dist)
 }

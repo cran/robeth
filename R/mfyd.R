@@ -8,9 +8,9 @@ ny <- length(y)
 nz <- ize*(m-1)+1
 z <- double(nz)
 f.res <- .Fortran("mfyd",
-a=to.double(a),
-y=to.double(y),
-z=to.double(z),
+a=as.double(a),
+y=as.double(y),
+z=as.double(z),
 m=to.integer(m),
 n=to.integer(n),
 mda=to.integer(mda),

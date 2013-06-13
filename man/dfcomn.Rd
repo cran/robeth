@@ -18,9 +18,11 @@ dfcomn(ipsi = -9, c = -1.345, h1 = -1.7, h2 = -3.4, h3 = -8.5,
   \item{h3}{ Parameter \eqn{h3} of the Hampel function }
   \item{xk}{ Parameter \eqn{k} of the rescaled Tukey biweight }
   \item{d}{ See reference}
-  \item{beta}{ Parameter \eqn{\beta}{beta} to make\eqn{\sigma}{sigma} estimate asymptotically unbiased }
-  \item{bet0}{ Parameter \eqn{\beta_0}{bet0} to make\eqn{\sigma}{sigma} estimate asymptotically unbiased }
-  \item{iucv}{ Option parameter for the choice of u(s), u'(s), v(s), v'(s), w(s) or w'(s) }
+  \item{beta}{ Parameter \eqn{\beta}{beta} to make\eqn{\sigma}{sigma} estimate 
+               asymptotically unbiased }
+  \item{bet0}{ Parameter \eqn{\beta_0}{bet0} to make\eqn{\sigma}{sigma} estimate 
+               asymptotically unbiased }
+  \item{iucv}{ Option parameter for the choice of u(s), u'(s), v(s), v'(s), w(s) or w'(s)}
   \item{a2}{ Parameter a^2 of Huber's mimimax u-function }
   \item{b2}{ Parameter b^2 of Huber's mimimax u-function }
   \item{chk}{ Parameter c of the Hampel-Krasker u-function }
@@ -34,7 +36,8 @@ dfcomn(ipsi = -9, c = -1.345, h1 = -1.7, h2 = -3.4, h3 = -8.5,
   \item{np}{ Parameter np for unstandard u-function }
   \item{nu}{ Parameter nu for unstandard u-function }
   \item{v7}{ Parameter v for unstandard u-function }
-  \item{iwww}{ Option parameter for the choice of \eqn{\bar\omega}{bar w}. Set 0 <= iwww <= 3 }
+  \item{iwww}{ Option parameter for the choice of \eqn{\bar\omega}{bar w}. 
+               Set 0 <= iwww <= 3 }
 }
 \value{
   See reference

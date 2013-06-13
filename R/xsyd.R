@@ -7,12 +7,12 @@ n <- length(x)
 nn <- length(s)
 result <- double(1)
 f.res <- .Fortran("xsyd",
-x=to.double(x),
-y=to.double(y),
-s=to.double(s),
+x=as.double(x),
+y=as.double(y),
+s=as.double(s),
 n=to.integer(n),
 nn=to.integer(nn),
-result=to.double(result))
+result=as.double(result))
 list(result=f.res$result)
 }
 

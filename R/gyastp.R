@@ -24,7 +24,7 @@ y=to.single(y),
 ni=to.integer(ni),
 vtheta=to.single(vtheta),
 ci=to.single(ci),
-a=to.double(a),
+a=as.double(a),
 oi=to.single(oi),
 b=to.single(b),
 iugl=to.integer(iugl),
@@ -40,9 +40,10 @@ icnv=to.integer(icnv),
 tol=to.single(tol),
 nit=to.integer(nit),
 dist=to.single(dist),
-su=to.double(su),
-sa=to.double(sa),
-st=to.double(st),
-sd=to.double(sd))
+su=as.double(su),
+sa=as.double(sa),
+st=as.double(st),
+sd=as.double(sd))
 list(a=f.res$a,nit=f.res$nit,dist=f.res$dist)
 }
+

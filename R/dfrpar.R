@@ -40,15 +40,15 @@ function(x, etype, upar=-1, psipar=-1)
                 itypw = to.integer(itypw),
                 itype = to.integer(itype),
                 isigma = to.integer(isigma))
-         .def <- .dFvGet()
-        .def$itw <- f.res$itypw
-        .def$ite <- f.res$itype
-        .def$isg <- f.res$isigma
+        zdef  <- .Fortran("zdfvals",io=to.integer(0),dfv=single(66))
+        .def  <- zdef$dfv
+        .def[23] <- f.res$itypw
+        .def[22] <- f.res$itype
+        .def[21] <- f.res$isigma
         z   <-  comval()
-        if (z$c > 0) .def$ccc <- z$c else .def$ccc <- 1.345
-        if (z$d > 0) .def$ddd <- z$d else .def$ddd <- .def$ccc
-
-        .dFvSet(.def)
-
-        list(itypw = .dFvGet()$itw, itype = .dFvGet()$ite, isigma = .dFvGet()$isg)
+        if (z$c > 0) .def[17] <- z$c else .def[17] <- 1.345
+        if (z$d > 0) .def[61] <- z$d else .def[61] <- .def[17]
+        f.res <- .Fortran("zdfvals",io=to.integer(1),dfv=to.single(.def))
+        list(itypw = .def[23], itype = .def[22], isigma = .def[21])
 }
+

@@ -7,9 +7,9 @@ nn <- length(a)
 mdc <- n
 c <- matrix(double(1),mdc,n)
 f.res <- .Fortran("mssd",
-a=to.double(a),
-b=to.double(b),
-c=to.double(c),
+a=as.double(a),
+b=as.double(b),
+c=as.double(c),
 n=to.integer(n),
 nn=to.integer(nn),
 mdc=to.integer(mdc))

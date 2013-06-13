@@ -7,9 +7,9 @@ nn <- length(a)
 mdb <- nrow(b)
 c <- double(nn)
 f.res <- .Fortran("msf1d",
-a=to.double(a),
-b=to.double(b),
-c=to.double(c),
+a=as.double(a),
+b=as.double(b),
+c=as.double(c),
 n=to.integer(n),
 nn=to.integer(nn),
 mdb=to.integer(mdb))

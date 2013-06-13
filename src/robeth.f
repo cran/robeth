@@ -4574,7 +4574,8 @@ C  ------
       ENDIF
    50 DL(L)=SNGL(ANS1)
       FACT=1.
-      CALL KTASKW(T,DL,EL,NOBS,NU,MDX,MDZ,NCOV,TAU,1,FACT,0.,1,
+      JAINV=1
+      CALL KTASKW(T,DL,EL,NOBS,NU,MDX,MDZ,NCOV,TAU,1,FACT,0.,JAINV,
      *            SS,SS(ISS2),SS(ISS3),SS(ISS4),SS(ICOV),SZ)
       TRCOV=0.
       DO 55 J0=1,NU
@@ -6227,6 +6228,41 @@ C
 C
 C-----------------------------------------------------------------------
 C
+      SUBROUTINE ZDFVALS(IO,DFV)
+C.......................................................................
+
+CC   AUTHOR : A. RANDRIAMIHARISOA
+C.......................................................................
+C
+      REAL DFV(66),VALS(66),VALZ(66)
+      DATA VALS(1:66)/1.e-3, 1., 1., 30., 0., 1.e-6, 1.e-11, 2., 1., 1., 
+     +     1., 2., 1., 1., 1., 0.025, 1.345, 10.0, 1.e-4, 1., 1., 1., 
+     +     0., 150., 50., 50., 2., 1.25, 1., 1., 1., 1., 0.0, 0.0 , 1.0,
+     +     1., 1., 150., 0.0 , 0.0, 1., 150., 1.e-3, 1.e-3, 30., 2. ,
+     +     1., 1313., 1., 0.1, 1., 0., 9., 1.345, 2., 1., -6.9078, 
+     +     1.e-3, 1. , 1. , 1.345, 1., 50., 1. , 1., 1./
+      DATA VALZ(1:66)/1.e-3, 1., 1., 30., 0., 1.e-6, 1.e-11, 2., 1., 1., 
+     +     1., 2., 1., 1., 1., 0.025, 1.345, 10.0, 1.e-4, 1., 1., 1., 
+     +     0., 150., 50., 50., 2., 1.25, 1., 1., 1., 1., 0.0, 0.0 , 1.0,
+     +     1., 1., 150., 0.0 , 0.0, 1., 150., 1.e-3, 1.e-3, 30., 2. ,
+     +     1., 1313., 1., 0.1, 1., 0., 9., 1.345, 2., 1., -6.9078, 
+     +     1.e-3, 1. , 1. , 1.345, 1., 50., 1. , 1., 1./
+
+      IF (IO.EQ.0) THEN
+       DO 100 I=1,66
+ 100   DFV(I)=VALS(I)
+      ELSEIF (IO.EQ.1) THEN
+       DO 200 I=1,66
+ 200   VALS(I)=DFV(I)
+      ELSE
+       DO 300 I=1,66
+ 300   VALS(I)=VALZ(I)
+      ENDIF
+      RETURN 
+      END
+C
+C-----------------------------------------------------------------------
+C
       SUBROUTINE DFCOMN(IPSI,C,H1,H2,H3,XK,D,BTA,BT0,IUCV,A2,B2,CHK,CKW,
      +                  BB,BT,CW,EM,CR,VK,NP,ENU,V7,IWWW)
 C.......................................................................
@@ -6542,7 +6578,6 @@ C
    10 ZMAX=0.0
       DO 20 IJ=1,NCOV
    20 ST(IJ)=0.D0
-      YL=1.
       NL=1
       DO 100 L=1,N
       DO  50 J=1,NP
@@ -6553,13 +6588,11 @@ C
       IF (ICNT.EQ.2) ZMAX=AMAX1(ZMAX,ABS(DISTL-DIST(L)))
       DIST(L)=DISTL
       GL=VTHETA(L)+OI(L)
-      CL=CI(L)
-      IF (IUGL.EQ.1) YL=Y(L)
       IF (ICASE.EQ.2) NL=NI(L)
-      UARR(1)=YL
+      UARR(1)=Y(L)
       UARR(2)=FLOAT(NL)
       UARR(3)=GL
-      UARR(4)=CL
+      UARR(4)=CI(L)
       U=EXUL(UARR,4,DISTL)
       SU(L)=U
       IJ=0
@@ -6585,14 +6618,15 @@ C.......................................................................
 C
 C  G-FUNCTION FOR LOGISTIC REGRESSION
 C
-      DOUBLE PRECISION GI,EXGI,DMIN,DMAX,XBIG,XEXPD 
-      EXTERNAL XEXPD
+      DOUBLE PRECISION GI,EXGI,DMIN,DMAX,XBIG
       DATA NCALL,DMIN,DMAX,XBIG/0,0.D0,0.D0,0.D0/
 C
       IF (NCALL.EQ.1) GOTO 10
-      CALL MACHD(3,DMIN)
-      CALL MACHD(6,XBIG)
-      XBIG=XBIG/10.D0
+c     CALL MACHD(3,DMIN)
+c     CALL MACHD(6,XBIG)
+c     XBIG=XBIG/10.D0
+      DMIN=-20.D0
+      XBIG=1.D6
       DMAX=DLOG(XBIG)
       NCALL=1
    10 GI=DBLE(G)  
@@ -6608,7 +6642,13 @@ C==>    LOGISTIC BERNOUILLI OR BINOMIAL
         ENDIF
       ELSE
 C==>    LOGISTIC POISSON (ICASE=3)
-        GFUN=XEXPD(GI)
+        IF (GI.LE.DMIN) THEN
+          GFUN=DEXP(DMIN)
+        ELSEIF (GI.GE.DMAX) THEN
+          GFUN=XBIG
+        ELSE
+          GFUN=DEXP(GI)
+        ENDIF
       ENDIF
       RETURN
       END
@@ -6631,7 +6671,7 @@ C
 
       CALL DOTP(DELTA,GRAD,NP,1,1,NP,NP,S0)
 C     S0=-S0
-      ETA=AMIN1(1.,-2.*SF0/S0)
+      ETA=AMIN1(1.0,-2.*SF0/S0)
       DO 10 J=1,NP
   10  ST(J)=THETA(J)+ETA*DELTA(J)
       CALL MFY(X,ST,VTHETA,N,NP,MDX,NP,1,N,1)
@@ -6689,12 +6729,15 @@ C
       GOTO 100
   300 CALL MESSGE(450,'STPLRG',0)
   500 GAM=ETA
+      DO 600 J=1,NP
+      DELTA(J)=DELTA(J)*ETA
+  600 THETA(J)=ST(J)
       RETURN
       END
 C
 C-----------------------------------------------------------------------
 C
-      SUBROUTINE GICSTP(ICASE,IALG,NN,VTHETA,WA,OI,N,TOL,MAXIT,C)
+      SUBROUTINE GICSTP(ICASE,IALG,NN,VTHETA,WA,OI,N,TOL,MAXIT,CI)
 C.......................................................................
 C
 C   COPYRIGHT 1992 Alfio Marazzi
@@ -6704,11 +6747,12 @@ C.......................................................................
 C
 C  H-,W-,S-ALGORITHM FOR ROBUST LOGISTIC REGRESSION : C-STEP solution
 C
-      DIMENSION VTHETA(N),OI(N),WA(N),C(N)
+      DIMENSION VTHETA(N),OI(N),WA(N),CI(N)
       DOUBLE PRECISION PP,GFUN 
       INTEGER NN(N)
       LOGICAL NPRCHK
       EXTERNAL GFUN
+      COMMON/UGLPR/IUGL,ICS,B
 C
 C  PARAMETER CHECK
 C
@@ -6717,6 +6761,7 @@ C
      2       IALG.EQ.-1.OR.IALG.EQ.1.OR.IALG.EQ.2)
       IF (.NOT.NPRCHK) CALL MESSGE(500,'GICSTP',1)
 C
+      ICS=ICASE
       DO 500 I=1,N
       GI=VTHETA(I)+OI(I)
       A=WA(I)
@@ -6724,9 +6769,9 @@ C
       IF (ICASE.EQ.2) NI=NN(I) 
       PP=GFUN(ICASE,NI,GI)
       E=SNGL(PP) 
-      T=C(I)+E
-      CALL GYCSTP(ICASE,IALG,NI,A,E,TOL,MAXIT,T)
-      C(I)=T-E
+      T=CI(I)+E
+      CALL GYCSTP(ICASE,IALG,NI,A,E,TOL,MAXIT,T)  
+      CI(I)=T-E
   500 CONTINUE
       RETURN
       END
@@ -6962,8 +7007,8 @@ C
       ISC=IF2+N
       ISE=ISC+NCOV
       ISF=ISE+NCOV
-      ISG=ISF+NP
-      ISH=ISG+NP
+      ISG=ISF+NCOV
+      ISH=ISG+NCOV
       IST=NCOV+1
       ISD=IST+NCOV
       ISU=ISD+NP
@@ -6995,7 +7040,7 @@ C
      1          THETA(NP),DELTA(NP),GRAD(NP),COV(NCOV),HESSNV(NCOV),
      2          SC(NCOV),SE(NCOV),SF(NP),SG(NP),SH(NP),SX(MDX,NP),OI(N)
       DOUBLE PRECISION A(NCOV),SA(NCOV),SD(NP),ST(NCOV),SU(N),Z
-      INTEGER SP(NP),NI(N)  
+      INTEGER SP(NP),NI(N), jjj(11)  
       LOGICAL NPRCHK
       EXTERNAL ICTHET
       NN=NP*(NP+1)/2
@@ -7026,26 +7071,31 @@ C  ------
       ZNR=ZMIN
    30 WA(I)=B/ZNR
    40 CONTINUE
+      INI=1
+      QMIN=1.E10
 C
 C  STEP 1 : COMPUTE THETA
 C  ------
   100 DO 150 I=1,NP
   150 SD(I)=DBLE(THETA(I))
       CALL GYTST2(X,Y,CI,THETA,WA,COV,NI,OI,N,NP,MDX,NCOV,GAM,TOLT,
-     +     TAU,0.001,15,IOPT,ICASE,ICNVT,MAXTT,NITMNT,NITT,Q0,DELTA,
-     +     F0,F1,F2,VTHETA,GRAD,HESSNV,SE,SF,SG,SH,SC,SX,SP)
+     +     TAU,0.01,10,IOPT,ICASE,ICNVT,MAXTT,NITMNT,NITT,Q0,DELTA,
+     +     F0,F1,F2,VTHETA,GRAD,HESSNV,SE,SF,SG,SH,SC,SX,SP,INI,QMIN)
+
 C
 C  STEP 2 : CHECK CONVERGENCE
 C  ------
-      IF (NIT.EQ.MAXIT) GOTO 500
+      IF (NIT.EQ.MAXIT.OR.NITT.LT.0) GOTO 500
       DO 200 I=1,NP
   200 DELTA(I)=THETA(I)-SNGL(SD(I))
-      IF (ICTHET(NP,NCOV,DELTA,1.0,COV,TOL,ICNVT).EQ.1) RETURN
+      IF (ICTHET(NP,NCOV,DELTA,1.0,COV,TOL,ICNVT).EQ.1) GOTO 500
 C
 C  STEP 3 : COMPUTE THE A MATRIX AND THE ai's
 C  ------
       CALL GYASTP(X,Y,NI,VTHETA,CI,A,OI,B,IUGL,ICASE,N,NP,NCOV,MDX,
      1            TAU,MAXTA,NITMNA,ICNVA,TOLA,NITA,WA,SU,SA,ST,SD)
+C
+      IF (NITA.LT.0) GOTO 500
       DO 340 I=1,N   
       ZNR=WA(I)
       IF (ZNR.GT.ZMIN) GOTO 320
@@ -7053,6 +7103,7 @@ C  ------
       ZNR=ZMIN
   320 WA(I)=B/ZNR
   340 CONTINUE
+
 C
 C  STEP 4 : COMPUTE THE ci's 
 C  ------
@@ -7062,7 +7113,9 @@ C  STEP 5 : SET NIT:=NIT+1 AND GOTO STEP 1
 C  ------
       NIT=NIT+1
       GOTO 100
-  500 RETURN
+  500 CONTINUE
+
+      RETURN
       END
 C
 C-----------------------------------------------------------------------
@@ -7200,8 +7253,10 @@ C
       DO 50 L=1,N
    50 SU(L)=DBLE(Y(L))
       CALL KIEDCH(WGT,N,CPSI,ITYP,CI,SW)
-      CALL KTASKW(X,CI,SW,N,NP,MDX,MDX,NCOV,TAU,IA,F1,F0,IAINV,
+      JAINV=IAINV
+      CALL KTASKW(X,CI,SW,N,NP,MDX,MDX,NCOV,TAU,IA,F1,F0,JAINV,
      +  SC,SF,SG,SH,COV,SX)
+      IF (JAINV.GT.400) CALL MESSGE(400,'GITAC2',0)
       CALL RYWALG(X,SY,THETA,WGT,COV,PSP0,PSY,CHI,RHO,SIG0,N,NP,MDX,MDT,
      +  NCOV,TOLT,GAMT,TAU,ITYP,ISIGMA,ICNV,MAXTT,MAXIS,MONIT,NITT,
      +  SIGMA,Y,SC,CI,SF,SG,SH,SP,SW,SX)
@@ -7241,18 +7296,24 @@ C
       DOUBLE PRECISION GFUN,PP,DNI,DI,EI,FJME,TMP,TT,TPJ,TE,AA,CC,PREC
       LOGICAL NPRCHK
       EXTERNAL GFUN
-      DATA PREC/0.D0/
+      DATA PREC,XP20/0.D0,0.0/
       NPRCHK=N.GT.0.AND.(ICASE.EQ.1.OR.ICASE.EQ.2.OR.ICASE.EQ.3)
       IF (.NOT.NPRCHK) CALL MESSGE(500,'GFEDCA',1)
 C
-      IF (PREC.EQ.0.D0) CALL MACHD(2,PREC)
+      IF (PREC.EQ.0.D0) THEN
+        CALL MACH(2,PRCS)
+        PREC=100.D0*DBLE(PRCS)
+        XP20=EXP(-20.0)
+      ENDIF
       DO 500 I=1,N
         GI=VTHETA(I)+OI(I)
         CII=CI(I)
         CC=DBLE(CII)
         A=WA(I)
         AA=DBLE(A)
-        PP=GFUN(ICASE,1,GI)
+        NN=1
+        IF (ICASE.EQ.2) NN=NI(I)
+        PP=GFUN(ICASE,NN,GI)
         PI=SNGL(PP)
         IF (ICASE.EQ.1) THEN
 C==>      LOGISTIC BERNOULLI
@@ -7296,7 +7357,12 @@ c          call realpr('D,E',3,ver,3)
 C==>      LOGISTIC POISSON
           DI=0.D0
           EI=0.D0
+c==> Modif 05.10.2012
+          IF (PI.LT.XP20) PI=XP20
+          IF (PI.GT.1.E6) PI=1.E6
           MI=INT(100.*PI)
+          IF (MI.LT.1) MI=150
+          IF (MI.GT.150) MI=150
           DO 300 J=0,MI
             CALL PRPOIS(PI,J,PJ)
             FJME=DFLOAT(J)-PP
@@ -7333,7 +7399,7 @@ C
       DOUBLE PRECISION T1
       INTEGER H,K
       LOGICAL NPRCHK
-      DATA INICA,INIAL,PREC/0,0,0./
+      DATA INICA,INIAL,PREC,XP20/0,0,0.0,0.0/
       IF (INICA.EQ.ICASE.AND.INIAL.EQ.IALG) GOTO 10
       INICA=ICASE
       INIAL=IALG
@@ -7341,7 +7407,11 @@ C
      1       (IALG.EQ.1.OR.IALG.EQ.2.OR.IALG.EQ.-1.OR.
      2       IALG.EQ.-2).AND.(NI.GT.0.OR.ICASE.NE.2).AND.
      3       A.GT.0..AND.E.GT.0..AND.TOL.GT.0..AND.MAXIT.GT.0
-      CALL MACH(2,PREC)
+      IF (PREC.EQ.0.0) THEN
+       CALL MACH(2,PRCS)
+       PREC=100.*PRCS
+       XP20=EXP(-20.0)
+      ENDIF
 C
 C  STEP 0.   SET NIT=1
 C  ------
@@ -7365,7 +7435,7 @@ C==>    LOGISTIC BERNOULLI : SOLVE EXPLICITLY
       ENDIF
       IF (ICASE.EQ.2) PI=E/FLOAT(NI)
       M=NI
-      IF (ICASE.EQ.3) M=MAX0(INT(100.*E),5000)
+      IF (ICASE.EQ.3) M=MAX0(INT(100.*E),500)
   100 H=-1
       K=-1
       J1=0
@@ -7409,8 +7479,11 @@ C==>    LOGISTIC BINOMIAL
   220   CONTINUE
       ELSEIF (ICASE.EQ.3) THEN
 C==>    LOGISTIC POISSON
+         EE=E
+         IF (E.LT.XP20) EE=XP20
+         IF (E.GT.1.E6) EE=1.E6
         DO 230 J=J1,J2
-          CALL PRPOIS(E,J,PJ)
+          CALL PRPOIS(EE,J,PJ)
           DEN=(FLOAT(J)-T)
           TEMP=AMIN1(A,ABS(DEN))
           IF (DEN.LT.0.) TEMP=-TEMP
@@ -7472,7 +7545,7 @@ C
 C   STEP 5.  W-ALGORITHM : SET T:=T0 + DELTA/DBAR
 C   _______
   500 IF (ABS(IALG).EQ.2) THEN
-        IF (ABS(DJBAR).LE.1.E-5) DJBAR=SIGN(1.,DJBAR)
+        IF (ABS(DJBAR).LE.1.E-5) DJBAR=SIGN(1.0,DJBAR)
         DELTA=SNGL(T1)/DJBAR
         T=T+DELTA
       ENDIF
@@ -7505,7 +7578,7 @@ C
      2          DELTA(NP),RW1(5*NP),RW2(MDX,NP)
       INTEGER NI(N),IW1(NP)
       LOGICAL NPRCHK
-      DATA ZETA,IQ/0.001,10/
+      DATA ZETA,IQ/0.01,10/
 C
 C  PARAMETER CHECK
 C
@@ -7520,18 +7593,20 @@ C
       ISG=ISF+NP
       ISH=ISG+NP
       IST=ISH+NP
+      NIT=-1
+      QMIN=1.E10
       CALL GYTST2(X,Y,CI,THETA,WA,COV,NI,OI,N,NP,MDX,NCOV,GAM,TOL,
      +TAU,ZETA,IQ,IOPT,ICASE,ICNV,MAXIT,NITMON,NIT,Q0,DELTA,F0,
      +F1,F2,VTHETA,GRAD,HESSNV,RW1,RW1(ISF),RW1(ISG),RW1(ISH),
-     +RW1(IST),RW2,IW1)
+     +RW1(IST),RW2,IW1,NIT,QMIN)
       RETURN
       END
 C
 C-----------------------------------------------------------------------
 C
       SUBROUTINE GYTST2(X,Y,CI,THETA,WA,COV,NI,OI,N,NP,MDX,NCOV,GAM,TOL,
-     1           TAU,ZETA,IQ,IOPT,ICASE,ICNV,MAXIT,NITMON,NIT,Q0,DELTA,
-     2           F0,F1,F2,VTHETA,GRAD,HESSNV,SE,SF,SG,SH,ST,SX,IP)
+     1       TAU,ZETA,IQ,IOPT,ICASE,ICNV,MAXIT,NITMON,NIT,Q0,DELTA,
+     2       F0,F1,F2,VTHETA,GRAD,HESSNV,SE,SF,SG,SH,ST,SX,IP,INI,QMIN)
 C.......................................................................
 C
 C   COPYRIGHT 1992 Alfio Marazzi
@@ -7557,17 +7632,23 @@ C
      3       MAXIT.GT.0.AND.(IOPT.EQ.1.OR.IOPT.EQ.2).AND.
      4       (ICNV.EQ.1.OR.ICNV.EQ.2.OR.ICNV.EQ.3)
       IF (.NOT.NPRCHK) CALL MESSGE(500,'GYTST2',1)
-      SE(1)=0.
 C
 C  STEP 1.   SET NIT=1
 C  ------
 C
       NIT=1
+
 C
 C  STEP 2.   COMPUTE CURRENT OBJECTIVE FUNCTION VALUE AND (-)DERIVATIVES
 C  ------
   200 CALL MFY(X,THETA,VTHETA,N,NP,MDX,NP,1,N,1)
       CALL LRFNCT(ICASE,Y,CI,VTHETA,OI,WA,NI,N,1,1,1,F0,F1,F2,Q0)
+      IF (INI.EQ.1) THEN
+       INI=-1
+       QMIN=Q0
+       DO 210 J=1,NP
+  210  SE(J)=THETA(J)
+      ENDIF
 C
 C  ITERATION MONITORING
 C
@@ -7586,57 +7667,56 @@ C
   400 NULF2=.TRUE.
       DO 410 I=1,N
       SQF2=SQRT(F2(I))
-      IF (SQF2.GT.1.E-5) NULF2=.FALSE.
+      IF (SQF2.GE.1.E-4) NULF2=.FALSE.
       DO 410 J=1,NP
   410 SX(I,J)=X(I,J)*SQF2
       IF (NULF2) THEN
-        K=0
+        DO 420 J=1,NP
+        THETA(J)=SE(J)
+  420   DELTA(J)=-GRAD(J)
+        NIT=-NIT
+        GOTO 730
       ELSE
         CALL RIMTRF(SX,N,NP,MDX,INTCH,TAU,K,SF,SG,SH,IP)
-        IF (K.NE.NP) CALL MESSGE(111,'GYTSTP',0)
-c        if (k.ne.np) then
-c         call intpr('nit',3,nit,1)
-c         call realpr('F2',2,f2,n)
-c        endif
+        IF (K.NE.NP) THEN
+c          CALL MESSGE(111,'GYTSTP',0)
+           call intpr('GYTSTP: Inverse hessian rank',28,K,1)
+        ENDIF
+        CALL KIASCV(SX,K,NP,MDX,NCOV,1.,1.,HESSNV)
+        CALL KFASCV(SX,HESSNV,K,NP,MDX,NCOV,1.,DELTA,SG,IP) 
       ENDIF
-C
-      L=0
-      DO 420 I=1,NP
-        DO 420 J=1,I
-        L=L+1
-        HESSNV(L)=0.
-        IF (J.EQ.I) HESSNV(L)=1.
-  420 CONTINUE
-      IF (K.EQ.0) GOTO 500
-      CALL KIASCV(SX,K,NP,MDX,NCOV,1.,1.,HESSNV)
-      CALL KFASCV(SX,HESSNV,K,NP,MDX,NCOV,1.,DELTA,SG,IP) 
 C
 C  STEP 5.   COMPUTE THE INCREMENT VECTOR
 C  ------
 C
   500 CALL MSF(HESSNV,GRAD,DELTA,NP,NCOV,1,NP,NP)
       GAM0=GAM
-      IF (K.LT.NP.AND.IOPT.NE.2) THEN
-        CALL DOTP(DELTA,DELTA,NP,1,1,NP,NP,GAM0)
-        IF (GAM0.GT.1.) GAM0=1./SQRT(GAM0)
-      ENDIF
+C     IF (K.LT.NP.AND.IOPT.NE.2) THEN     ! 25.10.12 AR
+C       CALL DOTP(DELTA,DELTA,NP,1,1,NP,NP,GAM0)
+C       IF (GAM0.GT.1.) GAM0=1./SQRT(GAM0)
+C       call realpr('gam0',4,gam0,1)
+C     ENDIF
       DO 510 J=1,NP
-      DELTA(J)=-DELTA(J)*GAM0
+      DELTA(J)=-DELTA(J)
       IF (FIRST) THEN
         ST(J)=THETA(J)
-        THETA(J)=THETA(J)+DELTA(J)
+        THETA(J)=THETA(J)+DELTA(J)*GAM0
       ELSE
-        SF(J)=THETA(J)
-        THETA(J)=ST(J)+DELTA(J)
+        THETA(J)=ST(J)+DELTA(J)*GAM0
       ENDIF
   510 CONTINUE
 C
 C  STEP 6.   DETERMINE THE STEP-LENGTH
 C  ------
 C
-      CALL MFY(X,THETA,VTHETA,N,NP,MDX,NP,1,N,1)
+      CALL MFY(X,THETA,F2,N,NP,MDX,NP,1,N,1)
       IF (.NOT.FIRST) Q01=Q0L
-      CALL LRFNCT(ICASE,Y,CI,VTHETA,OI,WA,NI,N,1,0,0,F0,F1,F2,Q0L)
+      CALL LRFNCT(ICASE,Y,CI,F2,OI,WA,NI,N,1,0,0,F1,F1,F1,Q0L)
+      IF (Q0L.LE.QMIN) THEN
+        QMIN=Q0L
+        DO 520 J=1,NP
+  520   SE(J)=THETA(J)
+      ENDIF 
       IF (Q0L.LE.Q0) GOTO 700
       IF (.NOT.FIRST) GOTO 650
       FIRST=.FALSE.
@@ -7645,13 +7725,16 @@ C
         IF (ICASE.EQ.3) CALL DPOISS(Y,CI,VTHETA,WA,F0,OI,N,1.E-6,F2)
         GOTO 400
       ELSE
-        CALL STPLRG(ICASE,X,Y,CI,OI,ZETA,IQ,THETA,DELTA,WA,NI,GRAD,
+        CALL STPLRG(ICASE,X,Y,CI,OI,ZETA,IQ,ST,DELTA,WA,NI,GRAD,
      1              N,NP,MDX,Q0,Q01,GAM0,ST,F0,VTHETA)
+        DO 600 J=1,NP
+  600   THETA(J)=ST(J)+DELTA(J)*GAM0
         GOTO 700
       ENDIF   
   650 IF (Q01.LT.Q0L) THEN
         DO 670 J=1,NP
-  670   THETA(J)=SF(J)
+        DELTA(J)=ST(J)-THETA(J)
+  670   THETA(J)=ST(J)
       ENDIF
 C     STEP LENGTH BY CUBIC INTERPOLATION (USE THE ARRAY SE)
 C     CALL STEPLR(ICASE,X,Y,CI,OI,THETA,DELTA,WA,NI,GRAD,SE,
@@ -7659,7 +7742,8 @@ C    1            N,NP,MDX,Q00,Q01,GAM,ST,F0,F1,F2,VTHETA)
 C
 C  STEP 7. STOP ITERATIONS IF DESIRED PRECISION HAS BEEN REACHED
 C  -------
-  700 IF (NIT.EQ.MAXIT) GOTO 730
+  700 CONTINUE
+      IF (NIT.EQ.MAXIT) GOTO 730
       IF (ICTHET(NP,NCOV,DELTA,1.0,COV,TOL,ICNV).EQ.1) GOTO 730
       NIT=NIT+1
       GOTO 200
@@ -7916,6 +8000,10 @@ C  ------
       INFO=0
       CALL PRSCF0(ST,NVAR,NCOV,TAU,INFO)
       IF (INFO.NE.0) CALL MESSGE(400+INFO,'GYASTP',0)
+      IF (INFO.EQ.1) THEN 
+         NIT= -NIT
+         RETURN
+      ENDIF
 C
 C  STEP 4: SET SA:=A AND A:=(I-SS)*SA
 C  -------
@@ -11216,6 +11304,7 @@ C
       CALL MCHL(COV,NP,NN,INFO)
       IF (INFO.EQ.0) GOTO 65
       CALL MESSGE(400+INFO,'KTASKW',0)
+      IAINV=400+INFO
       RETURN
    65 CONTINUE
       DO 70 L=1,NN
@@ -11224,6 +11313,7 @@ C
       CALL MINV(A,NP,NN,TAU,ISING)
       IF (ISING.EQ.0) GOTO 75
       CALL MESSGE(450,'KTASKW',0)
+      IAINV=450
       RETURN
    75 CONTINUE
       CALL MTT1(A,S1INV,NP,NN)
@@ -11245,6 +11335,7 @@ C
    90 AINV(L)=A(L)
       CALL MINV(AINV,NP,NN,TAU,ISING)
       IF (ISING.NE.0) CALL MESSGE(460,'KTASKW',0)
+      IAINV=460
       RETURN
       END
 C
@@ -20555,9 +20646,14 @@ C
       DOUBLE PRECISION AA,T1,T2,PREC,PP,GFUN,DNI   
       EXTERNAL GFUN
       COMMON/UGLPR/IUGL,ICASE,B
-      DATA STOL,PREC/1.E-6,0.D0/
+      DATA STOL,PREC,XP20/1.E-3,0.D0,0.0/
 C
-      IF (PREC.EQ.0.D0) CALL MACHD(2,PREC)
+      IF (PREC.EQ.0.D0) THEN
+c       CALL MACH(2,PRCS)
+c       PREC=100.D0*DBLE(PRCS)
+        PREC=6.02007D-7
+        XP20=EXP(-20.0)
+      ENDIF
       YI=UPAR(1)
       ENI=UPAR(2)
       GI=UPAR(3)
@@ -20596,6 +20692,10 @@ C==>      LOGISTIC BINOMIAL
         ELSEIF (ICASE.EQ.3) THEN
 C==>      LOGISTIC POISSON
           MI=INT(100.*PI)
+          IF (MI.LT.1) MI=150
+          IF (MI.GT.150) MI=150
+          IF (PI.LT.XP20) PI=XP20
+          IF (PI.GT.1.E6) PI=1.E6
           T2=0.D0
           DO 300 J=0,MI
             CALL PRPOIS(PI,J,PJ)
@@ -20603,15 +20703,15 @@ C==>      LOGISTIC POISSON
             TEMP=ABS(FJME-CI)
             T1=AA**2
             IF (TEMP.LT.A) T1=DBLE(TEMP)**2
-            IF (FJME.GT.0..AND.T1*DBLE(PJ).LT.PREC) GOTO 350
             T2=T2+T1*DBLE(PJ)
+            IF (FJME.GT.0..AND.T1*DBLE(PJ).LT.PREC) GOTO 350
   300     CONTINUE
   350     UGL=T2
         ENDIF
       ELSE
 C====>  OPTION 2 (IUGL=2)
         PP=GFUN(ICASE,NI,GI)
-        temP=ABS(YI-SNGL(PP)-CI)
+        TEMP=ABS(YI-SNGL(PP)-CI)
         UGL=AA**2
         IF (TEMP.LT.A) UGL=DBLE(TEMP)**2
       ENDIF
@@ -20773,7 +20873,6 @@ C   STEP 2. COMPUTE RESIDUALS R=Y-X*THETA
 C   -------
   200 DO 210 I=1,N
   210 RS(I)=Y(I)-THETA
-c      call intpr('Nit',3,nit,1)
 C
 C   STEP 3. COMPUTE A NEW VALUE SIGMB FOR SIGMA.
 C   -------
@@ -20835,4 +20934,38 @@ C   -------
   900 CONTINUE
       RETURN
       END
+C
+C-----------------------------------------------------------------------
+C
+      SUBROUTINE UGLTST(IUGL,ICASE,B,N,NI,Y,VTHETA,OI,CI,DIST,SU)
+C.......................................................................
+C TEST
+C.......................................................................
+C
+      DIMENSION Y(N),CI(N),VTHETA(N),OI(N),DIST(N),UARR(4)
+      DOUBLE PRECISION SU(N),U,UGL
+      INTEGER NI(N)
+      EXTERNAL UGL
+      COMMON/UGLPR/IUG,ICS,BB
 
+C
+      IUG=IUGL
+      ICS=ICASE
+      BB=B
+      YL=1.
+      NL=1
+      DO 100 L=1,N
+      DISTL=DIST(L)
+      GL=VTHETA(L)+OI(L)
+      CL=CI(L)
+      IF (IUGL.EQ.2) YL=Y(L)
+      IF (ICASE.EQ.2) NL=NI(L)
+      UARR(1)=YL
+      UARR(2)=FLOAT(NL)
+      UARR(3)=GL
+      UARR(4)=CL
+      U=UGL(UARR,4,DISTL)
+      SU(L)=U
+  100 CONTINUE
+      RETURN
+      END

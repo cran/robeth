@@ -20,9 +20,10 @@ lywalg(y, lambda, psp0 = psp(0), expsi = psi, exchi = chi, exrho = rho,
   \item{sigmai}{ Initial estimate of the scale parameter }
   \item{tol}{ Relative precision for the convergence criterion }
   \item{gam}{ Relaxation factor. Set 0 < gam < 2. }
-  \item{isigma}{ If isigma<0, the value of sigma is not changed during the first iteration.
-   If isigma=0, bypasss iteration on sigma (sigmaf=sigmai). If |isigma|>0, sigma is updated
-   using the robeth function rysigm.}
+  \item{isigma}{ If isigma<0, the value of sigma is not changed during the first 
+                 iteration.
+   If isigma=0, bypasss iteration on sigma (sigmaf=sigmai). If |isigma|>0, sigma 
+   is updated using the robeth function rysigm.}
   \item{maxit}{ Maximum number of cycles }
   \item{maxis}{ Maximum number of iterations for the scale step }
   \item{nitmon}{ If nitmon>0 and the  iteration counter is a multiple of nitmon,

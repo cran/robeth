@@ -23,7 +23,7 @@ st <- double(ncov)
 st1 <- double(ncov)
 f.res <- .Fortran("int16",
 x=to.single(x),
-a=to.double(a),
+a=as.double(a),
 t=to.single(t),
 as.integer(exu()),
 as.integer(exup()),
@@ -43,15 +43,15 @@ tol=to.single(tol),
 xfud=to.single(xfud),
 nit=to.integer(nit),
 dist=to.single(dist),
-sa=to.double(sa),
-ss=to.double(ss),
+sa=as.double(sa),
+ss=as.double(ss),
 sz=to.single(sz),
-su=to.double(su),
-sup=to.double(sup),
-sy1=to.double(sy1),
-sy2=to.double(sy2),
-sd=to.double(sd),
-st=to.double(st),
-st1=to.double(st1))
+su=as.double(su),
+sup=as.double(sup),
+sy1=as.double(sy1),
+sy2=as.double(sy2),
+sd=as.double(sd),
+st=as.double(st),
+st1=as.double(st1))
 list(a=f.res$a,t=f.res$t,nit=f.res$nit,dist=f.res$dist)
 }

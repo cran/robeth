@@ -6,7 +6,7 @@ if (missing(k)) messagena("k")
 nn <- length(s)
 if (missing(s)) s <- double(nn)
 f.res <- .Fortran("exchd",
-s=to.double(s),
+s=as.double(s),
 n=to.integer(n),
 nn=to.integer(nn),
 h=to.integer(h),

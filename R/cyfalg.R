@@ -15,7 +15,7 @@ sr <- double(nvar)
 sd <- double(nvar)
 f.res <- .Fortran("int7",
 x=to.single(x),
-a=to.double(a),
+a=as.double(a),
 t=to.single(t),
 as.integer(exu()),
 as.integer(exv()),
@@ -32,9 +32,9 @@ icnv=to.integer(icnv),
 tol=to.single(tol),
 nit=to.integer(nit),
 dist=to.single(dist),
-sa=to.double(sa),
-st=to.double(st),
-sr=to.double(sr),
-sd=to.double(sd))
+sa=as.double(sa),
+st=as.double(st),
+sr=as.double(sr),
+sd=as.double(sd))
 list(a=f.res$a,t=f.res$t,nit=f.res$nit,dist=f.res$dist)
 }

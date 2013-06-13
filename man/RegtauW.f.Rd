@@ -2,7 +2,8 @@
 \alias{RegtauW.f}
 \title{ Auxiliary function  for the computation of QQopt}
 \description{
- QQopt is a resampling algorithm for the determination of the parameters of a Loggamma model}
+ QQopt is a resampling algorithm for the determination of the parameters of a Loggamma 
+ model}
 \usage{
 RegtauW.f(x, y, w, b1, c1, b2, c2, N, tol = 1e-6, seed = 567)
 }

@@ -6,14 +6,14 @@ nx <- length(x)
 ny <- length(y)
 result <- double(1)
 f.res <- .Fortran("dotpd",
-x=to.double(x),
-y=to.double(y),
+x=as.double(x),
+y=as.double(y),
 n=to.integer(n),
 incx=to.integer(incx),
 incy=to.integer(incy),
 nx=to.integer(nx),
 ny=to.integer(ny),
-result=to.double(result))
+result=as.double(result))
 list(result=f.res$result)
 }
 

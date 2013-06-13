@@ -9,9 +9,9 @@ mdb <- nrow(b)
 mdc <- m
 c <- matrix(double(1),mdc,n)
 f.res <- .Fortran("mffd",
-a=to.double(a),
-b=to.double(b),
-c=to.double(c),
+a=as.double(a),
+b=as.double(b),
+c=as.double(c),
 m=to.integer(m),
 k=to.integer(k),
 n=to.integer(n),

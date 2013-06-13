@@ -16,7 +16,7 @@ st <- double(ncov)
 sd <- double(nvar)
 f.res <- .Fortran("int53",
 x=to.single(x),
-a=to.double(a),
+a=as.double(a),
 as.integer(exu()),
 as.integer(exup()),
 nobs=to.integer(nobs),
@@ -30,11 +30,11 @@ tol=to.single(tol),
 xfud=to.single(xfud),
 nit=to.integer(nit),
 dist=to.single(dist),
-sa=to.double(sa),
-ss=to.double(ss),
-su=to.double(su),
-sup=to.double(sup),
-st=to.double(st),
-sd=to.double(sd))
+sa=as.double(sa),
+ss=as.double(ss),
+su=as.double(su),
+sup=as.double(sup),
+st=as.double(st),
+sd=as.double(sd))
 list(a=f.res$a,nit=f.res$nit,dist=f.res$dist,su=f.res$su)
 }

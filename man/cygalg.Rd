@@ -5,7 +5,10 @@
 \description{
  See Marazzi A. (1993), p.238}
 \usage{
-cygalg(x, a, t, exu = ucv, exup = upcv, exv = vcv, exw = wcv, exwp = wpcv, nobs = nrow(x), maxit = .dFvGet()$mxg, nitmon = .dFvGet()$ntm, iloc = .dFvGet()$ilc, icnv = .dFvGet()$icv, tol = .dFvGet()$tlo, xfud = .dFvGet()$xfd)
+cygalg(x, a, t, exu = ucv, exup = upcv, exv = vcv, exw = wcv, exwp = wpcv, 
+       nobs = nrow(x), maxit = .dFvGet()$mxg, nitmon = .dFvGet()$ntm, 
+       iloc = .dFvGet()$ilc, icnv = .dFvGet()$icv, tol = .dFvGet()$tlo, 
+       xfud = .dFvGet()$xfd)
 }
 \arguments{
   \item{x}{ See reference}

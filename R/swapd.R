@@ -5,8 +5,8 @@ mdy <- length(y)
 if (missing(x)) x <- double(mdx)
 if (missing(y)) y <- double(mdy)
 f.res <- .Fortran("swapd",
-x=to.double(x),
-y=to.double(y),
+x=as.double(x),
+y=as.double(y),
 n=to.integer(n),
 incx=to.integer(incx),
 incy=to.integer(incy),

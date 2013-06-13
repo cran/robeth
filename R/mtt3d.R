@@ -6,9 +6,9 @@ if (missing(n)) messagena("n")
 nn <- length(a)
 c <- double(nn)
 f.res <- .Fortran("mtt3d",
-a=to.double(a),
-b=to.double(b),
-c=to.double(c),
+a=as.double(a),
+b=as.double(b),
+c=as.double(c),
 n=to.integer(n),
 nn=to.integer(nn))
 list(c=f.res$c)

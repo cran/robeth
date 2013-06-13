@@ -31,7 +31,7 @@ x=to.single(x),
 y=to.single(y),
 ni=to.integer(ni),
 cov=to.single(cov),
-a=to.double(a),
+a=as.double(a),
 theta=to.single(theta),
 oi=to.single(oi),
 mdx=to.integer(mdx),
@@ -67,8 +67,13 @@ hessnv=to.single(hessnv),
 rw1=to.single(rw1),
 rw2=to.single(rw2),
 iw1=to.integer(iw1),
-dw1=to.double(dw1))
+dw1=as.double(dw1))
+nf1 <- n+1 ; nf2 <- nf1+n; ef2 <- nf2+n-1
+Li <- f.res$rw1[1:n]; li <- f.res$rw1[nf1:(nf2-1)]; lip <- f.res$rw1[nf2:ef2]
+lip[is.na(lip)] <- 0; rs <- lip ; rs[lip!=0] <- 1/lip[lip!=0]; rs[lip==0] <- NA
+rs <- -rs*li
 list(a=f.res$a,theta=f.res$theta,nit=f.res$nit,ci=f.res$ci,wa=f.res$wa,
 vtheta=f.res$vtheta,delta=f.res$delta,grad=f.res$grad,hessnv=f.res$hessnv,
-rw1=f.res$rw1)
+Li=Li,li=li,lip=lip,rs=rs)
 }
+

@@ -7,7 +7,7 @@ function(svals)
         f.res <- .Fortran("wcva",
                 n = to.integer(n),
                 svals = to.single(svals),
-                fvals = to.double(fvals))
+                fvals = as.double(fvals))
         f.res$fvals
 }
 

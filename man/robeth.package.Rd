@@ -108,7 +108,7 @@ library(robeth)
 # P, tm, tl, tu: 0.014 6.918 1.562 12.273 
 
 #
-# ---- Examples of Chapter 2: M-estimates of coefficients and scale in linear regression ------
+# Examples of Chapter 2: M-estimates of coefficients and scale in linear regression
 #
 # Read data; declare the vector wgt; load defaults
 #
@@ -223,7 +223,7 @@ library(robeth)
 #=======================================================================
  rbmost <- function(x,y,cc,usext=userfd) {
  n      <- nrow(x); np <- ncol(x); dfcomn(xk=np)
- .def   <- .dFv; .def$itw <- 1; .dFv <<- .def 
+ .dFvPut(1,"itw")
  z      <- wimedv(x)
  z      <- wyfalg(x, z$a, y, exu=usext); nitw <- z$nit
  wgt    <- 1/z$dist; wgt[wgt>1.e6] <- 1.e6
@@ -246,8 +246,8 @@ library(robeth)
 #
  Mal.Std <- function(x, y, b2=-1, cc=-1, isigma=2) {
  n <- length(y); np <- ncol(x)
- dfrpar(x, "Mal-Std", b2, cc); .def <- .dFv
- if (isigma==1) {dfcomn(d=.dFv$ccc); .def$isg <- 1; .dFv <<- .def}
+ dfrpar(x, "Mal-Std", b2, cc); .dFv <- .dFvGet()
+ if (isigma==1) {dfcomn(d=.dFv$ccc); .dFvPut(1,"isg")}
 # Weights 
  z      <- wimedv(x)
  z      <- wyfalg(x, z$a, y); nitw <- z$nit
@@ -259,7 +259,7 @@ library(robeth)
  z      <- rbmost(x,y,1.5,userfd)
  theta0 <- z$theta; sigma0 <- z$sigma; nitw0 <- z$nitw
 # Final theta and sigma
- if (.dFv$isg==1) ribeth(wgt) else ribet0(wgt)
+ if (isigma==1) ribeth(wgt) else ribet0(wgt)
  z      <- rywalg(x, y,theta0,wgt,cov$cov, sigmai=sigma0)
  theta1 <- z$theta[1:np]; sigma1 <- z$sigmaf; nit1 <- z$nit
 # Covariance matrix of coefficient estimates
@@ -285,8 +285,8 @@ library(robeth)
 #
  Kra.Wel <- function(x, y, ckw=-1, isigma=2) {
  n <- length(y); np <- ncol(x)
- dfrpar(x, "Kra-Wel", ckw); .def <- .dFv 
- if (isigma==1) {dfcomn(d=.dFv$ccc); .def$isg <- 1; .dFv <<- .def}
+ dfrpar(x, "Kra-Wel", ckw); .dFv <- .dFvGet()
+ if (isigma==1) {dfcomn(d=.dFv$ccc); .dFvPut(1,"isg")}
 # Weights 
  z      <- wimedv(x)
  z      <- wynalg(x, z$a); nitw <- z$nit
@@ -298,7 +298,7 @@ library(robeth)
  z      <- rbmost(x, y, cc=1.5)
  theta0 <- z$theta;       sigma0 <- z$sigma; nitw0 <- z$nitw
 # Final theta and sigma
-  if (.dFv$isg==1) ribeth(wgt) else ribet0(wgt)
+  if (isigma==1) ribeth(wgt) else ribet0(wgt)
  z      <- rynalg(x, y,theta0,wgt,cov$cov, sigmai=sigma0)
  theta2 <- z$theta[1:np]; sigma2 <- z$sigma; nit2 <- z$nit
 #
@@ -390,7 +390,7 @@ library(robeth)
 # Huber
 #
     dfcomn(ipsi=1,c=1.345,d=1.345)
-    .dFv$ite <- 1
+    .dFvPut(1,"ite")
     z <- airef0(mu=3, ialfa=1, sigmx=1)
 #.......................................................................
 {
@@ -401,7 +401,7 @@ library(robeth)
 # Schweppe: Krasker-Welsch
 #
     dfcomn(ipsi=1,c=3.76,iucv=3,ckw=3.76,iwww=1)
-    .dFv$ite <- 3
+    .dFvPut(3,"ite")
     z <- airef0(mu=3, ialfa=1, sigmx=1)
 #.......................................................................
 {
@@ -412,7 +412,7 @@ library(robeth)
 # Mallows-Standard
 #
     dfcomn(ipsi=1,c=1.5,iucv=1,a2=0,b2=6.16,iww=3)
-    .dFv$ite <- 2
+    .dFvPut(2,"ite")
     z <- airef0(mu=3, ialfa=1, sigmx=1)
 #.......................................................................
 {
@@ -478,12 +478,12 @@ library(robeth)
 # Full model. np variables in x[,1:np]
  n      <- nrow(x)
  z      <- riclls(x[,1:np], y)
- theta0 <- z$theta; sigma0 <- z$sigma 
+ theta0 <- z$theta; sigma0 <- z$sigma; .dFv <- .dFvGet() 
  z      <- liepsh(.dFv$ccc) # ccc is globally defined by dfrpar
  epsi2  <- z$epsi2; epsip <- z$epsip
  zc     <- ktaskv(x[,1:np],f=epsi2/(epsip^2))
  covi   <- zc$cov
- ribeth(y)
+ ribeth(y) 
  zf     <- rywalg(x[,1:np],y,theta0,y,covi,sigmai=sigma0)
  thetaf <- zf$theta; sigma <- zf$sigmaf; rf <- zf$rs
  f      <- kffacv(rf,np=np,sigma=sigma)
@@ -539,7 +539,7 @@ library(robeth)
 #------------------------------------------------------------------------
  rbmost <- function(x,y,cc,usext=userfd) {
  n      <- nrow(x); np <- ncol(x); dfcomn(xk=np)
- .def <- .dFv; .def$itw <- 1; .dFv <<- .def
+ .dFvPut(1,"itw")
  z      <- wimedv(x)
  z      <- wyfalg(x, z$a, y, exu=usext); nitw <- z$nit
  wgt    <- 1/z$dist; wgt[wgt>1.e6] <- 1.e6
@@ -640,7 +640,8 @@ library(robeth)
 # Optimal tau-test based on Schweppe-type estimates
 #
  z      <- tauare(itype=3,mu=1,cpsi=2.665,bb=0,sigmax=1)
- dfrpar(x, "Sch-Tau",upar=2.67); .dFv$isg <- 1; dfcomn(d=.dFv$ccc)
+ dfrpar(x, "Sch-Tau",upar=2.67); .dFvPut(1,"isg"); 
+ .dFv   <- .dFvGet(); dfcomn(d=.dFv$ccc)
 # Full model: initial estimates of theta, sigma and weights
  dfcomn(xk=np)  # Needed for userfd 
  zr     <- rbmost(x,y,cc=1.5)
@@ -693,8 +694,7 @@ library(robeth)
 #  Rn2-test on Mallows estimators 
 #  ==============================
  dfrpar(x, "mal-std", b2, c)
- .def  <- .dFv
- .def$isg <- 1; .dFv <<- .def; dfcomn(d=.dFv$ccc)
+ .dFvPut(1,"isg"); .dFv <- .dFvGet(); dfcomn(d=.dFv$ccc)
 #
 # Initial and final values of weights
 #
@@ -1015,7 +1015,7 @@ library(robeth)
   y     <- xx[,"y"]
   wgt   <- vector("numeric",length(y))
   n     <- 56; np <- 7
- dfvals()
+ dfvals(); .dFv   <- .dFvGet()
 # Compute classical sigma and the t-statistics
  dfrpar(x,"ols",-1,-1)
  z     <- mirtsr(x,y,.dFv$ite)
@@ -1069,7 +1069,7 @@ library(robeth)
 #
 # Minimum Volume Ellipsoid covariances 
 #
- dfvals()
+ dfvals(); .dFv   <- .dFvGet()
  z       <- mymvlm(cx,y,ilms=0,iopt=3,iseed=5321)
  dst     <- z$d;  cv <- z$cov; xvol <- z$xvol
 #.......................................................................

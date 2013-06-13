@@ -43,7 +43,7 @@ cov=to.single(cov),
 mdd=to.integer(mdd),
 mdr=to.integer(mdr),
 mdi=to.integer(mdi),
-dwrk=to.double(dwrk),
+dwrk=as.double(dwrk),
 rwrk=to.single(rwrk),
 iwrk=to.integer(iwrk))
 list(x=f.res$x,sigmaf=f.res$sigmaf,theta=f.res$theta,rs=f.res$rs,wgt=f.res$wgt,

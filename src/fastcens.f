@@ -267,4 +267,82 @@ C     QL(2,I)=qloggamma(P,lambda)
   100 CONTINUE
       RETURN
       END
+C
+      SUBROUTINE ZEMLL(B,X,YO,DO,N,NP,R,EMLL)
+      REAL B(NP),X(N,NP),YO(N),R(N),AN(2)
+      INTEGER DO(N) 
+      IJ=0
+      NU=0
+      NN=N*N
+      DO 100 I=1,N
+      NU=NU+DO(I)
+  100 CONTINUE
+      NC=N-NU
+      S1=0.0
+      S2=0.0
+      O1=0.0
+      I1=0
+      I0=N+1
+      SD1=0.0
+      SD0=0.0
+      S2D1=0.0
+      S2D0=0.0
+      DO 300 I=1,N
+      XB=0.0
+      DO 200 J=1,NP
+      XB=XB+X(I,J)*B(J)
+  200 CONTINUE
+      R(I)=YO(I)-XB
+      RI2=R(I)*R(I)
+      IF (DO(I).EQ.1) THEN
+        SD1=SD1+R(I)
+        S2D1=S2D1+RI2
+        O1=O1-XB-R(I)
+      ELSE
+        SD0=SD0+R(I)
+        S2D0=S2D0+RI2
+      ENDIF
+  300 CONTINUE
+      IF (NU.GT.1) THEN
+        SD1=SD1/FLOAT(NU)
+        S1=(S2D1-FLOAT(NU)*(SD1**2))/FLOAT(NU-1)
+        S1=SQRT(S1)
+      ENDIF
+      IF (NC.GT.1) THEN
+       SD0=SD0/FLOAT(NC)
+       S2=(S2D0-FLOAT(NC)*(SD0**2))/FLOAT(NC-1)
+       S2=SQRT(S2)
+      ENDIF
+      IF (S2.EQ.0.0) S2=S1
+      AN(1) = ((8.0*SQRT(2.0)/3.0)**0.2)*S1*(FLOAT(N)**(-0.2))
+      AN(2) = (4.0**(1.0/3.0))*S2*(FLOAT(N)**(-1.0/3.0))
+      O2=0.0
+      O3=0.0
+      DO 600 I=1,N
+      IF (DO(I).EQ.0) GOTO 600
+      ARG2=0.0
+      ARG3=0.0
+      IA=1
+      IF (DO(I).EQ.0) IA=2
+      DO 500 J=1,N
+      Z=(R(J)-R(I))/AN(IA)
+      CALL GAUSS(1,Z,PNRMZ)
+      ARG3=ARG3+PNRMZ
+      IF (DO(J).EQ.0) GOTO 500
+      CALL XERF(2,Z,DNRMZ)
+      ARG2=ARG2+DNRMZ/AN(IA)
+ 500  CONTINUE
+      ARG2=ARG2/FLOAT(N)
+      ARG3=ARG3/FLOAT(N)
+      IF (ARG2.EQ.0.0) ARG2=0.0001
+      IF (ARG3.EQ.0.0) ARG3=0.0001
+      O2=O2+ALOG(ARG2)
+      O3=O3+ALOG(ARG3)      
+ 600  CONTINUE
+c      call realpr('O1',2,O1,1)
+c      call realpr('O2',2,O2,1)
+c      call realpr('O3',2,O3,1)
+      EMLL= -(O1+O2-O3)/FLOAT(N)
+      RETURN
+      END
 

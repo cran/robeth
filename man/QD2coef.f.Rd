@@ -1,6 +1,7 @@
 \name{QD2coef.f}
 \alias{QD2coef.f}
-\title{ Auxiliary function to find mu and sigma parameter for extended  loggamma distribution}
+\title{ Auxiliary function to find mu and sigma parameter for extended  loggamma 
+        distribution}
 \description{
  QD2coef.f computes for a given lambda, the mu and sigma parameters}
 \usage{

@@ -2,8 +2,8 @@ Package: robeth
 Type: Package
 Title: R functions for robust statistics
 LazyLoad: yes
-Version: 2.2
-Date: 2010-03-05
+Version: 2.6
+Date: 2013-06-13
 Depends: R (>= 2.9.2)
 Author: Alfio Marazzi <Alfio.Marazzi@chuv.ch>
 Maintainer: A. Randriamiharisoa <Alex.Randriamiharisoa@chuv.ch>
@@ -16,6 +16,7 @@ Description: Locations problems, M-estimates of coefficients and scale
         linear models.
 License: GPL (>= 2)
 URL: http://www.iumsp.ch/
-Packaged: 2011-08-23 19:10:06 UTC; arandria
+Packaged: 2013-06-17 15:42:54 UTC; arandria
+NeedsCompilation: yes
 Repository: CRAN
-Date/Publication: 2011-08-24 19:19:32
+Date/Publication: 2013-06-17 18:34:00

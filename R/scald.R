@@ -4,7 +4,7 @@ if (missing(sa)) messagena("sa")
 mdx <- length(x)
 if (missing(x)) x <- double(mdx)
 f.res <- .Fortran("scald",
-x=to.double(x),
+x=as.double(x),
 sa=to.single(sa),
 n=to.integer(n),
 incx=to.integer(incx),

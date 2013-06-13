@@ -15,7 +15,7 @@ ncov=to.integer(ncov),
 mdx=to.integer(mdx),
 nfirst=to.integer(nfirst),
 iloc=to.integer(iloc),
-a=to.double(a),
+a=as.double(a),
 t=to.single(t),
 sc=to.single(sc))
 list(a=f.res$a,t=f.res$t)

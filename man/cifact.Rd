@@ -1,10 +1,13 @@
 \name{cifact}
 \alias{cifact}
-\title{ Determination of the correction factor for the M-estimate based on Huber weight function }
+\title{ 
+Determination of the correction factor for the M-estimate based on Huber 
+weight function }
 \description{
  See Marazzi A. (1993), p.246}
 \usage{
-cifact(a2 = .dFvGet()$aa2, b2 = .dFvGet()$bb2, nvar, tol = .dFvGet()$tlo, maxit = .dFvGet()$mxt)
+cifact(a2 = .dFvGet()$aa2, b2 = .dFvGet()$bb2, nvar, tol = .dFvGet()$tlo, 
+       maxit = .dFvGet()$mxt)
 }
 \arguments{
   \item{a2}{ See reference}

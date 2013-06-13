@@ -21,7 +21,7 @@ ip <- integer(nvar)
 sw <- matrix(double(1),mdw,nvar)
 sz <- double(nvar)
 f.res <- .Fortran("int58",
-x=to.double(x),
+x=as.double(x),
 as.integer(exu()),
 nobs=to.integer(nobs),
 nvar=to.integer(nvar),
@@ -39,15 +39,15 @@ icnv=to.integer(icnv),
 k=to.integer(k),
 nit=to.integer(nit),
 dist=to.single(dist),
-a=to.double(a),
-su=to.double(su),
-sb=to.double(sb),
-sb0=to.double(sb0),
-sf=to.double(sf),
-sg=to.double(sg),
-sh=to.double(sh),
+a=as.double(a),
+su=as.double(su),
+sb=as.double(sb),
+sb0=as.double(sb0),
+sf=as.double(sf),
+sg=as.double(sg),
+sh=as.double(sh),
 ip=to.integer(ip),
-sw=to.double(sw),
-sz=to.double(sz))
+sw=as.double(sw),
+sz=as.double(sz))
 list(x=f.res$x,k=f.res$k,nit=f.res$nit,dist=f.res$dist,a=f.res$a)
 }

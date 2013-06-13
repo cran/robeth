@@ -15,7 +15,7 @@ mdx=to.integer(mdx),
 itypw=to.integer(itypw),
 init=to.integer(init),
 nfirst=to.integer(nfirst),
-a=to.double(a),
+a=as.double(a),
 sc=to.single(sc))
 list(a=f.res$a)
 }

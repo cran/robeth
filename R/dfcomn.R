@@ -1,9 +1,11 @@
+
 "dfcomn" <-
 function(ipsi=-9,c=-1.345,h1=-1.7,h2=-3.4,h3=-8.5,xk=-1.548,d=-1.345,
                    beta=-0.5,bet0=-1.0,iucv=-1,a2=0.,b2=-3.0,chk=-9.0,ckw=-2.0,
                    bb=-1.0,bt=-1.0,cw=-1.0,em=-1.345,cr=-2.0,vk=-1.0,np=-2,
                    nu=-1, v7=-1, iwww=-1)
 {
+#Set the common values in robeth.dll
         f.res <- .Fortran("dfcomn",
         ipsi = to.integer(ipsi),
         c = to.single(c),
@@ -29,12 +31,14 @@ function(ipsi=-9,c=-1.345,h1=-1.7,h2=-3.4,h3=-8.5,xk=-1.548,d=-1.345,
         enu = to.single(nu),
         v7 = to.single(v7),
         iwww = to.integer(iwww))
-        .def <- .dFvGet()
-        if (c > 0) .def$ccc <- c
-        if (.def$ccc < 0) .def$ccc <- 1.345
-        if (d > 0) .def$ddd <- d
-        if (.def$ddd < 0) .def$ddd <- .def$ccc
-
-        .dFvSet(.def)
+        z.res <- .Fortran("zdfvals",io=to.integer(0),dfv=single(66))
+        .def <- z.res$dfv 
+        ccc <- c
+        if (ccc <= 0) ccc <- 1.345
+        .def[17] <- ccc
+        ddd <- d
+        if (ddd <= 0) ddd <- ccc         
+        .def[61] <- ddd
+        z.res <- .Fortran("zdfvals",io=to.integer(1),dfv=to.single(.def))
         list(ipsi=f.res$ipsi,iucv=f.res$iucv,iwww=f.res$iwww)
 }
