@@ -1,5 +1,5 @@
-56d6a50340a2ae728336ca97954b1763 *DESCRIPTION
-b0c743ea180a406033a21bd159046b36 *NAMESPACE
+16baf1b9f778ecfcee6c5de67b226566 *DESCRIPTION
+525fbab1aa731b009c4bc1d648bb0737 *NAMESPACE
 ec900b6d79bdf21ec6d016646971db01 *R/Dbinom.R
 b99e7b9c03a526f63a56d130dfc7ac9d *R/Fn.Exp.f.R
 66c7728c91e385ec3b534982d54a010d *R/QD2coef.f.R
@@ -43,6 +43,7 @@ bf797b3dc61edd76738966bb4bd3dcd6 *R/gauss.R
 38947ca6b793532a7dfd44c9a1e9e628 *R/gaussd.R
 4fa4a8b0fa6042bb552730f76106118b *R/gfedca.R
 5a817bf826da3030ccb30c1b1854cb5b *R/gintac.R
+ca90b792e47a48b6c1e12749bc75a3a0 *R/glmdev.R
 72104fa947b3afa66b45334b104a0a75 *R/gminit.R
 8e370e430944d02032d891948107f1fa *R/gyastp.R
 ba7460a17d980e91e9b955e77139f9ca *R/gycstp.R
@@ -234,6 +235,7 @@ c42454674dd64eb15d0a1baf7b191943 *man/fstord.Rd
 0e1ac3cc90a65a4b4727ca9824d3c2d3 *man/gaussd.Rd
 7fbaf2fb179509122a62ded7b14b164d *man/gfedca.Rd
 bf3eaa7a82ffa70070a7d8ac009ce115 *man/gintac.Rd
+4cac32309cfcda552ed52375b75ac681 *man/glmdev.Rd
 0c9398ff0d67ddbcf2003bd55a8f483b *man/gyastp.Rd
 5da7ee9246dc188a47e218d37f802755 *man/gycstp.Rd
 22e1d3ae630979f44edf03d156e9bd65 *man/gymain.Rd
