@@ -8,10 +8,10 @@ function(y, ni, ci, wa, vtheta, offset=0, icase = .dFvGet()$ics)
         if(missing(wa)) messagena("wa") 
         if(missing(vtheta)) messagena("vtheta") 
         if (length(offset)==1) offset <- rep(0,n)
-        dev <- single(1)
-        thetas <- single(n)
-        li  <- single(n)      
-        sc  <- single(n)  
+        dev <- double(1)
+        thetas <- double(n)
+        li  <- double(n)      
+        sc  <- double(n)  
 #       sink("GLMini.tmp")
         f.res <- .Fortran("glmdev",
                 y = to.single(y),
@@ -22,10 +22,10 @@ function(y, ni, ci, wa, vtheta, offset=0, icase = .dFvGet()$ics)
                 oi = to.single(offset),
                 n = to.integer(n),
                 icase = to.integer(icase),
-                dev = to.single(dev),
-                thetas = to.single(thetas),
-                li = to.single(li),
-                sc = to.single(sc))
+                dev = to.double(dev),
+                thetas = to.double(thetas),
+                li = to.double(li),
+                sc = to.double(sc))
 #       sink() 
         sc <- f.res$sc 
 #       list(dev = f.res$dev, thetas = f.res$thetas, cis = f.res$cis,

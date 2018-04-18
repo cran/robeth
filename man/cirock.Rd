@@ -14,7 +14,7 @@ cirock(nvar, em = .dFvGet()$em, cr = .dFvGet()$cr, iopt = 1)
   \item{iopt}{ See the description of \code{iopt} as indicated above }
 }
 
-\references{\url{http://www.stat.ubc.ca/research/techreports/176html/node11.html}
+\references{\url{https://www.ubc.ca/search/?q=rocke#gsc.tab=0&gsc.q=rocke&gsc.page=1}
 - Marazzi A. (1993), \emph{Algorithm, Routines, and S functions 
 for Robust Statistics}, Wadsworth & Brooks/cole, Pacific Grove,
 California, p.223

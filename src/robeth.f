@@ -742,7 +742,7 @@ C
 C   AUTHORS : A. MARAZZI / A. RANDRIAMIHARISOA
 C.......................................................................
 C
-      DOUBLE PRECISION R(NN),SM,DZERO
+      DOUBLE PRECISION R(NN),SM,DZERO,DTAU
       LOGICAL NPRCHK
 C
 C  PARAMETER CHECK
@@ -2082,7 +2082,7 @@ C                LINPACK USER'S GUIDE.
 C                ADAPTED FOR ROBETH BY A. MARAZZI
 C.......................................................................
 C
-      DOUBLE PRECISION X(MDX)
+      DOUBLE PRECISION X(MDX),SA
       LOGICAL NPRCHK
 C
 C  PARAMETER CHECK
@@ -6439,9 +6439,9 @@ C
 C  FUNCTIONS L, L' and L" FOR THE THETA STEP
 C
       DIMENSION Y(N),C(N),VTHETA(N),OI(N),WA(N),NN(N),F0(N),F1(N),F2(N)
-      DOUBLE PRECISION GFUN,DXLOG,XEXPD,EXPGI,F0I,XBIG   
+      DOUBLE PRECISION GFUN,DXLOG,EXPGI,F0I,XBIG   
       DOUBLE PRECISION GI,OF,DNI,S1,S2,T1,T2,SUM,DMIN,XMIN,YMIN,DMAX 
-      EXTERNAL GFUN,DXLOG,XEXPD
+      EXTERNAL GFUN,DXLOG
       DATA NCALL,DMIN,XMIN,YMIN,DMAX/0,0.D0,0.D0,0.D0,0.D0/
 C
       IF (NCALL.EQ.1) GOTO 10
@@ -6554,6 +6554,134 @@ C**     IF (-YI.LT.AI) THEN
 C
 C-----------------------------------------------------------------------
 C
+      SUBROUTINE LRFCTD(ICASE,Y,C,VTHETA,OI,WA,NN,N,I0,I1,I2,F0,F1,F2,
+     +                  SF0)
+C.......................................................................
+C
+C   COPYRIGHT 1992 Alfio Marazzi
+C
+C   AUTHORS : A. RANDRIAMIHARISOA / A. MARAZZI
+C.......................................................................
+C
+C  FUNCTIONS L, L' and L" FOR THE THETA STEP
+C
+      DIMENSION Y(N),C(N),VTHETA(N),OI(N),WA(N),NN(N)
+      DOUBLE PRECISION GFUN,DXLOG,EXPGI,XBIG,YY,F0(N),F1(N),F2(N),   
+     +       F0I,GI,OF,DNI,S1,S2,T1,T2,SUM,SF0,DMIN,XMIN,YMIN,DMAX 
+      EXTERNAL GFUN,DXLOG
+      DATA NCALL,DMIN,XMIN,YMIN,DMAX/0,0.D0,0.D0,0.D0,0.D0/
+C
+      IF (NCALL.EQ.1) GOTO 10
+      CALL MACHD(3,DMIN)
+      CALL MACHD(4,XMIN)
+      CALL MACHD(5,YMIN)
+      CALL MACHD(6,XBIG)
+      XBIG=XBIG/10.D0 
+      DMAX=DLOG(XBIG)
+      NCALL=1
+   10 SUM=0.D0
+      DO 500 I=1,N
+        GI=DBLE(VTHETA(I))
+        OF=DBLE(OI(I))
+        GO=SNGL(GI+OF) 
+        YI=Y(I)-C(I)
+        YY=DBLE(YI)
+        AI=WA(I)
+        NI=1
+        IF (ICASE.EQ.2) NI=NN(I)
+        ENI=FLOAT(NI)
+        DNI=DBLE(ENI) 
+        IF (-YI.GE.AI) THEN
+          S2=0.D0 
+          GOTO 200
+        ENDIF
+        IF (ICASE.EQ.3) GOTO 30
+C==>    BERNOUILLI OR BINOMIAL CASE
+        IF (-YI.LT.-AI) THEN
+          IF (-YI+ENI.LE.-AI) THEN
+            S1=0.D0 
+            GOTO 100
+          ENDIF
+          T1=DBLE(YI-AI)/DBLE(ENI-YI+AI)
+          T1=DXLOG(T1,XMIN,YMIN)-OF
+          IF (GI.LT.T1) THEN
+            S1=DNI/DBLE(ENI-YI+AI)
+            S1=DXLOG(S1,XMIN,YMIN)
+            S1=-DBLE(YI-AI)*T1+DNI*S1
+            GOTO 100
+          ENDIF
+          GOTO 50
+        ELSE
+C**     IF (-YI.LT.AI) THEN
+          GOTO 50
+        ENDIF
+   30   IF (-YI.LT.-AI) THEN
+C==>    POISSON CASE
+          T1=DBLE(YI-AI) 
+          T2=DBLE(YI+AI) 
+          T1=DXLOG(T1,XMIN,YMIN)-OF
+          T2=DXLOG(T2,XMIN,YMIN)-OF
+          IF (GI.LT.T1) THEN
+            S1=-DBLE(YI-AI)*T1+DBLE(YI-AI) 
+            GOTO 100
+          ELSEIF (GI.GT.T2) THEN
+            S2=-DBLE(YI+AI)*T2+DBLE(YI+AI) 
+            GOTO 200
+          ELSE
+            GOTO 400
+          ENDIF
+        ELSE
+C**     IF (-YI.LT.AI) THEN
+          T2=DBLE(YI+AI) 
+          T2=DXLOG(T2,XMIN,YMIN)-OF
+          IF (GI.LE.T2) GOTO 400
+          S2=-DBLE(YI+AI)*T2+DBLE(YI+AI) 
+          GOTO 200
+        ENDIF
+   50   IF (-YI+ENI.LE.AI) GOTO 300
+        T2=DBLE(YI+AI)/DBLE(ENI-YI-AI)
+        T2=DXLOG(T2,XMIN,YMIN)-OF
+        IF (GI.LE.T2) GOTO 300
+        S2=DNI/DBLE(ENI-YI-AI)
+        S2=DXLOG(S2,XMIN,YMIN)
+        S2=-DBLE(YI+AI)*T2+DNI*S2
+        GOTO 200
+  100   F0I=-DBLE(AI)*GI+S1  
+        IF (I0.NE.0) F0(I)=F0I           
+        IF (I1.NE.0) F1(I)=-DBLE(AI)
+        IF (I2.NE.0) F2(I)=0.D0
+        GOTO 450
+  200   F0I=DBLE(AI)*GI+S2
+        IF (I0.NE.0) F0(I)=F0I
+        IF (I1.NE.0) F1(I)=DBLE(AI)
+        IF (I2.NE.0) F2(I)=0.D0
+        GOTO 450
+  300   IF (GI+OF.LE.DMIN) THEN
+          S1=0.D0 
+        ELSEIF (GI+OF.GE.DMAX) THEN
+          S1=DNI*(GI+OF)
+        ELSE
+          S1=DNI*DLOG(1.D0+DEXP(GI+OF))
+        ENDIF
+        S2=GFUN(ICASE,1,GO)
+        F0I=-YY*GI+S1 
+        IF (I0.NE.0) F0(I)=F0I
+        IF (I1.NE.0) F1(I)=-YY+(DNI*S2)
+        IF (I2.NE.0) F2(I)=DNI*S2*(1.D0-S2)
+        GOTO 450
+  400   EXPGI=GFUN(ICASE,1,GO)
+        F0I=-YY*GI+EXPGI 
+        IF (I0.NE.0) F0(I)=F0I
+        IF (I1.NE.0) F1(I)=-YY+EXPGI
+        IF (I2.NE.0) F2(I)=EXPGI
+  450   SUM=SUM+F0I  
+  500 CONTINUE
+      SF0=SUM
+      RETURN
+      END
+C
+C-----------------------------------------------------------------------
+C
       SUBROUTINE UCOWJ(X,Y,NI,VTHETA,OI,CI,EXUL,SA,ST,N,NP,NCOV,MDX,
      1                  ICNT,NIT,ZMAX,DIST,SU,SD)
 C.......................................................................
@@ -6625,7 +6753,7 @@ C
 c     CALL MACHD(3,DMIN)
 c     CALL MACHD(6,XBIG)
 c     XBIG=XBIG/10.D0
-      DMIN=-20.D0
+      DMIN=-35.D0
       XBIG=1.D6
       DMAX=DLOG(XBIG)
       NCALL=1
@@ -6778,16 +6906,18 @@ C
 C
 C-----------------------------------------------------------------------
 C
-      SUBROUTINE PROBIN(K,N,P,PK)
-      DOUBLE PRECISION LPL,PL,EMIN,SML,ALSML,P1,Q1,ALQ,ALP
-      INTEGER K,N
+      SUBROUTINE PROBIN(K,N,P,ILG,PK)
+      DOUBLE PRECISION LPL,P,PL,PK,EMIN,SML,ALSML,P1,Q1,ALQ,ALP,
+     +       QP,XN,XX,XK,ICNT,PAR
+      INTEGER K,N,ILG
       LOGICAL NPRCHK
       DATA NCALL,KL,LPL,EMIN,SML,ALSML/0,0,0.D0,0.D0,0.D0,0.D0/
       DATA ALP,ALQ/0.D0,0.D0/
 C
-      PK=0. 
+      PK=0.D0 
       NPRCHK=(K .LE. N .AND. K .GE. 0).AND.
-     +       (P .LE. 1. .AND. P .GE. 0.)
+     +       (P .LE. 1. .AND. P .GE. 0.). AND.
+     +       (ILG .EQ. 0. .OR. ILG .EQ. 1)
       IF (.NOT.NPRCHK) CALL MESSGE(500,'PROBIN',1)
       IF (NCALL.EQ.0) THEN
         CALL MACHD(3,EMIN)
@@ -6795,30 +6925,67 @@ C
         CALL MACHD(5,ALSML)
         NCALL=1
       ENDIF
-      IF (P .NE. 0.) GO TO 15
+      IF (ALP.EQ.0.D0) THEN
+        ALP = YLMN
+        IF (P.GT.XLMN) ALP = DLOG(P)
+        ALQ = YLMN
+        P1=1.D0-P
+        IF (P1.GT.XLMN) ALQ = DLOG(P1)
+      ELSE
+        PAR = YLMN
+        IF (P.GT.XLMN) PAR = DLOG(P)
+        IF (DABS(PAR-ALP).GT.XLMN) THEN
+          KL=0
+          ALP=PAR
+          ALQ = YLMN
+          P1=1.D0-P
+          IF (P1.GT.XLMN) ALQ = DLOG(P1)
+        ENDIF
+      ENDIF
+      IF (P .NE. 0.D0) GO TO 115
       PL = 1.D0
       IF (K .NE. 0) PL=0.D0 
       GOTO 900
-   15 IF (P .NE. 1.) GO TO 20
+  115 IF (P .NE. 1.D0) GO TO 120
       PL = 1.D0
       IF (K .NE. N) PL=0.D0  
       GO TO 900
-   20 IF (K.EQ.0.OR.KL+1.NE.K) THEN
-        Q1=1.D0-DBLE(P)
+  120 IF (K.EQ.0) THEN
+        Q1=1.D0-P
         ALQ=ALSML
         IF (Q1.GT.SML) ALQ=DLOG(Q1)
         ALP=ALSML
-        P1=DBLE(P)
+        P1=P
         IF (P1.GT.SML) ALP=DLOG(P1)
-      ENDIF
-      IF (K.EQ.0) THEN
         PL=0.D0
         LPL=DFLOAT(N)*ALQ
         IF (LPL.GT.EMIN) PL=DEXP(LPL)
       ELSEIF (KL+1.NE.K.OR.LPL.LE.ALSML) THEN 
-        CALL BINPRD(K,N,P,S1,PK)
-        PL=DBLE(PK) 
-        GOTO 900 
+c       CALL BINPRD(K,N,P,S1,PK)
+        P1 = P
+        Q1 = 1.D0-P
+        K1 = K
+        XN = DFLOAT(N)
+        XX = XN*P
+        LPL = 0.D0
+        IF (DFLOAT(K) .LE. XX) GO TO 25
+        P1 = Q1
+        Q1 = P
+        K1 = N-K
+   25   ALQ = ALSML
+        IF (Q1.GT.SML) ALQ=DLOG(Q1)
+        XK=DFLOAT(K1)
+        ICNT = 1.D0
+        ALP = ALSML
+        IF (P1.GT.SML) ALP=DLOG(P1)
+        IF (K1 .EQ. 0 .OR. K1 .EQ. N) GO TO 35
+        DO 30 J = 1,K1
+         ICNT=ICNT*DFLOAT(N-J+1)/DFLOAT(J)
+   30   CONTINUE
+   35   LPL = DLOG(ICNT) + XK*ALP + (XN-XK)*ALQ 
+        PL=0.D0
+        IF (LPL.GT.EMIN) PL=DEXP(LPL)
+        GOTO 950 
       ELSE
         LPL=LPL+DLOG(DFLOAT(N-K+1))+ALP-DLOG(DFLOAT(K))-ALQ
         PL=0.D0
@@ -6827,21 +6994,23 @@ C
       GOTO 950
   900 LPL=ALSML
       IF (PL.GT.SML) LPL=DLOG(PL)   
-  950 PK=SNGL(PL)
+  950 PK=PL
+      IF (ILG.EQ.1) PK=LPL
       KL=K
       RETURN
       END
 C
 C-----------------------------------------------------------------------
 C
-      SUBROUTINE PRPOIS(E,K,PK)
-      DOUBLE PRECISION LPL,LE,ESML,XLMN,YLMN 
-      INTEGER K
+      SUBROUTINE PRPOIS(E,K,ILG,PK)
+      DOUBLE PRECISION E,PK,LPL,LGE,ESML,XLMN,YLMN,PAR 
+      INTEGER K,ILG
       LOGICAL NPRCHK
-      DATA NCALL,KL,LPL,LE,ESML,XLMN,YLMN/0,0,0.D0,0.D0,0.D0,0.D0,0.D0/
+      DATA NCALL,KL,LPL,LGE,ESML,XLMN,YLMN/0,0,0.D0,0.D0,0.D0,0.D0,0.D0/
 C
-      PK=0.
-      NPRCHK=(E.GT.0. .AND. E.LE.1.E6 .AND. K .GE. 0)
+      PK=0.D0
+      NPRCHK=(E.GT.0.D0 .AND. E.LE.1.D6 .AND. K .GE. 0 .AND. 
+     +       (ILG.EQ.0 .OR. ILG.EQ.1)) 
       IF (.NOT.NPRCHK) CALL MESSGE(500,'PRPOIS',1)
       IF (NCALL.EQ.0) THEN
         CALL MACHD(3,ESML)
@@ -6849,38 +7018,61 @@ C
         CALL MACHD(5,YLMN)
         NCALL=1
       ENDIF
+      IF (LGE.EQ.0.D0) THEN
+        LGE = YLMN
+        IF (E.GT.XLMN) LGE = DLOG(E)
+      ELSE
+        PAR = YLMN
+        IF (E.GT.XLMN) PAR = DLOG(E)
+        IF (DABS(PAR-LGE).GT.1.D-6) THEN
+          KL=0
+          LGE=PAR
+        ENDIF
+      ENDIF
       IF (K.GT.1100000) THEN
 C       For E.LE.1E6 and K.GT.1100000 the probability
 C       PK is smaller than 1E-2000.
         LPL = YLMN 
         PK=0.D0
         GOTO 950
-      ELSEIF (E.LT.SNGL(DSQRT(XLMN))) THEN
+      ELSEIF (E.LT.DSQRT(XLMN)) THEN
 C       This case is treated here in order to reduce underflow
 C       problems
-        PK = 0.0
-        IF (K.EQ.0) PK = 1.0
+        LPL = YLMN
+        PK = 0.D0
+        IF (K.EQ.0) PK = 1.D0
         IF (K.EQ.1) PK = E
-        GOTO 900 
-      ENDIF
-      IF (K.EQ.0.OR.KL+1.NE.K) THEN
-        LE=YLMN
-        IF (DBLE(E).GT.XLMN) LE=DLOG(DBLE(E))
+        IF (K.GT.1) THEN
+          LPL=DFLOAT(K)*LGE
+          GOTO 700
+        ENDIF
+        IF (PK.GT.0.D0.AND.PK.GT.XLMN) LPL = DLOG(PK) 
+        GOTO 950 
       ENDIF
       IF (K.EQ.0) THEN
-        LPL = -DBLE(E)
-      ELSEIF (KL+1.NE.K.OR.LPL.LE.YLMN) THEN
-        CALL POISSN(E,K,S1,PK)      
-        GOTO 900 
+        LPL = -E
+      ELSEIF (KL+1.NE.K) THEN
+C       CALL POISSN(E,K,S1,PK) 
+        LGE = YLMN
+        IF (E.GT.XLMN) LGE = DLOG(E)
+        LPL=DFLOAT(K)*LGE - E
+        GOTO 700
       ELSE
-        LPL=LPL+LE-DLOG(DFLOAT(K))
+c       IF (K.LE.4) CALL DBLEPR('LPL',3,LPL,1)
+c       IF (K.LE.4) CALL DBLEPR('LGE',3,LGE,1)
+        LPL=LPL+LGE-DLOG(DFLOAT(K))
       ENDIF
-      PK=0.
-      IF (LPL.GT.ESML) PK = SNGL(DEXP(LPL))
+      GOTO 800
+  700 DO 750 I=1,K
+        LPL=LPL-DLOG(DFLOAT(I))
+  750 CONTINUE    
+  800 PK=0.
+      IF (LPL.GT.ESML) PK = DEXP(LPL)
       GOTO 950
   900 LPL=YLMN 
-      IF (PK.GT.XLMN) LPL=DLOG(DBLE(PK)) 
+      IF (PK.GT.XLMN) LPL=DLOG(PK) 
   950 KL=K
+      IF (ILG.EQ.1) PK=LPL
       RETURN
       END
 C-----------------------------------------------------------------------
@@ -6901,41 +7093,43 @@ C.......................................................................
 C
 C  GLM DEVIANCE COMPUTATION 
 C   
-      REAL  Y(N),CI(N),WA(N),VTHETA(N),OI(N),THETAS(N),LI(N),SC(N)
+      REAL  Y(N),CI(N),WA(N),VTHETA(N),OI(N)
+      DOUBLE PRECISION DEV,THETAS(N),ENI,YI,ENYI,TMPDEV,LI(N),SC(N),Q,
+     +       QS,TMP,FLINK
       INTEGER NI(N)
       LOGICAL NPRCHK 
       EXTERNAL FLINK
       NPRCHK=(ICASE.EQ.1.OR.ICASE.EQ.2.OR.ICASE.EQ.3)
       IF (.NOT.NPRCHK) CALL MESSGE(500,'GLMDEV',1)
-      CALL LRFNCT(ICASE,Y,CI,VTHETA,OI,WA,NI,N,1,0,0,LI,WA,WA,Q)
+      CALL LRFCTD(ICASE,Y,CI,VTHETA,OI,WA,NI,N,1,0,0,LI,LI,LI,Q)
       DO 700 I=1,N
-      TMP=(Y(I)-CI(I))/FLOAT(NI(I))
-      THETAS(I)=FLINK(ICASE,TMP)-OI(I)
+      TMP=DBLE(Y(I)-CI(I))/DFLOAT(NI(I))
+      THETAS(I)=FLINK(ICASE,TMP)-DBLE(OI(I))
   700 CONTINUE 
 c     CALL LRFNCT(ICASE,Y,CI,THETAS,OI,WA,NI,N,1,0,0,SC,WA,WA,QS)
-      QS=0.
+      QS=0.D0
       DO 800 I=1,N
-      ENI=FLOAT(NI(I))
-      YI=Y(I)
+      ENI=DFLOAT(NI(I))
+      YI=DBLE(Y(I))
       IF (ICASE.LE.2) THEN
-        TMP=ENI*ALOG(ENI)
-        IF (YI.GT.0.) TMP=TMP-YI*ALOG(YI)
+        TMP=ENI*DLOG(ENI)
+        IF (YI.GT.0.D0) TMP=TMP-YI*DLOG(YI)
         ENYI=ENI-YI
-        IF (ENYI.GT.0.) TMP=TMP-ENYI*ALOG(ENYI)
+        IF (ENYI.GT.0.D0) TMP=TMP-ENYI*DLOG(ENYI)
       ELSE
         TMP=YI
-        IF (YI.GT.0.) TMP=TMP-YI*ALOG(YI)
+        IF (YI.GT.0.D0) TMP=TMP-YI*DLOG(YI)
       ENDIF  
       QS=QS+TMP
       SC(I)=TMP
   800 CONTINUE 
-      DEV=2.*ABS(Q-QS)
+      DEV=2.D0*DABS(Q-QS)
       RETURN
       END
 C
 C-----------------------------------------------------------------------
 C
-      FUNCTION FLINK(ICASE,EM)
+      DOUBLE PRECISION FUNCTION FLINK(ICASE,EM)
 C.......................................................................
 C
 C   COPYRIGHT 1996 Alfio Marazzi
@@ -6944,22 +7138,27 @@ C   AUTHORS : A. RANDRIAMIHARISOA / A. MARAZZI
 C.......................................................................
 C
 C  LINK FUNCTION FOR LOGISTIC REGRESSION
+      DOUBLE PRECISION EM,EM1,XMIN,YMIN,TT,TMP
 C
-      DATA NCALL,XMIN,YMIN/0,0.,0./
+      DATA NCALL,XMIN,YMIN/0,0.D0,0.D0/
 C
       IF (NCALL.EQ.1) GOTO 10
-      CALL MACH(4,XMIN)
-      CALL MACH(5,YMIN)
+      CALL MACHD(4,XMIN)
+      CALL MACHD(5,YMIN)
       NCALL=1
-   10 FLINK=-999.
-      IF (EM.LE.0.) RETURN 
+      IF (ICASE.NE.3) GOTO 10
+      FLINK=DLOG(0.5D0)
+      IF (EM.EQ.0.D0) RETURN
+   10 FLINK=-9999.D0
+      IF (EM.LE.0.D0) RETURN 
       TT=YMIN
-      IF (EM.GT.XMIN) TT=ALOG(EM)
-      TMP=0.
-      IF (ICASE.GT.2) GOTO 20 
-      IF (1.-EM.LE.0.) RETURN 
+      IF (EM.GT.XMIN) TT=DLOG(EM)
+      TMP=0.D0
+      IF (ICASE.EQ.3) GOTO 20
+      EM1=1.D0-EM 
+      IF (EM1.LE.0.D0) RETURN 
       TMP=YMIN
-      IF (1.-EM.GT.XMIN) TMP=ALOG(1.-EM)
+      IF (EM1.GT.XMIN) TMP=DLOG(EM1)
    20 FLINK=TT-TMP 
       RETURN
       END
@@ -7293,93 +7492,92 @@ C
 C  D AND E MATRICES FOR THE COV. MATRIX OF THE COEFF. ESTIMATES
 C
       DIMENSION VTHETA(N),CI(N),OI(N),WA(N),NI(N),D(N),E(N)
-      DOUBLE PRECISION GFUN,PP,DNI,DI,EI,FJME,TMP,TT,TPJ,TE,AA,CC,PREC
+      DOUBLE PRECISION GFUN,AA,CC,PREC,TMP,TMPSI,ETERM,DTERM,SUME,SUMD,
+     +       SML,ALSML,DMIN,DMAX,PROBI,GI,EXGI,LPIJ
       LOGICAL NPRCHK
-      EXTERNAL GFUN
-      DATA PREC,XP20/0.D0,0.0/
+c     EXTERNAL GFUN
+      DATA PREC,SML,ALSML,DMIN,DMAX/0.D0,0.D0,0.D0,0.D0,0.D0/
       NPRCHK=N.GT.0.AND.(ICASE.EQ.1.OR.ICASE.EQ.2.OR.ICASE.EQ.3)
       IF (.NOT.NPRCHK) CALL MESSGE(500,'GFEDCA',1)
 C
       IF (PREC.EQ.0.D0) THEN
         CALL MACH(2,PRCS)
-        PREC=100.D0*DBLE(PRCS)
-        XP20=EXP(-20.0)
+        CALL MACHD(4,SML)
+        CALL MACHD(5,ALSML)
+        PREC = DBLE(PRCS)
+        DMIN = -30.D0
+        DMAX = 70.D0
       ENDIF
       DO 500 I=1,N
-        GI=VTHETA(I)+OI(I)
+        GI=DBLE(VTHETA(I)+OI(I))
         CII=CI(I)
         CC=DBLE(CII)
         A=WA(I)
         AA=DBLE(A)
         NN=1
         IF (ICASE.EQ.2) NN=NI(I)
-        PP=GFUN(ICASE,NN,GI)
-        PI=SNGL(PP)
-        IF (ICASE.EQ.1) THEN
-C==>      LOGISTIC BERNOULLI
-          TEMP=-PI-CII
-          T0=AMIN1(A,ABS(TEMP))
-          IF (TEMP.LT.0.) T0=-T0
-          TEMP=1.-PI-CII
-          T1=AMIN1(A,ABS(TEMP))
-          IF (TEMP.LT.0.) T1=-T1
-          D(I)=T1*(1.-PI)*PI-T0*PI*(1.-PI)
-          E(I)=T1**2*PI+T0**2*(1.-PI)
-          GOTO 500
-        ELSEIF (ICASE.EQ.2) THEN
-C==>      LOGISTIC BINOMIAL
-          DI=0.D0
-          EI=0.D0
-          MI=NI(I)
-          ENI=FLOAT(MI)
-          DNI=DBLE(ENI)
-          MED=1+MI/2
-          DO 200 J=0,MI
-            CALL PROBIN(J,MI,PI,PJ)
-            FJME=DFLOAT(J)-DNI*PP
-            TMP=FJME-CC
-            TT=DMIN1(AA,DABS(TMP))
-            IF (TMP.LT.0.D0) TT=-TT
-            TPJ=TT*DBLE(PJ)
-            TMP=TPJ*FJME
-            DI=DI+TMP
-            TE=TPJ*TT
-            EI=EI+TE
-            IF (J.LE.MED) GOTO 200
-            IF (DABS(TT).GT.0.D0.AND.DABS(TMP).LE.PREC.AND.TE.LE.PREC)
-     +      GOTO 350
-  200     CONTINUE
-c  349     ver(1)=sngl(di)
-c          ver(2)=sngl(ei)
-c          ver(3)=float(i)
-c          call realpr('D,E',3,ver,3)
-      ELSEIF (ICASE.EQ.3) THEN
-C==>      LOGISTIC POISSON
-          DI=0.D0
-          EI=0.D0
-c==> Modif 05.10.2012
-          IF (PI.LT.XP20) PI=XP20
-          IF (PI.GT.1.E6) PI=1.E6
-          MI=INT(100.*PI)
-          IF (MI.LT.1) MI=150
-          IF (MI.GT.150) MI=150
-          DO 300 J=0,MI
-            CALL PRPOIS(PI,J,PJ)
-            FJME=DFLOAT(J)-PP
-            TMP=FJME-CC
-            TT=DMIN1(AA,DABS(TMP))
-            IF (TMP.LT.0.D0) TT=-TT
-            TPJ=TT*DBLE(PJ)
-            TMP=TPJ*FJME
-            DI=DI+TMP
-            TE=TPJ*TT
-            EI=EI+TE
-            IF (DABS(TT).GT.0.D0.AND.DABS(TMP).LE.PREC.AND.TE.LE.PREC)
-     +      GOTO 350
-  300     CONTINUE
+C  MODIFIED 12.03.2018
+c       PP=GFUN(ICASE,NN,GI)
+c       PI=SNGL(PP)
+        ILG=1
+        ETERM=100.D0
+        DTERM=100.D0
+        J=0
+        SUME=0.D0
+        SUMD=0.D0
+        IF (ICASE.LE.2) THEN
+C==>    LOGISTIC BERNOUILLI OR BINOMIAL
+          IF (GI.LE.DMIN) THEN
+            PROBI=0.D0
+          ELSEIF (GI.GE.DMAX) THEN
+            PROBI=1.D0
+          ELSE
+            EXGI=DEXP(GI)
+            PROBI=EXGI/(1.D0+EXGI)
+          ENDIF
+          GFUN=PROBI*DFLOAT(NN)
+        ELSE
+C==>    LOGISTIC POISSON (ICASE=3)
+          IF (GI.LE.DMIN) THEN
+            GFUN=DEXP(DMIN)
+          ELSEIF (GI.GE.DMAX) THEN
+            GFUN=DEXP(DMAX)
+          ELSE
+            GFUN=DEXP(GI)
+          ENDIF
         ENDIF
-  350   D(I)=SNGL(DI)
-        E(I)=SNGL(EI)
+  250   IF (DMAX1(ETERM,DTERM).LE.PREC) GOTO 350 
+        IF (ICASE.LE.2) THEN
+C==>    LOGISTIC BERNOUILLI OR BINOMIAL
+          CALL PROBIN(J,NN,PROBI,ILG,LPIJ)
+        ELSE
+C==>    LOGISTIC POISSON (ICASE=3)
+          CALL PRPOIS(GFUN,J,ILG,LPIJ)
+        ENDIF
+        TMP=DFLOAT(J)-CC-GFUN
+        TMPSI=DMIN1(AA,TMP)
+        TMPSI=DMAX1(-AA,TMPSI)
+        TMP=TMPSI**2 
+        ETERM = 2.D0*ALSML + LPIJ
+        IF (TMP.GT.SML) ETERM = DLOG(TMP) + LPIJ
+        ETERM = DEXP(ETERM)
+        SUME = SUME + ETERM
+        TMPSI=TMPSI*(DFLOAT(J)-GFUN)
+        IF (TMPSI.GT.0.D0) THEN
+          DTERM = ALSML + LPIJ
+          IF (TMPSI.GT.SML) DTERM = DLOG(TMPSI) + LPIJ
+          DTERM = DEXP(DTERM)
+          SUMD = SUMD + DTERM
+        ELSE
+          DTERM = TMPSI*DEXP(LPIJ)
+          SUMD = SUMD + DTERM
+          DTERM = DABS(DTERM)
+        ENDIF
+        J = J + 1
+        IF (J.GT.NN.AND.ICASE.LE.2) GOTO 350
+        GOTO 250 
+  350   D(I)=SNGL(SUMD)
+        E(I)=SNGL(SUME)
   500 CONTINUE
       RETURN
       END
@@ -7396,10 +7594,10 @@ C.......................................................................
 C
 C  NEWTON-TYPE ALGORITHM FOR THE C-STEP
 C   
-      DOUBLE PRECISION T1
+      DOUBLE PRECISION E1,T1,DPI,PJ,TMPJ,DPREC
       INTEGER H,K
       LOGICAL NPRCHK
-      DATA INICA,INIAL,PREC,XP20/0,0,0.0,0.0/
+      DATA INICA,INIAL,PREC,XP30/0,0,0.0,0.0/
       IF (INICA.EQ.ICASE.AND.INIAL.EQ.IALG) GOTO 10
       INICA=ICASE
       INIAL=IALG
@@ -7409,8 +7607,9 @@ C
      3       A.GT.0..AND.E.GT.0..AND.TOL.GT.0..AND.MAXIT.GT.0
       IF (PREC.EQ.0.0) THEN
        CALL MACH(2,PRCS)
+       CALL MACHD(2,DPREC)
        PREC=100.*PRCS
-       XP20=EXP(-20.0)
+       XP30=EXP(-30.0)
       ENDIF
 C
 C  STEP 0.   SET NIT=1
@@ -7460,57 +7659,59 @@ C  _______
       SK=0.
       EK=0.
       S1=0.
-      E1=0.
+      E1=0.D0
       T1=0.D0
       DJBAR=0.
   210 IF (ICASE.EQ.2) THEN
 C==>    LOGISTIC BINOMIAL
+        DPI=DBLE(PI)
         DO 220 J=J1,J2
-          CALL PROBIN(J,NI,PI,PJ)
+          CALL PROBIN(J,NI,DPI,0,PJ)
           DEN=(FLOAT(J)-T)
           TEMP=AMIN1(A,ABS(DEN))
           IF (DEN.LT.0.) TEMP=-TEMP
-          T1=T1+DBLE(TEMP*PJ)
-          E1=E1+FLOAT(J)*PJ
+          T1=T1+DBLE(TEMP)*PJ
+          E1=E1+DFLOAT(J)*PJ
           IF (ABS(IALG).NE.2) GOTO 220
-          DJ=PJ
-          IF (ABS(DEN).GT.1.E-6) DJ=TEMP*PJ/DEN
+          DJ=SNGL(PJ)
+          IF (ABS(DEN).GT.1.E-6) DJ=TEMP*SNGL(PJ)/DEN
           DJBAR=DJBAR+DJ
   220   CONTINUE
       ELSEIF (ICASE.EQ.3) THEN
 C==>    LOGISTIC POISSON
          EE=E
-         IF (E.LT.XP20) EE=XP20
+         IF (E.LT.XP30) EE=XP30
          IF (E.GT.1.E6) EE=1.E6
-        DO 230 J=J1,J2
-          CALL PRPOIS(EE,J,PJ)
+         DPI=DBLE(EE)
+         DO 230 J=J1,J2
+          CALL PRPOIS(DPI,J,0,PJ)
           DEN=(FLOAT(J)-T)
           TEMP=AMIN1(A,ABS(DEN))
           IF (DEN.LT.0.) TEMP=-TEMP
-          TMP=TEMP*PJ
+          TMP=TEMP*SNGL(PJ)
           IF (ABS(TMP).LT.PREC) TMP=0. 
           T1=T1+DBLE(TMP)
-          TMPJ=FLOAT(J)*PJ
-          IF (ABS(TMPJ).LT.PREC) TMPJ=0.
+          TMPJ=DFLOAT(J)*PJ
+          IF (DABS(TMPJ).LT.DPREC) TMPJ=0.D0
           E1=E1+TMPJ
           IF (ABS(IALG).NE.2) GOTO 225
-          DJ=PJ
+          DJ=SNGL(PJ)
           IF (ABS(DEN).GT.1.E-6) DJ=TMP/DEN
           DJBAR=DJBAR+DJ
-  225     IF (TMP.EQ.0..AND.TMPJ.EQ.0.) GOTO 240
+  225     IF (TMP.EQ.0..AND.TMPJ.EQ.0.D0) GOTO 240
   230   CONTINUE
       ENDIF
   240 IF (IALG.EQ.1) GOTO 400
       IF (IALG.EQ.2) GOTO 500
       IF (J1.EQ.0.AND.J2.EQ.H) THEN
         IF (H.NE.-1) SH=S1
-        IF (H.NE.-1) EH=E1
+        IF (H.NE.-1) EH=SNGL(E1)
         J1=H+1
         J2=K
         GOTO 210
       ELSEIF (J1.EQ.H+1.AND.J2.EQ.K) THEN
         SK=S1
-        EK=E1
+        EK=SNGL(E1)
         J1=K+1
         J2=NI
         GOTO 210
@@ -20643,21 +20844,22 @@ C  -------
 C  WEIGHT FUNCTION FOR THE A-STEP 
 C
       DIMENSION UPAR(NPAR)
-      DOUBLE PRECISION AA,T1,T2,PREC,PP,GFUN,DNI   
+      DOUBLE PRECISION AA,CC,T1,T2,PREC,PP,GFUN,DNI,PI,PJ,TEMP,XP30  
       EXTERNAL GFUN
       COMMON/UGLPR/IUGL,ICASE,B
-      DATA STOL,PREC,XP20/1.E-3,0.D0,0.0/
+      DATA STOL,PREC,XP30/1.E-3,0.D0,0.D0/
 C
       IF (PREC.EQ.0.D0) THEN
 c       CALL MACH(2,PRCS)
 c       PREC=100.D0*DBLE(PRCS)
         PREC=6.02007D-7
-        XP20=EXP(-20.0)
+        XP30=DEXP(-30.D0)
       ENDIF
       YI=UPAR(1)
       ENI=UPAR(2)
       GI=UPAR(3)
       CI=UPAR(4)
+      CC=DBLE(CI)
       NI=INT(ENI+0.001)
       DNI=DBLE(ENI)
       SI=S
@@ -20668,25 +20870,25 @@ c       PREC=100.D0*DBLE(PRCS)
       IF (IUGL.EQ.1) THEN
 C====>  OPTION 1 
         PP=GFUN(ICASE,1,GI)
-        PI=SNGL(PP)
+        PI=PP
         IF (ICASE.EQ.1) THEN
 C==>      LOGISTIC BERNOULLI
-          TEMP=ABS(1.-PI-CI)
+          TEMP=DABS(1.D0-PI-CC)
           T1=AA**2
-          IF (TEMP.LT.A) T1=DBLE(TEMP)**2
-          TEMP=ABS(-PI-CI)
+          IF (TEMP.LT.AA) T1=TEMP**2
+          TEMP=DABS(-PI-CC)
           T2=AA**2
-          IF (TEMP.LT.A) T2=DBLE(TEMP)**2 
-          UGL=T1*DBLE(PI)+T2*DBLE(1.-PI)
+          IF (TEMP.LT.AA) T2=TEMP**2 
+          UGL=T1*PI + T2*(1.D0-PI)
         ELSEIF (ICASE.EQ.2) THEN
 C==>      LOGISTIC BINOMIAL
           T2=0.D0
           DO 200 J=0,NI
-            CALL PROBIN(J,NI,PI,PJ)
-            TEMP=ABS(FLOAT(J)-SNGL(DNI*PP)-CI)
+            CALL PROBIN(J,NI,PI,0,PJ)
+            TEMP=DABS(DFLOAT(J)-(DNI*PP)-CC)
             T1=AA**2
-            IF (TEMP.LT.A) T1=DBLE(TEMP)**2
-            T2=T2+T1*DBLE(PJ)
+            IF (TEMP.LT.AA) T1=TEMP**2
+            T2=T2+T1*PJ
   200     CONTINUE
           UGL=T2
         ELSEIF (ICASE.EQ.3) THEN
@@ -20694,26 +20896,26 @@ C==>      LOGISTIC POISSON
           MI=INT(100.*PI)
           IF (MI.LT.1) MI=150
           IF (MI.GT.150) MI=150
-          IF (PI.LT.XP20) PI=XP20
-          IF (PI.GT.1.E6) PI=1.E6
+          IF (PI.LT.XP30) PI=XP30
+          IF (PI.GT.1.D6) PI=1.D6
           T2=0.D0
           DO 300 J=0,MI
-            CALL PRPOIS(PI,J,PJ)
-            FJME=FLOAT(J)-PI
-            TEMP=ABS(FJME-CI)
+            CALL PRPOIS(PI,J,0,PJ)
+c           FJME=DFLOAT(J)-PI
+            TEMP=DABS(DFLOAT(J)-PI-CC)
             T1=AA**2
-            IF (TEMP.LT.A) T1=DBLE(TEMP)**2
-            T2=T2+T1*DBLE(PJ)
-            IF (FJME.GT.0..AND.T1*DBLE(PJ).LT.PREC) GOTO 350
+            IF (TEMP.LT.A) T1=TEMP**2
+            T2=T2+T1*PJ
+            IF (DFLOAT(J).GT.PI.AND.T1*PJ.LT.PREC) GOTO 350
   300     CONTINUE
   350     UGL=T2
         ENDIF
       ELSE
 C====>  OPTION 2 (IUGL=2)
         PP=GFUN(ICASE,NI,GI)
-        TEMP=ABS(YI-SNGL(PP)-CI)
+        TEMP=DABS(DBLE(YI)-PP-CC)
         UGL=AA**2
-        IF (TEMP.LT.A) UGL=DBLE(TEMP)**2
+        IF (TEMP.LT.AA) UGL=TEMP**2
       ENDIF
       RETURN
       END
@@ -20969,3 +21171,4 @@ C
   100 CONTINUE
       RETURN
       END
+

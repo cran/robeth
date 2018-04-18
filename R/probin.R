@@ -1,21 +1,22 @@
 "probin" <-
-function(k,n,p) {
-pk <- single(1)
+function(k,n,p,ilg) {
 f.res <- .Fortran("probin",
 k=to.integer(k),
 n=to.integer(n),
-p=to.single(p),
-pk=to.single(pk))
+p=to.double(p),
+ilg=to.integer(ilg),
+pk=double(1))
 list(pk=f.res$pk)
 }
 
 "prpois" <-
-function(e,k) {
+function(e,k,ilg) {
 pk <- single(1)
 f.res <- .Fortran("prpois",
-e=to.single(e),
+e=to.double(e),
 k=to.integer(k),
-pk=to.single(pk))
+ilg=to.integer(ilg),
+pk=double(1))
 list(pk=f.res$pk)
 }
 

@@ -7,7 +7,7 @@ export(exch,exchd, fcum, fstord, gauss, gaussd, gfedca, gintac, glmdev, gyastp, 
 export(gymain, gytstp, h12, h12d, hylmse, hyltse, hysest, hysestw, ingama, kfascv)
 export(kfedcb, kfedcc, kffacv, kiascv, kiedch, kiedcu, ktaskv, ktaskw, lgama)
 export(libet0, libeth, libetu, liclls, liepsh, liepsu, liindh, liinds, liindw)
-export(lilars, littst, lmdd, lyhalg, lywalg, lyhdle, lymnwt, lytau2, mchl, mchld)
+export(lilars, littst, lmdd, lrfctd, lyhalg, lywalg, lyhdle, lymnwt, lytau2, mchl, mchld)
 export(messagena, mff, mffd, mfragr, mfy, mfyd, mhat, minv, minvd, mirtsr, mly, mlyd)
 export(msf,msf1, msf1d, msfd, mss, mssd, mtt1, mtt1d, mtt2, mtt2d, mtt3, mtt3d, mty, mtyd)
 export(myhbhe, mymvlm, nlgm, nrm2, nrm2d, permc, permv, poissn, precd, precs, probst)
@@ -18,4 +18,5 @@ export(to.character, to.double, to.integer, to.single, tquant, ttaskt, tteign, u
 export(Ucv, ugl, userfs, userfd, upcv, Upcv, vcv, vpcv, wcv, Wcv, wfshat, wimedv)
 export(wpcv, Wpcv, www, Www, wyfalg, wyfcol, wygalg, wynalg, xerf, xerp, xsy, xsyd)
 export(Regtau.f,Fn.Exp.f,Qn.Exp.f,QD2funC.f,QD2coef.f,RegtauW.f,zemll)
+importFrom("stats", "lsfit", "median", "ppoints", "qgamma", "qnorm","var")
 

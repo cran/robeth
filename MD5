@@ -1,5 +1,5 @@
-16baf1b9f778ecfcee6c5de67b226566 *DESCRIPTION
-525fbab1aa731b009c4bc1d648bb0737 *NAMESPACE
+a34d9179fd200617d211f75d9b113ff7 *DESCRIPTION
+d870cdcb5eb896c616c0c35cafbe02f6 *NAMESPACE
 ec900b6d79bdf21ec6d016646971db01 *R/Dbinom.R
 b99e7b9c03a526f63a56d130dfc7ac9d *R/Fn.Exp.f.R
 66c7728c91e385ec3b534982d54a010d *R/QD2coef.f.R
@@ -43,11 +43,11 @@ bf797b3dc61edd76738966bb4bd3dcd6 *R/gauss.R
 38947ca6b793532a7dfd44c9a1e9e628 *R/gaussd.R
 4fa4a8b0fa6042bb552730f76106118b *R/gfedca.R
 5a817bf826da3030ccb30c1b1854cb5b *R/gintac.R
-ca90b792e47a48b6c1e12749bc75a3a0 *R/glmdev.R
+0fbffdf5081a245ced7d790bf34e2657 *R/glmdev.R
 72104fa947b3afa66b45334b104a0a75 *R/gminit.R
 8e370e430944d02032d891948107f1fa *R/gyastp.R
 ba7460a17d980e91e9b955e77139f9ca *R/gycstp.R
-a0174366066604f50494957e7404a16c *R/gymain.R
+59066e2731fba733affa937945ac0611 *R/gymain.R
 9b208f04b2ab29fe7c30e78d451fffa9 *R/gytstp.R
 3a50c91304e96f76afff59e2ea7edf4b *R/h12.R
 3401c3db26c79d6de438ae95ba56fadd *R/h12d.R
@@ -78,6 +78,7 @@ eb68aca99ee4aafcfb8a8d593d68e4da *R/liepsu.R
 416d429bc14c2b6c15188b9187ebbd3b *R/lilars.R
 a8f8eb83dd4e13a9dd864a577df655e4 *R/littst.R
 f05543a5443697574baebc8b58737465 *R/lmdd.R
+5b953ce0975ad0fe17e99c4353e91050 *R/lrfctd.R
 c66a0cece4d8c2a48ae713f0493465f6 *R/lyhalg.R
 cc3dea7bc46272c6bd971bf8815515aa *R/lyhdle.R
 82bfad39875769dcc585b0ac25eec317 *R/lymnwt.R
@@ -123,7 +124,7 @@ b78a4fbc3ff9167aa340a380f7265a34 *R/permv.R
 8716096d4d13f24a0acb992370901110 *R/poissn.R
 50bfcd62a7d010354b03470bb6b7bc14 *R/precd.R
 dcd2c38a91c4c974f8514045882c84e0 *R/precs.R
-685ed407aae8fcf28d29e03f308abb4b *R/probin.R
+e1c41851549b778b16976554361dc253 *R/probin.R
 25ef4e9caa6c90af581a070db032545d *R/probst.R
 edcb01ba7085d99f84be94cb9889e08c *R/psi.R
 89be7d5c0ed942ae0995469c92ae8b3b *R/psi_1.R
@@ -215,7 +216,7 @@ b3a3913e8c0b01ddb662d1952074a07b *man/chisq.Rd
 7b1f2d46c24f51f1422c5cbdcce7f584 *man/cicloc.Rd
 433f23d1d004594e04adf8598d7aca4e *man/cifact.Rd
 a1467bb72217c999537a076e995c3082 *man/cimedv.Rd
-5ce75835193e43ce1a6592022f42d8ad *man/cirock.Rd
+649cab699da0489809e0541970eca6b2 *man/cirock.Rd
 057d0ac8464e88afff4f4612769ba410 *man/comval.Rd
 da14e5d40cba9faf786af5cc77003355 *man/cquant.Rd
 ddf918b5931f3bb3d3f59a65ff37d7c3 *man/cyfalg.Rd
@@ -269,6 +270,7 @@ ed72f3da98171c8f00dbf0c56c182435 *man/liindw.Rd
 8794a03fd5b912988c8cb8e54d67d1c2 *man/lilars.Rd
 aed9366d109db1d4772cfc666b0cd145 *man/littst.Rd
 ffeae01d0ae2ac803bd03126fddb197c *man/lmdd.Rd
+a92f2a1af5f17aa9a3fe4e36d8100081 *man/lrfctd.Rd
 ea526b4204d2a136d9e57616c10a2a03 *man/lyhalg.Rd
 f9803f3ae4190021b643d66798d808b0 *man/lyhdle.Rd
 4e7114528124318801265e87e1c78d03 *man/lymnwt.Rd
@@ -380,5 +382,6 @@ f2d96521d01bedab856b7c6acb640f0f *man/xerp.Rd
 a89619b4ee9e4056dfeac7a8be342f94 *man/xsyd.Rd
 440593272e71c3a0ea318c0571a24876 *man/zemll.Rd
 fe23344bf47ecc7e1eb15fe4218a6ba3 *src/fastcens.f
+5c0a48e146033390207ccef968a5b015 *src/init.c
 e7cf1f16e9437781376bdfdce3089b4d *src/regtau.f
-9641a8b12f04a80c2dcf9602b863076d *src/robeth.f
+d1361cb818e56324dc7b8eab0218dae9 *src/robeth.f
