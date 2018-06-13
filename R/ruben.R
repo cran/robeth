@@ -12,7 +12,7 @@ sg <- single(n)
 st <- single(n)
 sa <- single(maxit)
 sb <- single(maxit)
-f.res <- .Fortran("ruben",
+f.res <- .Fortran("rubenz",
 xlmbda=to.single(xlmbda),
 delta=to.single(delta),
 mult=to.integer(mult),

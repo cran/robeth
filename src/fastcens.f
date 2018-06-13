@@ -18,7 +18,7 @@ C
       G=0.D0
       IF (X.EQ.0.D0) RETURN
       IF (X.LT.0.D0.OR.P.LE.0.D0) CALL MESSGE(500,'INGAMD',1)
-      CALL MACHD(6,OFLO)
+      CALL MACHZD(6,OFLO)
       OFLO=OFLO*1.D-15
       CALL LGAMAD(P,GP)
       GIN=0.D0
@@ -52,7 +52,8 @@ C
       TERM=TERM+1.D0
       AN=A*TERM
       DO 33 I=1,2
-   33 PN(I+4)=B*PN(I+2)-AN*PN(I)
+      PN(I+4)=B*PN(I+2)-AN*PN(I)
+   33 CONTINUE 
       IF (PN(6).EQ.0.D0) GOTO 35
       RN=PN(5)/PN(6)
       DIF=DABS(GIN-RN)
@@ -60,10 +61,12 @@ C
       IF (DIF.LE.TOL*RN) GOTO 42
    34 GIN=RN
    35 DO 36 I=1,4
-   36 PN(I)=PN(I+2)
+      PN(I)=PN(I+2)
+   36 CONTINUE 
       IF (DABS(PN(5)).LT.OFLO) GOTO 32
       DO 41 I=1,4
-   41 PN(I)=PN(I)/OFLO
+      PN(I)=PN(I)/OFLO
+   41 CONTINUE 
       GOTO 32
    42 GIN=1.D0-FACTOR*GIN
    50 G=GIN
@@ -112,7 +115,7 @@ C
         TMP=ALPHA*XEXPD(TMP)
         CALL INGAMD(TMP,ALPHA,RES)
       ELSE
-        CALL GAUSSD(1,X,RES)
+        CALL GAUSSZD(1,X,RES)
       ENDIF
       IF (LAMBDA.LT.-ZERO) RES=1.D0-RES
       RETURN
@@ -167,7 +170,7 @@ C
 C
 C  INITIALIZE
 C
-      TL=DMIN1(1.D-10,0.1D0*TOL)
+c     TL=DMIN1(1.D-10,0.1D0*TOL)
       ITR=1
       MESS=0
       CALL FNEXP(A,YC,DELTA,N,MU,SIGMA,LAMBDA,ZERO,FA)
@@ -268,7 +271,7 @@ C     QL(2,I)=qloggamma(P,lambda)
       RETURN
       END
 C
-      SUBROUTINE ZEMLL(B,X,YO,DO,N,NP,R,EMLL)
+      SUBROUTINE ZEMLLZ(B,X,YO,DO,N,NP,R,EMLL)
       REAL B(NP),X(N,NP),YO(N),R(N),AN(2)
       INTEGER DO(N) 
       IJ=0
@@ -326,10 +329,10 @@ C
       IF (DO(I).EQ.0) IA=2
       DO 500 J=1,N
       Z=(R(J)-R(I))/AN(IA)
-      CALL GAUSS(1,Z,PNRMZ)
+      CALL GAUSSZ(1,Z,PNRMZ)
       ARG3=ARG3+PNRMZ
       IF (DO(J).EQ.0) GOTO 500
-      CALL XERF(2,Z,DNRMZ)
+      CALL XERFZ(2,Z,DNRMZ)
       ARG2=ARG2+DNRMZ/AN(IA)
  500  CONTINUE
       ARG2=ARG2/FLOAT(N)

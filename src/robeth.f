@@ -6,7 +6,7 @@ C  File COMUTL.F  Utility subroutines of Chapter 12
 C
 C-----------------------------------------------------------------------
 C
-      SUBROUTINE MACH(I,X)
+      SUBROUTINE MACHZ(I,X)
 C.......................................................................
 C
 C   COPYRIGHT 1992 Alfio Marazzi
@@ -64,7 +64,7 @@ C
 C
 C-----------------------------------------------------------------------
 C
-      SUBROUTINE MACHD(I,X)
+      SUBROUTINE MACHZD(I,X)
 C.......................................................................
 C
 C   COPYRIGHT 1992 Alfio Marazzi
@@ -157,8 +157,8 @@ C   AUTHOR : A. RANDRIAMIHARISOA
 C.......................................................................
       DATA NCALL,DMIN,DMAX,XBIG/0,0.,0.,0./
       IF (NCALL.EQ.0) THEN
-        CALL MACH(3,DMIN)
-        CALL MACH(6,XBIG)
+        CALL MACHZ(3,DMIN)
+        CALL MACHZ(6,XBIG)
         XBIG=XBIG/10.
         DMAX=ALOG(XBIG)
         NCALL=1
@@ -211,8 +211,8 @@ C.......................................................................
       DOUBLE PRECISION X,DMIN,DMAX,XBIG
       DATA NCALL,DMIN,DMAX,XBIG/0,0.D0,0.D0,0.D0/
       IF (NCALL.EQ.0) THEN
-        CALL MACHD(3,DMIN)
-        CALL MACHD(6,XBIG)
+        CALL MACHZD(3,DMIN)
+        CALL MACHZD(6,XBIG)
         XBIG=XBIG/10.D0
         DMAX=DLOG(XBIG)
         NCALL=1
@@ -272,7 +272,7 @@ C  EXCHANGE COLUMN J WITH COLUMN L+1
 C
       LP1=L+1
       IF (J.EQ.LP1) GOTO 20
-      CALL SWAP(X(1,J),X(1,L+1),N,1,1,MDX,MDX)
+      CALL SWAPZ(X(1,J),X(1,L+1),N,1,1,MDX,MDX)
       TMP=SH(J)
       SH(J)=SH(L+1)
       SH(L+1)=TMP
@@ -286,19 +286,20 @@ C
       IF (L.EQ.0) GOTO 40
       DO 30 II=1,L
       I=II
-   30 CALL H12(2,I,I+1,N,X(1,I),1,SH(I),X(1,L+1),1,N,1,N)
+      CALL H12Z(2,I,I+1,N,X(1,I),1,SH(I),X(1,L+1),1,N,1,N)
+   30 CONTINUE 
    40 CONTINUE
 C
 C  COMPUTE H.T. FOR COLUMNN L+1
 C
-      CALL H12(1,L+1,L+2,N,X(1,L+1),1,SH(L+1),SX,1,N,0,N)
+      CALL H12Z(1,L+1,L+2,N,X(1,L+1),1,SH(L+1),SX,1,N,0,N)
       L=L+1
       RETURN
       END
 C
 C-------------------------------------------------------------
 C
-      SUBROUTINE RMVC(X,N,NP,MDX,L,J,SH,IP,SX)
+      SUBROUTINE RMVCZ(X,N,NP,MDX,L,J,SH,IP,SX)
 C.......................................................................
 C
 C   COPYRIGHT 1992 Alfio Marazzi
@@ -314,7 +315,7 @@ C  PARAMETER CHECK
 C
       NPRCHK=N.GT.0.AND.MDX.GE.N.AND.NP.LE.N
      1       .AND.L.GE.1.AND.J.GE.0.AND.J.LE.L.AND.L.LE.NP
-      IF (.NOT.NPRCHK) CALL MESSGE(500,'RMVC  ',1)
+      IF (.NOT.NPRCHK) CALL MESSGE(500,'RMVCz ',1)
       IF (J.EQ.0) RETURN
 C
 C  APPLY ALREADY COMPUTED H.T. DEFINED BY COLUMN L TO SAME
@@ -322,13 +323,16 @@ C  COLUMN L OF THE TRANSFORMED MATRIX (TEMPORARILY STORING
 C  THE RESULT IN SX)
 C
       DO 20 I=1,L
-   20 SX(I)=X(I,L)
+      SX(I)=X(I,L)
+   20 CONTINUE
       LP1=L+1
       DO 30 I=LP1,N
-   30 SX(I)=0.
-      CALL H12(2,L,L+1,N,X(1,L),1,SH(L),SX,1,N,1,N)
+      SX(I)=0.
+   30 CONTINUE 
+      CALL H12Z(2,L,L+1,N,X(1,L),1,SH(L),SX,1,N,1,N)
       DO 40 I=1,N
-   40 X(I,L)=SX(I)
+      X(I,L)=SX(I)
+   40 CONTINUE 
 C
 C  APPLY ALREADY COMPUTED H.T. DEFINED BY COLS L-1 DOWN TO J
 C  TO SUBSEQUENT COLS
@@ -337,20 +341,23 @@ C
       LMJP1=L-J+1
       DO 80 IN=2,LMJP1
       J1=L-IN+1
-      CALL H12(2,J1,J1+1,N,X(1,J1),1,SH(J1),X(1,J1+1),1,MDX,
+      CALL H12Z(2,J1,J1+1,N,X(1,J1),1,SH(J1),X(1,J1+1),1,MDX,
      1L-J1,(L-J1)*MDX)
 C
 C  APPLY ALREADY COMPUTED H.T. DEFINED BY COLS L-1 DOWN TO J
 C  TO SAME COLS (TEMPORARILY STORING THE RESULT IN SX)
 C
       DO 50 I=1,L
-   50 SX(I)=X(I,J1)
+      SX(I)=X(I,J1)
+   50 CONTINUE 
       J1P1=J1+1
       DO 60 I=J1P1,N
-   60 SX(I)=0.
-      CALL H12(2,J1,J1+1,N,X(1,J1),1,SH(J1),SX,1,N,1,N)
+      SX(I)=0.
+   60 CONTINUE
+      CALL H12Z(2,J1,J1+1,N,X(1,J1),1,SH(J1),SX,1,N,1,N)
       DO 70 I=1,N
-   70 X(I,J1)=SX(I)
+      X(I,J1)=SX(I)
+   70 CONTINUE
    80 CONTINUE
 C
 C  MULTIPLY J-TH COLUMN BY H.T. STORED IN COLS
@@ -361,7 +368,8 @@ C
       JM1=J-1
       DO 100 II=1,JM1
       I=J-II
-  100 CALL H12(2,I,I+1,N,X(1,I),1,SH(I),X(1,J),1,MDX,1,MDX)
+      CALL H12Z(2,I,I+1,N,X(1,I),1,SH(I),X(1,J),1,MDX,1,MDX)
+  100 CONTINUE
   110 CONTINUE
       IF (J.EQ.L) GOTO 140
 C
@@ -373,12 +381,12 @@ C
       DO 120 II=JP1,L
       I=II
       IF (L-I.GT.0)
-     1CALL H12(1,I-1,I,N,X(1,I),1,SH(I),X(1,I+1),1,MDX,L-I,(L-I)*MDX)
+     1CALL H12Z(1,I-1,I,N,X(1,I),1,SH(I),X(1,I+1),1,MDX,L-I,(L-I)*MDX)
       IF (L-I.EQ.0)
-     1CALL H12(1,I-1,I,N,X(1,I),1,SH(I),SX,1,N,0,N)
+     1CALL H12Z(1,I-1,I,N,X(1,I),1,SH(I),SX,1,N,0,N)
   120 CONTINUE
       DO 130 I=JP1,L
-      CALL SWAP(X(1,I-1),X(1,I),N,1,1,MDX,MDX)
+      CALL SWAPZ(X(1,I-1),X(1,I),N,1,1,MDX,MDX)
       TMP=SH(I-1)
       SH(I-1)=SH(I)
       SH(I)=TMP
@@ -392,7 +400,7 @@ C
 C
 C-----------------------------------------------------------------------
 C
-      SUBROUTINE EXCH(S,N,NN,H,K)
+      SUBROUTINE EXCHZ(S,N,NN,H,K)
 C.......................................................................
 C
 C   COPYRIGHT 1992 Alfio Marazzi
@@ -408,7 +416,7 @@ C  PARAMETER CHECK
 C
       MM=N*(N+1)/2
       NPRCHK=N.GT.0.AND.H.GT.0.AND.K.GT.H.AND.K.LE.N.AND.MM.EQ.NN
-      IF (.NOT.NPRCHK) CALL MESSGE(500,'EXCH  ',1)
+      IF (.NOT.NPRCHK) CALL MESSGE(500,'EXCHz ',1)
 C
       LH=H*(H+1)/2
       LK=K*(K+1)/2
@@ -424,7 +432,8 @@ C
       LK=LK+1
       T=S(LH)
       S(LH)=S(LK)
-   10 S(LK)=T
+      S(LK)=T
+   10 CONTINUE
    15 LH=LH+1
       LK=LK+1
       M=K-H-1
@@ -434,7 +443,8 @@ C
       LK=LK+1
       T=S(LH)
       S(LH)=S(LK)
-   20 S(LK)=T
+      S(LK)=T
+   20 CONTINUE
    30 LH=LH+K-1
       LK=LK+1
       M=N-K
@@ -444,13 +454,14 @@ C
       LK=LK+K+I-1
       T=S(LH)
       S(LH)=S(LK)
-   40 S(LK)=T
+      S(LK)=T
+   40 CONTINUE
    45 RETURN
       END
 C
 C-----------------------------------------------------------------------
 C
-      SUBROUTINE EXCHD(S,N,NN,H,K)
+      SUBROUTINE EXCHZD(S,N,NN,H,K)
 C.......................................................................
 C
 C   COPYRIGHT 1992 Alfio Marazzi
@@ -466,7 +477,7 @@ C  PARAMETER CHECK
 C
       MM=N*(N+1)/2
       NPRCHK=N.GT.0.AND.H.GT.0.AND.K.GT.H.AND.K.LE.N.AND.NN.EQ.MM
-      IF (.NOT.NPRCHK) CALL MESSGE(500,'EXCHD ',1)
+      IF (.NOT.NPRCHK) CALL MESSGE(500,'EXCHzD',1)
 C
       LH=H*(H+1)/2
       LK=K*(K+1)/2
@@ -482,7 +493,8 @@ C
       LK=LK+1
       T=S(LH)
       S(LH)=S(LK)
-   10 S(LK)=T
+      S(LK)=T
+   10 CONTINUE
    15 LH=LH+1
       LK=LK+1
       M=K-H-1
@@ -492,7 +504,8 @@ C
       LK=LK+1
       T=S(LH)
       S(LH)=S(LK)
-   20 S(LK)=T
+      S(LK)=T
+   20 CONTINUE
    30 LH=LH+K-1
       LK=LK+1
       M=N-K
@@ -502,13 +515,14 @@ C
       LK=LK+K+I-1
       T=S(LH)
       S(LH)=S(LK)
-   40 S(LK)=T
+      S(LK)=T
+   40 CONTINUE
    45 RETURN
       END
 C
 C----------------------------------------------------------------------
 C
-      SUBROUTINE H12(MODE,LPIVOT,L1,M,U,IUE,UP,C,ICE,ICV,NCV,
+      SUBROUTINE H12Z(MODE,LPIVOT,L1,M,U,IUE,UP,C,ICE,ICV,NCV,
      1               MDC)
 C.......................................................................
 C
@@ -530,56 +544,60 @@ C
 C  CONSTRUCT THE TRANSFORMATION
 C
       DO 10 J=L1,M
-   10 CL=AMAX1(ABS(U(1,J)),CL)
-      IF (CL) 130,130,20
-   20 CLINV=ONE/CL
+      CL=AMAX1(ABS(U(1,J)),CL)
+   10 CONTINUE
+      IF (CL.LE.0.0) GOTO 130
+      CLINV=ONE/CL
       SM=(DBLE(U(1,LPIVOT))*CLINV)**2
       DO 30 J=L1,M
-   30 SM=SM+(DBLE(U(1,J))*CLINV)**2
+      SM=SM+(DBLE(U(1,J))*CLINV)**2
+   30 CONTINUE
 C
 C  CONVERT DBLE. PRE. SM TO SNGL. PREC. SM1
 C
-      SM1=SM
+      SM1=SNGL(SM)
       CL=CL*SQRT(SM1)
-      IF (U(1,LPIVOT)) 50,50,40
-   40 CL=-CL
+      IF (U(1,LPIVOT).LE.0.0) GOTO 50
+      CL=-CL
    50 UP=U(1,LPIVOT)-CL
       U(1,LPIVOT)=CL
       GOTO 70
 C
 C  APPLY THE TRANSFORMATION I+U*(U**T)/B TO C
 C
-   60 IF (CL) 130,130,70
+   60 IF (CL.LE.0.0) GOTO 130
    70 IF (NCV.LE.0) RETURN
-      B=DBLE(UP)*U(1,LPIVOT)
+      B=DBLE(UP*U(1,LPIVOT))
 C
 C  B MUST BE NONPOSITIVE HERE. IF B=0., RETURN.
 C
-      IF (B) 80,130,130
-   80 B=ONE/B
+      IF (B.GE.0.D0) GOTO 130
+      B=DBLE(ONE)/B
       I2=1-ICV+ICE*(LPIVOT-1)
       INCR=ICE*(L1-LPIVOT)
       DO 120 J=1,NCV
       I2=I2+ICV
       I3=I2+INCR
       I4=I3
-      SM=C(I2)*DBLE(UP)
+      SM=DBLE(C(I2)*UP)
       DO 90 I=L1,M
-      SM=SM+C(I3)*DBLE(U(1,I))
-   90 I3=I3+ICE
-      IF (SM) 100,120,100
-  100 SM=SM*B
-      C(I2)=C(I2)+SM*DBLE(UP)
+      SM=SM+DBLE(C(I3)*U(1,I))
+      I3=I3+ICE
+   90 CONTINUE
+      IF (SM.EQ.0.D0) GOTO 120
+      SM=SM*B
+      C(I2)=C(I2)+SNGL(SM*DBLE(UP))
       DO 110 I=L1,M
-      C(I4)=C(I4)+SM*DBLE(U(1,I))
-  110 I4=I4+ICE
+      C(I4)=C(I4)+SNGL(SM*DBLE(U(1,I)))
+      I4=I4+ICE
+  110 CONTINUE
   120 CONTINUE
   130 RETURN
       END
 C
 C----------------------------------------------------------------------
 C
-      SUBROUTINE H12D(MODE,LPIVOT,L1,M,U,IUE,UP,C,ICE,ICV,NCV,
+      SUBROUTINE H12ZD(MODE,LPIVOT,L1,M,U,IUE,UP,C,ICE,ICV,NCV,
      1               MDC)
 C.......................................................................
 C
@@ -601,33 +619,35 @@ C
 C  CONSTRUCT THE TRANSFORMATION
 C
       DO 10 J=L1,M
-   10 CL=DMAX1(DABS(U(1,J)),CL)
-      IF (SNGL(CL)) 130,130,20
-   20 CLINV=ONE/CL
+      CL=DMAX1(DABS(U(1,J)),CL)
+   10 CONTINUE
+      IF (SNGL(CL).LE.0.0) GOTO 130
+      CLINV=ONE/CL
       SM=(U(1,LPIVOT)*CLINV)**2
       DO 30 J=L1,M
-   30 SM=SM+(U(1,J)*CLINV)**2
+      SM=SM+(U(1,J)*CLINV)**2
+   30 CONTINUE
 C
 C  CONVERT DBLE. PRE. SM TO SNGL. PREC. SM1
 C
 C     SM1=SM
       CL=CL*DSQRT(SM)
-      IF (SNGL(U(1,LPIVOT))) 50,50,40
-   40 CL=-CL
+      IF (SNGL(U(1,LPIVOT)).LE.0.0) GOTO 50
+      CL=-CL
    50 UP=U(1,LPIVOT)-CL
       U(1,LPIVOT)=CL
       GOTO 70
 C
 C  APPLY THE TRANSFORMATION I+U*(U**T)/B TO C
 C
-   60 IF (SNGL(CL)) 130,130,70
+   60 IF (SNGL(CL).LE.0.0) GOTO 130
    70 IF (NCV.LE.0) RETURN
       B=UP*U(1,LPIVOT)
 C
 C  B MUST BE NONPOSITIVE HERE. IF B=0., RETURN.
 C
-      IF (SNGL(B)) 80,130,130
-   80 B=ONE/B
+      IF (SNGL(B).GE.0.0) GOTO 130
+      B=ONE/B
       I2=1-ICV+ICE*(LPIVOT-1)
       INCR=ICE*(L1-LPIVOT)
       DO 120 J=1,NCV
@@ -637,20 +657,22 @@ C
       SM=C(I2)*UP
       DO 90 I=L1,M
       SM=SM+C(I3)*U(1,I)
-   90 I3=I3+ICE
-      IF (SM) 100,120,100
-  100 SM=SM*B
+      I3=I3+ICE
+   90 CONTINUE
+      IF (SM.EQ.0.D0) GOTO 120
+      SM=SM*B
       C(I2)=C(I2)+SM*UP
       DO 110 I=L1,M
       C(I4)=C(I4)+SM*U(1,I)
-  110 I4=I4+ICE
+      I4=I4+ICE
+  110 CONTINUE
   120 CONTINUE
   130 RETURN
       END
 C
 C-----------------------------------------------------------------------
 C
-      SUBROUTINE MHAT(X,N,NP,K,MDX,HAT,SH,SC)
+      SUBROUTINE MHATZ(X,N,NP,K,MDX,HAT,SH,SC)
 C.......................................................................
 C
 C   COPYRIGHT 1992 Alfio Marazzi
@@ -666,25 +688,29 @@ C  PARAMETER CHECK AND INITIALIZATION
 C
       DZERO=0.D0
       NPRCHK=K.GT.0.AND.K.LE.NP.AND.NP.LE.N.AND.MDX.GE.N
-      IF (.NOT.NPRCHK) CALL MESSGE(500,'MHAT  ',1)
+      IF (.NOT.NPRCHK) CALL MESSGE(500,'MHATz ',1)
 C
       DO 100 I=1,N
       DO  20 J=1,N
-   20 SC(J)=0.
+      SC(J)=0.
+   20 CONTINUE
       SC(I)=1.
       DO 50 JJ=1,NP
       J=JJ
-   50 CALL H12(2,J,J+1,N,X(1,J),1,SH(J),SC,1,N,1,N)
+      CALL H12Z(2,J,J+1,N,X(1,J),1,SH(J),SC,1,N,1,N)
+   50 CONTINUE
       SM=DZERO
       DO 70 J=1,K
-   70 SM=SM+SC(J)*DBLE(SC(J))
-  100 HAT(I)=SM
+      SM=SM+DBLE(SC(J)*SC(J))
+   70 CONTINUE
+      HAT(I)=SNGL(SM)
+  100 CONTINUE
       RETURN
       END
 C
 C-----------------------------------------------------------------------
 C
-      SUBROUTINE MINV(R,N,NN,TAU,ISING)
+      SUBROUTINE MINVZ(R,N,NN,TAU,ISING)
 C.......................................................................
 C
 C   COPYRIGHT 1992 Alfio Marazzi
@@ -699,7 +725,7 @@ C
 C  PARAMETER CHECK
 C
       NPRCHK=N.GT.0.AND.NN.EQ.(N*(N+1)/2).AND.TAU.GE.0.
-      IF (.NOT.NPRCHK) CALL MESSGE(500,'MINV  ',1)
+      IF (.NOT.NPRCHK) CALL MESSGE(500,'MINVz ',1)
 C
       DZERO=0.D0
       ISING=0
@@ -707,7 +733,8 @@ C
       DO 10 I=1,N
       I1=I1+I
       IF (ABS(R(I1)).LE.TAU) GOTO 900
-   10 R(I1)=1./R(I1)
+      R(I1)=1./R(I1)
+   10 CONTINUE
       IF (N.EQ.1) RETURN
       I1=0
       NM1=N-1
@@ -721,11 +748,13 @@ C
       LJ=J1
       JM1=J-1
       DO 20 L=I,JM1
-      SM=SM+R(IL)*DBLE(R(LJ))
+      SM=SM+DBLE(R(IL)*R(LJ))
       LJ=LJ+1
-   20 IL=IL+L
-      R(J1)=-R(LJ)*SM
-   30 J1=J1+J
+      IL=IL+L
+   20 CONTINUE
+      R(J1)=-R(LJ)*SNGL(SM)
+      J1=J1+J
+   30 CONTINUE
    40 CONTINUE
       RETURN
   900 ISING=1
@@ -734,7 +763,7 @@ C
 C
 C-----------------------------------------------------------------------
 C
-      SUBROUTINE MINVD(R,N,NN,TAU,ISING)
+      SUBROUTINE MINVZD(R,N,NN,TAU,ISING)
 C.......................................................................
 C
 C   COPYRIGHT 1992 Alfio Marazzi
@@ -748,7 +777,7 @@ C
 C  PARAMETER CHECK
 C
       NPRCHK=N.GT.0.AND.NN.EQ.(N*(N+1)/2).AND.TAU.GE.0.
-      IF (.NOT.NPRCHK) CALL MESSGE(500,'MINVD ',1)
+      IF (.NOT.NPRCHK) CALL MESSGE(500,'MINVzD',1)
 C
       DZERO=0.D0
       DTAU=DBLE(TAU)
@@ -757,7 +786,8 @@ C
       DO 10 I=1,N
       I1=I1+I
       IF (DABS(R(I1)).LE.DTAU) GOTO 900
-   10 R(I1)=1.D0/R(I1)
+      R(I1)=1.D0/R(I1)
+   10 CONTINUE
       IF (N.EQ.1) RETURN
       I1=0
       NM1=N-1
@@ -773,9 +803,11 @@ C
       DO 20 L=I,JM1
       SM=SM+R(IL)*R(LJ)
       LJ=LJ+1
-   20 IL=IL+L
+      IL=IL+L
+   20 CONTINUE
       R(J1)=-R(LJ)*SM
-   30 J1=J1+J
+      J1=J1+J
+   30 CONTINUE
    40 CONTINUE
       RETURN
   900 ISING=1
@@ -784,7 +816,7 @@ C
 C
 C-----------------------------------------------------------------------
 C
-      SUBROUTINE MCHL(A,N,NN,INFO)
+      SUBROUTINE MCHLZ(A,N,NN,INFO)
 C.......................................................................
 C
 C   COPYRIGHT 1979 SOCIETY FOR INDUSTRIAL AND APPLIED MATHEMATICS.
@@ -803,7 +835,7 @@ C
 C  PARAMETER CHECK
 C
       NPRCHK=N.GT.0.AND.NN.EQ.(N*(N+1)/2)
-      IF (.NOT.NPRCHK) CALL MESSGE(500,'MCHL  ',1)
+      IF (.NOT.NPRCHK) CALL MESSGE(500,'MCHLz ',1)
 C
       JJ=0
       DO 30 J=1,N
@@ -815,7 +847,7 @@ C
       IF (JM1.LT.1) GOTO 20
       DO 10 K=1,JM1
       KJ=KJ+1
-      CALL DOTP(A(KK+1),A(JJ+1),K-1,1,1,NN-KK,NN-JJ,DTP)
+      CALL DOTPZ(A(KK+1),A(JJ+1),K-1,1,1,NN-KK,NN-JJ,DTP)
       T=A(KJ)-DTP
       KK=KK+K
       T=T/A(KK)
@@ -826,7 +858,7 @@ C
       JJ=JJ+J
       S=DBLE(A(JJ))-S
       IF (S.LE.0.D0) GOTO 40
-      A(JJ)=DSQRT(S)
+      A(JJ)=SNGL(DSQRT(S))
    30 CONTINUE
       INFO=0
    40 CONTINUE
@@ -835,7 +867,7 @@ C
 C
 C-----------------------------------------------------------------------
 C
-      SUBROUTINE MCHLD(A,N,NN,INFO)
+      SUBROUTINE MCHLZD(A,N,NN,INFO)
 C.......................................................................
 C
 C   COPYRIGHT 1979 SOCIETY FOR INDUSTRIAL AND APPLIED MATHEMATICS.
@@ -853,7 +885,7 @@ C
 C  PARAMETER CHECK
 C
       NPRCHK=N.GT.0.AND.NN.EQ.(N*(N+1)/2)
-      IF (.NOT.NPRCHK) CALL MESSGE(500,'MCHLD ',1)
+      IF (.NOT.NPRCHK) CALL MESSGE(500,'MCHLzD',1)
 C
       JJ=0
       DO 30 J=1,N
@@ -865,7 +897,7 @@ C
       IF (JM1.LT.1) GOTO 20
       DO 10 K=1,JM1
       KJ=KJ+1
-      CALL DOTPD(A(KK+1),A(JJ+1),K-1,1,1,NN-KK,NN-JJ,DTP)
+      CALL DOTPZD(A(KK+1),A(JJ+1),K-1,1,1,NN-KK,NN-JJ,DTP)
       T=A(KJ)-DTP
       KK=KK+K
       T=T/A(KK)
@@ -885,7 +917,7 @@ C
 C
 C-----------------------------------------------------------------------
 C
-      SUBROUTINE MFY(A,Y,Z,M,N,MDA,NY,IYE,NZ,IZE)
+      SUBROUTINE MFYZ(A,Y,Z,M,N,MDA,NY,IYE,NZ,IZE)
 C.......................................................................
 C
 C   COPYRIGHT 1992 Alfio Marazzi
@@ -902,20 +934,21 @@ C
       LZ=1+(M-1)*IZE
       NPRCHK=M.GT.0.AND.N.GT.0.AND.MDA.GE.M.AND.NY.GE.LY
      1       .AND.NZ.GE.LZ.AND.IYE.GE.1.AND.IZE.GE.1
-      IF (.NOT.NPRCHK) CALL MESSGE(500,'MFY   ',1)
+      IF (.NOT.NPRCHK) CALL MESSGE(500,'MFYz  ',1)
       NA1=(N-1)*MDA+1
 C
       IZ=-IZE+1
       DO 20 I=1,M
       IZ=IZ+IZE
-      CALL DOTP(A(I,1),Y,N,MDA,IYE,NA1,NY,R)
-   20 Z(IZ)=R
+      CALL DOTPZ(A(I,1),Y,N,MDA,IYE,NA1,NY,R)
+      Z(IZ)=R
+   20 CONTINUE
       RETURN
       END
 C
 C-----------------------------------------------------------------------
 C
-      SUBROUTINE MFYD(A,Y,Z,M,N,MDA,NY,IYE,NZ,IZE)
+      SUBROUTINE MFYZD(A,Y,Z,M,N,MDA,NY,IYE,NZ,IZE)
 C.......................................................................
 C
 C   COPYRIGHT 1992 Alfio Marazzi
@@ -932,20 +965,21 @@ C
       LZ=1+(M-1)*IZE
       NPRCHK=M.GT.0.AND.N.GT.0.AND.MDA.GE.M.AND.NY.GE.LY
      1       .AND.NZ.GE.LZ.AND.IYE.GE.1.AND.IZE.GE.1
-      IF (.NOT.NPRCHK) CALL MESSGE(500,'MFYD  ',1)
+      IF (.NOT.NPRCHK) CALL MESSGE(500,'MFYzD ',1)
       NA1=(N-1)*MDA+1
 C
       IZ=-IZE+1
       DO 20 I=1,M
       IZ=IZ+IZE
-      CALL DOTPD(A(I,1),Y,N,MDA,IYE,NA1,NY,R)
-   20 Z(IZ)=R
+      CALL DOTPZD(A(I,1),Y,N,MDA,IYE,NA1,NY,R)
+      Z(IZ)=R
+   20 CONTINUE
       RETURN
       END
 C
 C-----------------------------------------------------------------------
 C
-      SUBROUTINE MFF(A,B,C,M,K,N,MDA,MDB,MDC)
+      SUBROUTINE MFFZ(A,B,C,M,K,N,MDA,MDB,MDC)
 C.......................................................................
 C
 C   COPYRIGHT 1992 Alfio Marazzi
@@ -960,19 +994,21 @@ C  PARAMETER CHECK
 C
       NPRCHK=M.GT.0.AND.N.GT.0.AND.K.GT.0.AND.MDA.GE.M.AND.MDB.GE.K
      1       .AND.MDC.GE.M
-      IF (.NOT.NPRCHK) CALL MESSGE(500,'MFF   ',1)
+      IF (.NOT.NPRCHK) CALL MESSGE(500,'MFFz  ',1)
       NA1=(K-1)*MDA+1
 C
-      DO 20 I=1,M
+      DO 30 I=1,M
       DO 20 J=1,N
-      CALL DOTP(A(I,1),B(1,J),K,MDA,1,NA1,K,R)
-   20 C(I,J)=R
+      CALL DOTPZ(A(I,1),B(1,J),K,MDA,1,NA1,K,R)
+      C(I,J)=R
+   20 CONTINUE
+   30 CONTINUE
       RETURN
       END
 C
 C-----------------------------------------------------------------------
 C
-      SUBROUTINE MFFD(A,B,C,M,K,N,MDA,MDB,MDC)
+      SUBROUTINE MFFZD(A,B,C,M,K,N,MDA,MDB,MDC)
 C.......................................................................
 C
 C   COPYRIGHT 1992 Alfio Marazzi
@@ -987,19 +1023,21 @@ C  PARAMETER CHECK
 C
       NPRCHK=M.GT.0.AND.N.GT.0.AND.K.GT.0.AND.MDA.GE.M.AND.MDB.GE.K
      1       .AND.MDC.GE.M
-      IF (.NOT.NPRCHK) CALL MESSGE(500,'MFFD  ',1)
+      IF (.NOT.NPRCHK) CALL MESSGE(500,'MFFzD ',1)
       NA1=(K-1)*MDA+1
 C
-      DO 20 I=1,M
+      DO 30 I=1,M
       DO 20 J=1,N
-      CALL DOTPD(A(I,1),B(1,J),K,MDA,1,NA1,K,R)
-   20 C(I,J)=R
+      CALL DOTPZD(A(I,1),B(1,J),K,MDA,1,NA1,K,R)
+      C(I,J)=R
+   20 CONTINUE
+   30 CONTINUE
       RETURN
       END
 C
 C------------------------------------------------------------------------
 C
-      SUBROUTINE MSF(A,B,C,N,NN,M,MDB,MDC)
+      SUBROUTINE MSFZ(A,B,C,N,NN,M,MDB,MDC)
 C.......................................................................
 C
 C   COPYRIGHT 1992 Alfio Marazzi
@@ -1016,7 +1054,7 @@ C  PARAMETER CHECK
 C
       N2=N*(N+1)/2
       NPRCHK=N.GT.0.AND.M.GT.0.AND.MDB.GE.N.AND.MDC.GE.N.AND.NN.EQ.N2
-      IF (.NOT.NPRCHK) CALL MESSGE(500,'MSF   ',1)
+      IF (.NOT.NPRCHK) CALL MESSGE(500,'MSFz  ',1)
 C
       DZERO=0.D0
       DO 20 J=1,M
@@ -1030,7 +1068,7 @@ C
       IF (K.GE.I) KK=K
       L=L+KK
    10 CONTINUE
-      C(I,J)=SM
+      C(I,J)=SNGL(SM)
       H=H+I
    15 CONTINUE
    20 CONTINUE
@@ -1039,7 +1077,7 @@ C
 C
 C------------------------------------------------------------------------
 C
-      SUBROUTINE MSFD(A,B,C,N,NN,M,MDB,MDC)
+      SUBROUTINE MSFZD(A,B,C,N,NN,M,MDB,MDC)
 C.......................................................................
 C
 C   COPYRIGHT 1992 Alfio Marazzi
@@ -1055,7 +1093,7 @@ C  PARAMETER CHECK
 C
       N2=N*(N+1)/2
       NPRCHK=N.GT.0.AND.M.GT.0.AND.MDB.GE.N.AND.MDC.GE.N.AND.NN.EQ.N2
-      IF (.NOT.NPRCHK) CALL MESSGE(500,'MSFD  ',1)
+      IF (.NOT.NPRCHK) CALL MESSGE(500,'MSFzD ',1)
 C
       DZERO=0.D0
       DO 20 J=1,M
@@ -1078,7 +1116,7 @@ C
 C
 C-----------------------------------------------------------------------
 C
-      SUBROUTINE MSF1(A,B,C,N,NN,MDB)
+      SUBROUTINE MSF1Z(A,B,C,N,NN,MDB)
 C.......................................................................
 C
 C   COPYRIGHT 1992 Alfio Marazzi
@@ -1094,7 +1132,7 @@ C  PARAMETER CHECK
 C
       N2=N*(N+1)/2
       NPRCHK=N.GT.0.AND.MDB.GE.N.AND.NN.EQ.N2
-      IF (.NOT.NPRCHK) CALL MESSGE(500,'MSF1  ',1)
+      IF (.NOT.NPRCHK) CALL MESSGE(500,'MSF1z ',1)
 C
       DZERO=0.D0
       LC=1
@@ -1109,7 +1147,7 @@ C
       IF (K.GE.I) KK=K
       L=L+KK
     5 CONTINUE
-      C(LC)=SM
+      C(LC)=SNGL(SM)
       LC=LC+1
       IBEG=IBEG+I
    10 CONTINUE
@@ -1119,7 +1157,7 @@ C
 C
 C-----------------------------------------------------------------------
 C
-      SUBROUTINE MSF1D(A,B,C,N,NN,MDB)
+      SUBROUTINE MSF1ZD(A,B,C,N,NN,MDB)
 C.......................................................................
 C
 C   COPYRIGHT 1992 Alfio Marazzi
@@ -1134,7 +1172,7 @@ C  PARAMETER CHECK
 C
       N2=N*(N+1)/2
       NPRCHK=N.GT.0.AND.MDB.GE.N.AND.NN.EQ.N2
-      IF (.NOT.NPRCHK) CALL MESSGE(500,'MSF1D ',1)
+      IF (.NOT.NPRCHK) CALL MESSGE(500,'MSF1zD',1)
 C
       DZERO=0.D0
       LC=1
@@ -1159,7 +1197,7 @@ C
 C
 C-----------------------------------------------------------------------
 C
-      SUBROUTINE MSS(A,B,C,N,NN,MDC)
+      SUBROUTINE MSSZ(A,B,C,N,NN,MDC)
 C.......................................................................
 C
 C   COPYRIGHT 1992 Alfio Marazzi
@@ -1175,7 +1213,7 @@ C  PARAMETER CHECK
 C
       N2=N*(N+1)/2
       NPRCHK=N.GT.0.AND.MDC.GE.N.AND.NN.EQ.N2
-      IF (.NOT.NPRCHK) CALL MESSGE(500,'MSS   ',1)
+      IF (.NOT.NPRCHK) CALL MESSGE(500,'MSSz  ',1)
 C
       DZERO=0.D0
       LI=1
@@ -1196,7 +1234,7 @@ C
       GOTO 40
    30 J=J+1
    40 CONTINUE
-      C(IR,JC)=SM
+      C(IR,JC)=SNGL(SM)
       LJ=LJ+JC
    50 CONTINUE
       LI=LI+IR
@@ -1206,7 +1244,7 @@ C
 C
 C-----------------------------------------------------------------------
 C
-      SUBROUTINE MSSD(A,B,C,N,NN,MDC)
+      SUBROUTINE MSSZD(A,B,C,N,NN,MDC)
 C.......................................................................
 C
 C   COPYRIGHT 1992 Alfio Marazzi
@@ -1221,7 +1259,7 @@ C  PARAMETER CHECK
 C
       N2=N*(N+1)/2
       NPRCHK=N.GT.0.AND.MDC.GE.N.AND.NN.EQ.N2
-      IF (.NOT.NPRCHK) CALL MESSGE(500,'MSSD  ',1)
+      IF (.NOT.NPRCHK) CALL MESSGE(500,'MSSzD ',1)
 C
       DZERO=0.D0
       LI=1
@@ -1252,7 +1290,7 @@ C
 C
 C-----------------------------------------------------------------------
 C
-      SUBROUTINE MTT1(A,B,N,NN)
+      SUBROUTINE MTT1Z(A,B,N,NN)
 C.......................................................................
 C
 C   COPYRIGHT 1992 Alfio Marazzi
@@ -1267,7 +1305,7 @@ C
 C  PARAMETER CHECK
 C
       NPRCHK=N.GT.0.AND.NN.EQ.(N*(N+1)/2)
-      IF (.NOT.NPRCHK) CALL MESSGE(500,'MTT1  ',1)
+      IF (.NOT.NPRCHK) CALL MESSGE(500,'MTT1Z ',1)
 C
       DZERO=0.D0
       IJ=0
@@ -1281,16 +1319,18 @@ C
       DO 10 L=J,N
       SM=SM+A(IL)*DBLE(A(JL))
       IL=IL+L
-   10 JL=JL+L
+      JL=JL+L
+   10 CONTINUE 
       B(IJ)=SNGL(SM)
    20 CONTINUE
-   30 JJ=JJ+J
+      JJ=JJ+J
+   30 CONTINUE
       RETURN
       END
 C
 C-----------------------------------------------------------------------
 C
-      SUBROUTINE MTT1D(A,B,N,NN)
+      SUBROUTINE MTT1ZD(A,B,N,NN)
 C.......................................................................
 C
 C   COPYRIGHT 1992 Alfio Marazzi
@@ -1304,7 +1344,7 @@ C
 C  PARAMETER CHECK
 C
       NPRCHK=N.GT.0.AND.NN.EQ.(N*(N+1)/2)
-      IF (.NOT.NPRCHK) CALL MESSGE(500,'MTT1D ',1)
+      IF (.NOT.NPRCHK) CALL MESSGE(500,'MTT1zD',1)
 C
       DZERO=0.D0
       IJ=0
@@ -1318,16 +1358,18 @@ C
       DO 10 L=J,N
       SM=SM+A(IL)*A(JL)
       IL=IL+L
-   10 JL=JL+L
+      JL=JL+L
+   10 CONTINUE
       B(IJ)=SM
    20 CONTINUE
-   30 JJ=JJ+J
+      JJ=JJ+J
+   30 CONTINUE
       RETURN
       END
 C
 C-----------------------------------------------------------------------
 C
-      SUBROUTINE MTT2(A,B,N,NN)
+      SUBROUTINE MTT2Z(A,B,N,NN)
 C.......................................................................
 C
 C   COPYRIGHT 1992 Alfio Marazzi
@@ -1342,7 +1384,7 @@ C
 C  PARAMETER CHECK
 C
       NPRCHK=N.GT.0.AND.NN.EQ.(N*(N+1)/2)
-      IF (.NOT.NPRCHK) CALL MESSGE(500,'MTT2  ',1)
+      IF (.NOT.NPRCHK) CALL MESSGE(500,'MTT2Z ',1)
 C
       DZERO=0.D0
       JJ=NN+N+1
@@ -1356,15 +1398,17 @@ C
       DO 10 L=1,(J-I+1)
       IA=IA-1
       IAT=IAT-1
-   10 SM=SM+A(IA)*DBLE(A(IAT))
-   20 B(IB)=SNGL(SM)
+      SM=SM+A(IA)*DBLE(A(IAT))
+   10 CONTINUE
+      B(IB)=SNGL(SM)
+   20 CONTINUE
    30 CONTINUE
       RETURN
       END
 C
 C-----------------------------------------------------------------------
 C
-      SUBROUTINE MTT2D(A,B,N,NN)
+      SUBROUTINE MTT2ZD(A,B,N,NN)
 C.......................................................................
 C
 C   COPYRIGHT 1992 Alfio Marazzi
@@ -1378,7 +1422,7 @@ C
 C  PARAMETER CHECK
 C
       NPRCHK=N.GT.0.AND.NN.EQ.(N*(N+1)/2)
-      IF (.NOT.NPRCHK) CALL MESSGE(500,'MTT2D ',1)
+      IF (.NOT.NPRCHK) CALL MESSGE(500,'MTT2zD',1)
 C
       DZERO=0.D0
       JJ=NN+N+1
@@ -1392,15 +1436,17 @@ C
       DO 10 L=1,(J-I+1)
       IA=IA-1
       IAT=IAT-1
-   10 SM=SM+A(IA)*A(IAT)
-   20 B(IB)=SM
+      SM=SM+A(IA)*A(IAT)
+   10 CONTINUE
+      B(IB)=SM
+   20 CONTINUE
    30 CONTINUE
       RETURN
       END
 C
 C-----------------------------------------------------------------------
 C
-      SUBROUTINE MTT3(A,B,C,N,NN)
+      SUBROUTINE MTT3Z(A,B,C,N,NN)
 C.......................................................................
 C
 C   COPYRIGHT 1992 Alfio Marazzi
@@ -1415,7 +1461,7 @@ C
 C  PARAMETER CHECK
 C
       NPRCHK=N.GT.0.AND.NN.EQ.(N*(N+1)/2)
-      IF (.NOT.NPRCHK) CALL MESSGE(500,'MTT3  ',1)
+      IF (.NOT.NPRCHK) CALL MESSGE(500,'MTT3Z ',1)
 C
       DZERO=0.D0
       IC=0
@@ -1430,7 +1476,8 @@ C
       DO 10 L=I,J
       JL=JJ+L
       SM=SM+A(IL)*DBLE(B(JL))
-   10 IL=IL+L
+      IL=IL+L
+   10 CONTINUE
       C(IC)=SNGL(SM)
    20 CONTINUE
       JJ=JJ+J
@@ -1440,7 +1487,7 @@ C
 C
 C-----------------------------------------------------------------------
 C
-      SUBROUTINE MTT3D(A,B,C,N,NN)
+      SUBROUTINE MTT3ZD(A,B,C,N,NN)
 C.......................................................................
 C
 C   COPYRIGHT 1992 Alfio Marazzi
@@ -1454,7 +1501,7 @@ C
 C  PARAMETER CHECK
 C
       NPRCHK=N.GT.0.AND.NN.EQ.(N*(N+1)/2)
-      IF (.NOT.NPRCHK) CALL MESSGE(500,'MTT3D ',1)
+      IF (.NOT.NPRCHK) CALL MESSGE(500,'MTT3ZD',1)
 C
       DZERO=0.D0
       IC=0
@@ -1469,7 +1516,8 @@ C
       DO 10 L=I,J
       JL=JJ+L
       SM=SM+A(IL)*B(JL)
-   10 IL=IL+L
+      IL=IL+L
+   10 CONTINUE
       C(IC)=SM
    20 CONTINUE
       JJ=JJ+J
@@ -1479,7 +1527,7 @@ C
 C
 C-----------------------------------------------------------------------
 C
-      SUBROUTINE MTY(A,Y,N,NN,NY,IYE)
+      SUBROUTINE MTYZ(A,Y,N,NN,NY,IYE)
 C.......................................................................
 C
 C   COPYRIGHT 1992 Alfio Marazzi
@@ -1495,7 +1543,7 @@ C  PARAMETER CHECK
 C
       NPRCHK=N.GT.0.AND.NN.EQ.(N*(N+1)/2)
       NPRCHK=NPRCHK.AND.IYE.GT.0.AND.(NY.GE.IYE*(N-1)+1)
-      IF (.NOT.NPRCHK) CALL MESSGE(500,'MTY   ',1)
+      IF (.NOT.NPRCHK) CALL MESSGE(500,'MTYz  ',1)
 C
       DZERO=0.D0
       IA1=0
@@ -1507,16 +1555,18 @@ C
       DO 10 I=J,N
       IA=IA+I-1
       IY=IY+IYE
-   10 SM=SM+A(IA)*DBLE(Y(IY))
+      SM=SM+A(IA)*DBLE(Y(IY))
+   10 CONTINUE
       IA1=IA1+J
       IY1=IY1+IYE
-   20 Y(IY1)=SNGL(SM)
+      Y(IY1)=SNGL(SM)
+   20 CONTINUE
       RETURN
       END
 C
 C-----------------------------------------------------------------------
 C
-      SUBROUTINE MTYD(A,Y,N,NN,NY,IYE)
+      SUBROUTINE MTYZD(A,Y,N,NN,NY,IYE)
 C.......................................................................
 C
 C   COPYRIGHT 1992 Alfio Marazzi
@@ -1531,7 +1581,7 @@ C  PARAMETER CHECK
 C
       NPRCHK=N.GT.0.AND.NN.EQ.(N*(N+1)/2)
       NPRCHK=NPRCHK.AND.IYE.GT.0.AND.(NY.GE.IYE*(N-1)+1)
-      IF (.NOT.NPRCHK) CALL MESSGE(500,'MTYD  ',1)
+      IF (.NOT.NPRCHK) CALL MESSGE(500,'MTYzD ',1)
 C
       DZERO=0.D0
       IA1=0
@@ -1543,16 +1593,18 @@ C
       DO 10 I=J,N
       IA=IA+I-1
       IY=IY+IYE
-   10 SM=SM+A(IA)*Y(IY)
+      SM=SM+A(IA)*Y(IY)
+   10 CONTINUE
       IA1=IA1+J
       IY1=IY1+IYE
-   20 Y(IY1)=SM
+      Y(IY1)=SM
+   20 CONTINUE
       RETURN
       END
 C
 C-----------------------------------------------------------------------
 C
-      SUBROUTINE MLY(A,Y,N,NN,NY,IYE)
+      SUBROUTINE MLYZ(A,Y,N,NN,NY,IYE)
 C.......................................................................
 C
 C   COPYRIGHT 1992 Alfio Marazzi
@@ -1568,7 +1620,7 @@ C  PARAMETER CHECK
 C
       NPRCHK=N.GT.0.AND.NN.EQ.(N*(N+1)/2)
      1       .AND.IYE.GT.0.AND.(NY.GE.IYE*(N-1)+1)
-      IF (.NOT.NPRCHK) CALL MESSGE(500,'MLY   ',1)
+      IF (.NOT.NPRCHK) CALL MESSGE(500,'MLYz  ',1)
 C
       DZERO=0.D0
       IA=NN
@@ -1581,14 +1633,16 @@ C
       DO 10 I=1,J
       SM=SM+A(IA)*DBLE(Y(IY))
       IA=IA-1
-   10 IY=IY-IYE
-   20 Y(IY1)=SNGL(SM)
+      IY=IY-IYE
+   10 CONTINUE
+      Y(IY1)=SNGL(SM)
+   20 CONTINUE
       RETURN
       END
 C
 C-----------------------------------------------------------------------
 C
-      SUBROUTINE MLYD(A,Y,N,NN,NY,IYE)
+      SUBROUTINE MLYZD(A,Y,N,NN,NY,IYE)
 C.......................................................................
 C
 C   COPYRIGHT 1992 Alfio Marazzi
@@ -1603,7 +1657,7 @@ C  PARAMETER CHECK
 C
       NPRCHK=N.GT.0.AND.NN.EQ.(N*(N+1)/2)
      1       .AND.IYE.GT.0.AND.(NY.GE.IYE*(N-1)+1)
-      IF (.NOT.NPRCHK) CALL MESSGE(500,'MLYD  ',1)
+      IF (.NOT.NPRCHK) CALL MESSGE(500,'MLYzD ',1)
 C
       DZERO=0.D0
       IA=NN
@@ -1616,14 +1670,16 @@ C
       DO 10 I=1,J
       SM=SM+A(IA)*Y(IY)
       IA=IA-1
-   10 IY=IY-IYE
-   20 Y(IY1)=SM
+      IY=IY-IYE
+   10 CONTINUE
+      Y(IY1)=SM
+   20 CONTINUE
       RETURN
       END
 C
 C-----------------------------------------------------------------------
 C
-      SUBROUTINE DOTP(X,Y,N,INCX,INCY,NX,NY,RESULT)
+      SUBROUTINE DOTPZ(X,Y,N,INCX,INCY,NX,NY,RESULT)
 C.......................................................................
 C
 C   COPYRIGHT 1979 SOCIETY FOR INDUSTRIAL AND APPLIED MATHEMATICS.
@@ -1643,7 +1699,7 @@ C  PARAMETER CHECK
 C
       NPRCHK=INCX.NE.0.AND.IABS(INCX)*(N-1)+1.LE.NX
      1       .AND.INCY.NE.0.AND.IABS(INCY)*(N-1)+1.LE.NY
-      IF (.NOT.NPRCHK) CALL MESSGE(500,'DOTP  ',1)
+      IF (.NOT.NPRCHK) CALL MESSGE(500,'DOTPz ',1)
 C
       DTEMP=0.D0
       RESULT=0.
@@ -1657,11 +1713,11 @@ C
       IF (INCX.LT.0) IX=(-N+1)*INCX+1
       IF (INCY.LT.0) IY=(-N+1)*INCY+1
       DO 10 I=1,N
-      DTEMP=DTEMP+X(IX)*DBLE(Y(IY))
+      DTEMP=DTEMP+DBLE(X(IX)*Y(IY))
       IX=IX+INCX
       IY=IY+INCY
    10 CONTINUE
-      RESULT=DTEMP
+      RESULT=SNGL(DTEMP)
       RETURN
 C
 C  CODE FOR BOTH INCREMENTS EQUAL TO 1
@@ -1678,13 +1734,13 @@ C
      1      X(I+2)*DBLE(Y(I+2))+X(I+3)*DBLE(Y(I+3))+
      1      X(I+4)*DBLE(Y(I+4))
    50 CONTINUE
-   60 RESULT=DTEMP
+   60 RESULT=SNGL(DTEMP)
       RETURN
       END
 C
 C-----------------------------------------------------------------------
 C
-      SUBROUTINE DOTPD(X,Y,N,INCX,INCY,NX,NY,RESULT)
+      SUBROUTINE DOTPZD(X,Y,N,INCX,INCY,NX,NY,RESULT)
 C.......................................................................
 C
 C   COPYRIGHT 1979 SOCIETY FOR INDUSTRIAL AND APPLIED MATHEMATICS.
@@ -1703,7 +1759,7 @@ C  PARAMETER CHECK
 C
       NPRCHK=INCX.NE.0.AND.IABS(INCX)*(N-1)+1.LE.NX
      1       .AND.INCY.NE.0.AND.IABS(INCY)*(N-1)+1.LE.NY
-      IF (.NOT.NPRCHK) CALL MESSGE(500,'DOTPD ',1)
+      IF (.NOT.NPRCHK) CALL MESSGE(500,'DOTPzD',1)
 C
       DTEMP=0.D0
       RESULT=0.D0
@@ -1743,7 +1799,7 @@ C
 C
 C-----------------------------------------------------------------------
 C
-      SUBROUTINE NRM2(X,N,INCX,MDX,XNRM)
+      SUBROUTINE NRM2Z(X,N,INCX,MDX,XNRM)
 C.......................................................................
 C
 C   COPYRIGHT 1979 SOCIETY FOR INDUSTRIAL AND APPLIED MATHEMATICS.
@@ -1764,7 +1820,7 @@ C
 C  PARAMETER CHECK
 C
       NPRCHK=INCX.GT.0.AND.INCX*(N-1)+1.LE.MDX
-      IF (.NOT.NPRCHK) CALL MESSGE(500,'NRM2  ',1)
+      IF (.NOT.NPRCHK) CALL MESSGE(500,'NRM2z ',1)
 C
       IF (N.GT.0) GOTO 10
       XNRM=0.
@@ -1778,8 +1834,11 @@ C  BEGIN MAIN LOOP
 C
       I=1
    20 DXI=DBLE(X(I))
-      GOTO (30,50,70,110) NEXT
-   30 IF (ABS(X(I)).GT.CUTLO) GOTO 85
+C     GOTO (30,50,70,110) NEXT
+      IF (NEXT.EQ.2) GOTO 50
+      IF (NEXT.EQ.3) GOTO 70
+      IF (NEXT.EQ.4) GOTO 110
+      IF (ABS(X(I)).GT.CUTLO) GOTO 85
       NEXT=2  !ASSIGN 50 TO NEXT
       XMAX=ZERO
 C
@@ -1829,8 +1888,9 @@ C  PHASE3.  SUM IS MID-RANGE.  NO SCALING.
 C
       DO 95 J=I,NN,INCX
       IF (ABS(X(J)).GE.HITEST) GOTO 100
-   95 SUM=SUM+X(J)*DBLE(X(J))
-      XNRM=DSQRT(SUM)
+      SUM=SUM+X(J)*DBLE(X(J))
+   95 CONTINUE
+      XNRM=SNGL(DSQRT(SUM))
       GOTO 300
 C
   200 CONTINUE
@@ -1839,20 +1899,20 @@ C
 C
 C  END MAIN LOOP
 C
-      XNRM=XMAX*DSQRT(SUM)
+      XNRM=SNGL(XMAX*DSQRT(SUM))
   300 CONTINUE
       RETURN
       END
 C
 C-----------------------------------------------------------------------
 C
-      SUBROUTINE NRM2D(X,N,INCX,MDX,XNRM)
+      SUBROUTINE NRM2ZD(X,N,INCX,MDX,XNRM)
 C.......................................................................
 C
 C   COPYRIGHT 1979 SOCIETY FOR INDUSTRIAL AND APPLIED MATHEMATICS.
 C   ALL RIGHTS RESERVED.
 C
-C   AUTHOR :     LINPACK (SUBROUTINE SNRM2)
+C   AUTHOR :     LINPACK (SUBROUTINE SNRM2Z)
 C                REPRINTED WITH PERMISSION FROM 
 C                LINPACK USER'S GUIDE.
 C                ADAPTED FOR ROBETH BY A. MARAZZI
@@ -1867,7 +1927,7 @@ C
 C  PARAMETER CHECK
 C
       NPRCHK=INCX.GT.0.AND.INCX*(N-1)+1.LE.MDX
-      IF (.NOT.NPRCHK) CALL MESSGE(500,'NRM2D ',1)
+      IF (.NOT.NPRCHK) CALL MESSGE(500,'NRM2zD ',1)
 C
       IF (N.GT.0) GOTO 10
       XNRM=0.D0
@@ -1881,8 +1941,11 @@ C  BEGIN MAIN LOOP
 C
       I=1
    20 DXI=X(I)
-      GOTO (30,50,70,110) NEXT
-   30 IF (DABS(X(I)).GT.CUTLO) GOTO 85
+C     GOTO (30,50,70,110) NEXT
+      IF (NEXT.EQ.2) GOTO 50
+      IF (NEXT.EQ.3) GOTO 70
+      IF (NEXT.EQ.4) GOTO 110
+      IF (DABS(X(I)).GT.CUTLO) GOTO 85
       NEXT=2    !ASSIGN 50 TO NEXT
       XMAX=ZERO
 C
@@ -1932,7 +1995,8 @@ C  PHASE3.  SUM IS MID-RANGE.  NO SCALING.
 C
       DO 95 J=I,NN,INCX
       IF (DABS(X(J)).GE.HITEST) GOTO 100
-   95 SUM=SUM+X(J)*X(J)
+      SUM=SUM+X(J)*X(J)
+   95 CONTINUE
       XNRM=DSQRT(SUM)
       GOTO 300
 C
@@ -1949,7 +2013,7 @@ C
 C
 C-----------------------------------------------------------------------
 C
-      SUBROUTINE XSY(X,Y,S,N,NN,RESULT)
+      SUBROUTINE XSYZ(X,Y,S,N,NN,RESULT)
 C.......................................................................
 C
 C   COPYRIGHT 1992 Alfio Marazzi
@@ -1963,28 +2027,30 @@ C
 C  PARAMETER CHECK
 C
       NS=N*(N+1)/2
-      IF (N.LE.0.OR.NN.NE.NS) CALL MESSGE(500,'XSY   ',1)
+      IF (N.LE.0.OR.NN.NE.NS) CALL MESSGE(500,'XSYz  ',1)
 C
       SM=0.D0
       L=0
-      DO 20 I=1,N
+      DO 30 I=1,N
       L=L+I
       L1=L-I+1
       K=0
       DO 20 J=L1,L
       K=K+1
-      IF (J.EQ.L) GOTO 10
-      SM=SM+DBLE(S(J))*(X(I)*Y(K)+X(K)*Y(I))
-      GOTO 20
-   10 SM=SM+DBLE(S(J))*X(I)*Y(I)
+      IF (J.EQ.L) THEN
+        SM=SM+DBLE(S(J))*X(I)*Y(I)
+      ELSE
+        SM=SM+DBLE(S(J))*(X(I)*Y(K)+X(K)*Y(I))
+      ENDIF
    20 CONTINUE
-      RESULT=SM
+   30 CONTINUE
+      RESULT=SNGL(SM)
       RETURN
       END
 C
 C-----------------------------------------------------------------------
 C
-      SUBROUTINE XSYD(X,Y,S,N,NN,RESULT)
+      SUBROUTINE XSYZD(X,Y,S,N,NN,RESULT)
 C.......................................................................
 C
 C   COPYRIGHT 1992 Alfio Marazzi
@@ -1997,28 +2063,30 @@ C
 C  PARAMETER CHECK
 C
       NS=N*(N+1)/2
-      IF (N.LE.0.OR.NN.NE.NS) CALL MESSGE(500,'XSYD  ',1)
+      IF (N.LE.0.OR.NN.NE.NS) CALL MESSGE(500,'XSYzD ',1)
 C
       SM=0.D0
       L=0
-      DO 20 I=1,N
+      DO 30 I=1,N
       L=L+I
       L1=L-I+1
       K=0
       DO 20 J=L1,L
       K=K+1
-      IF (J.EQ.L) GOTO 10
-      SM=SM+S(J)*(X(I)*Y(K)+X(K)*Y(I))
-      GOTO 20
-   10 SM=SM+S(J)*X(I)*Y(I)
+      IF (J.EQ.L) THEN
+        SM=SM+S(J)*X(I)*Y(I)
+      ELSE
+        SM=SM+S(J)*(X(I)*Y(K)+X(K)*Y(I))
+      ENDIF
    20 CONTINUE
+   30 CONTINUE
       RESULT=SM
       RETURN
       END
 C
 C-----------------------------------------------------------------------
 C
-      SUBROUTINE SCAL(X,SA,N,INCX,MDX)
+      SUBROUTINE SCALZ(X,SA,N,INCX,MDX)
 C.......................................................................
 C
 C   COPYRIGHT 1979 SOCIETY FOR INDUSTRIAL AND APPLIED MATHEMATICS.
@@ -2036,7 +2104,7 @@ C
 C  PARAMETER CHECK
 C
       NPRCHK=INCX.GT.0.AND.N.GE.0.AND.INCX*(N-1)+1.LE.MDX
-      IF (.NOT.NPRCHK) CALL MESSGE(500,'SCAL  ',1)
+      IF (.NOT.NPRCHK) CALL MESSGE(500,'SCALz ',1)
 C
       IF (N.LE.0) RETURN
       IF (INCX.EQ.1) GOTO 20
@@ -2070,7 +2138,7 @@ C
 C
 C-----------------------------------------------------------------------
 C
-      SUBROUTINE SCALD(X,SA,N,INCX,MDX)
+      SUBROUTINE SCALZD(X,SA,N,INCX,MDX)
 C.......................................................................
 C
 C   COPYRIGHT 1979 SOCIETY FOR INDUSTRIAL AND APPLIED MATHEMATICS.
@@ -2088,7 +2156,7 @@ C
 C  PARAMETER CHECK
 C
       NPRCHK=INCX.GT.0.AND.N.GE.0.AND.INCX*(N-1)+1.LE.MDX
-      IF (.NOT.NPRCHK) CALL MESSGE(500,'SCALD ',1)
+      IF (.NOT.NPRCHK) CALL MESSGE(500,'SCALzD',1)
 C
       IF (N.LE.0) RETURN
       IF (INCX.EQ.1) GOTO 20
@@ -2122,7 +2190,7 @@ C
 C
 C-----------------------------------------------------------------------
 C
-      SUBROUTINE SWAP(X,Y,N,INCX,INCY,MDX,MDY)
+      SUBROUTINE SWAPZ(X,Y,N,INCX,INCY,MDX,MDY)
 C.......................................................................
 C
 C   COPYRIGHT 1979 SOCIETY FOR INDUSTRIAL AND APPLIED MATHEMATICS.
@@ -2141,7 +2209,7 @@ C  PARAMETER CHECK
 C
       NPRCHK=N.GE.0.AND.INCX.NE.0.AND.IABS(INCX)*(N-1)+1.LE.MDX
      1       .AND.INCY.NE.0.AND.IABS(INCY)*(N-1)+1.LE.MDY
-      IF (.NOT.NPRCHK) CALL MESSGE(500,'SWAP  ',1)
+      IF (.NOT.NPRCHK) CALL MESSGE(500,'SWAPz ',1)
 C
       IF (N.EQ.0) RETURN
       IF (INCX.EQ.1.AND.INCY.EQ.1) GOTO 20
@@ -2189,7 +2257,7 @@ C
 C
 C-----------------------------------------------------------------------
 C
-      SUBROUTINE SWAPD(X,Y,N,INCX,INCY,MDX,MDY)
+      SUBROUTINE SWAPZD(X,Y,N,INCX,INCY,MDX,MDY)
 C.......................................................................
 C
 C   COPYRIGHT 1979 SOCIETY FOR INDUSTRIAL AND APPLIED MATHEMATICS.
@@ -2208,7 +2276,7 @@ C  PARAMETER CHECK
 C
       NPRCHK=N.GE.0.AND.INCX.NE.0.AND.IABS(INCX)*(N-1)+1.LE.MDX
      1       .AND.INCY.NE.0.AND.IABS(INCY)*(N-1)+1.LE.MDY
-      IF (.NOT.NPRCHK) CALL MESSGE(500,'SWAPD ',1)
+      IF (.NOT.NPRCHK) CALL MESSGE(500,'SWAPzD',1)
 C
       IF (N.EQ.0) RETURN
       IF (INCX.EQ.1.AND.INCY.EQ.1) GOTO 20
@@ -2256,7 +2324,7 @@ C
 C
 C-----------------------------------------------------------------------
 C
-      SUBROUTINE PERMC(X,IT,N,NP,MDX,IOPT)
+      SUBROUTINE PERMCZ(X,IT,N,NP,MDX,IOPT)
 C.......................................................................
 C
 C   COPYRIGHT 1992 Alfio Marazzi
@@ -2267,7 +2335,7 @@ C
       INTEGER IT(NP)
       REAL X(MDX,NP)
       IF (N.LE.0.OR.NP.LE.0.OR.MDX.LT.N.OR.(IOPT.NE.1.AND.IOPT.NE.2))
-     + CALL MESSGE(500,'PERMC ',1)
+     + CALL MESSGE(500,'PERMCz',1)
       IF (IOPT.EQ.2) GOTO 400
       DO 200 I=1,NP
       IF (IT(I).LT.0) THEN
@@ -2275,7 +2343,7 @@ C
       ELSEIF (IT(I).NE.I) THEN
         J=I
         K=IT(J)
-  100   CALL SWAP(X(1,J),X(1,K),N,1,1,MDX,MDX)
+  100   CALL SWAPZ(X(1,J),X(1,K),N,1,1,MDX,MDX)
         J=K
         K=IT(J)
         IT(J)=-K
@@ -2297,7 +2365,7 @@ C
           IJ=IT(K)
           IT(K)=-I
   600     J=IJ
-          CALL SWAP(X(1,J),X(1,K),N,1,1,MDX,MDX)
+          CALL SWAPZ(X(1,J),X(1,K),N,1,1,MDX,MDX)
           IJ=IT(J)
           IT(J)=-K
           K=J
@@ -2310,7 +2378,7 @@ C
 C
 C-----------------------------------------------------------------------
 C
-      SUBROUTINE PERMV(Y,IT,NP,IOPT)
+      SUBROUTINE PERMVZ(Y,IT,NP,IOPT)
 C.......................................................................
 C
 C   COPYRIGHT 1992 Alfio Marazzi
@@ -2321,7 +2389,7 @@ C
       INTEGER IT(NP)
       REAL Y(NP)
       IF (NP.LE.0.OR.(IOPT.NE.1.AND.IOPT.NE.2))
-     + CALL MESSGE(500,'PERMV ',1)
+     + CALL MESSGE(500,'PERMVz',1)
       IF (IOPT.EQ.2) GOTO 400
       DO 200 I=1,NP
       IF (IT(I).LT.0) THEN
@@ -2368,7 +2436,7 @@ C
 C
 C-----------------------------------------------------------------------
 C
-      SUBROUTINE CHISQ(KODE,IFN,X,P)
+      SUBROUTINE CHISQZ(KODE,IFN,X,P)
 C.......................................................................
 C
 C   AUTHORS :     I.D. HILL AND M.C. PIKE (1967)
@@ -2384,14 +2452,14 @@ C
       LOGICAL EVEN,BIGX,ODD,SMLX
       DATA XLSPI,YLSPI/0.572364942925,0.564189583548/
 C
-      IF (KODE.NE.1.AND.KODE.NE.2) CALL MESSGE(500,'CHISQ ',1)
+      IF (KODE.NE.1.AND.KODE.NE.2) CALL MESSGE(500,'CHISQZ',1)
       S=1.
       FN=FLOAT(IFN)
       IF (X.GT.0..AND.FN.GE.1.) GOTO 5
-      CALL MESSGE(400,'CHISQ ',0)
+      CALL MESSGE(400,'CHISQZ',0)
       GOTO 99
     5 NU=IFIX(FN+.5)
-      CALL MACH(3,EXMIN)
+      CALL MACHZ(3,EXMIN)
       A=0.5*X
       BIGX=.FALSE.
       IF (-A.LE.EXMIN) BIGX=.TRUE.
@@ -2403,7 +2471,7 @@ C
       Y=S
       IF (EVEN) GOTO 10
       SX=-SQRT(X)
-      CALL GAUSS(1,SX,ANS)
+      CALL GAUSSZ(1,SX,ANS)
       S=2.0*ANS
 C
 C  NU.LE.2
@@ -2439,7 +2507,7 @@ C
 C
 C-----------------------------------------------------------------------
 C
-      SUBROUTINE NLGM(N,GL)
+      SUBROUTINE NLGMZ(N,GL)
 C.......................................................................
 C
 C   COPYRIGHT 1992 Alfio Marazzi
@@ -2463,7 +2531,7 @@ C
 C
 C-----------------------------------------------------------------------
 C
-      SUBROUTINE LGAMA(X,GL)
+      SUBROUTINE LGAMAZ(X,GL)
 C.......................................................................
 C
 C   AUTHORS :     M.C. PIKE AND I.D. HILL (1966)
@@ -2472,7 +2540,7 @@ C                 COMMUNICATIONS OF THE ACM, VOL.9, P 684.
 C                 ADAPTED FOR ROBETH BY A. RANDRIAMIHARISOA
 C.......................................................................
 C
-      IF (X.LE.0.) CALL MESSGE(500,'LGAMA ',1)
+      IF (X.LE.0.) CALL MESSGE(500,'LGAMAz',1)
       V=X
       F=0.0
       IF (X.GE.7.0) GOTO 300
@@ -2493,7 +2561,7 @@ C
 C
 C-----------------------------------------------------------------------
 C
-      SUBROUTINE CQUANT(P,IFN,TOL,MAXIT,X)
+      SUBROUTINE CQUANTZ(P,IFN,TOL,MAXIT,X)
 C.......................................................................
 C
 C   AUTHORS :     D.J. BEST & D.E. ROBERTS (1975)
@@ -2510,7 +2578,7 @@ C
 C  This subroutine allows a positive real as degrees of freedom.
       DF=FLOAT(IFN)
       XX=0.5*DF
-      CALL LGAMA(XX,G)
+      CALL LGAMAZ(XX,G)
       AA=0.6931471805
       CC=XX-1.0
       NIT=0
@@ -2519,7 +2587,8 @@ C  STARTING APPROXIMATION FOR SMALL CHI-SQUARED
 C
       IF (DF.GE.-1.24*ALOG(P)) GOTO 10
       CH=(P*XX*EXP(G+XX*AA))**(1.0/XX)
-      IF (CH-TOL) 50,40,40
+      IF ((CH-TOL).GE.0.0) GOTO 40
+      GOTO 50
 C
 C  STARTING APPROXIMATION FOR DF LESS THAN OR EQUAL TO 0.32
 C
@@ -2531,7 +2600,8 @@ C
       P2=CH*(6.73+CH*(6.66+CH))
       T=-0.5+(4.67+2.0*CH)/P1 - (6.73+CH*(13.32+3.0*CH))/P2
       CH=CH-(1.0-EXP(A+G+0.5*CH+CC*AA)*P2/P1) / T
-      IF (ABS(Q/CH - 1.0)-0.01) 40,40,20
+      IF ((ABS(Q/CH - 1.0)-0.01) .LE. 0.0) GOTO 40
+      GOTO 20
    30 CALL NQUANT(P,XP)
 C
 C  STARTING APPROXIMATION USING WILSON AND HILFERTY ESTIMATE
@@ -2546,7 +2616,7 @@ C
       IF (NIT.EQ.MAXIT) GOTO 50
       Q=CH
       P1=0.5*CH
-      CALL INGAMA(P1,XX,GQ)
+      CALL INGAMAZ(P1,XX,GQ)
       P2=P-GQ
       T=P2*EXP(XX*AA+G+P1-CC*ALOG(CH))
       B=T/CH
@@ -2565,7 +2635,7 @@ C
 C
 C-----------------------------------------------------------------------
 C
-      SUBROUTINE INGAMA(X,P,G)
+      SUBROUTINE INGAMAZ(X,P,G)
 C.......................................................................
 C
 C   AUTHOR :     G. P. BHATTACHARJEE (1970)
@@ -2583,9 +2653,9 @@ C
       G=0.0
       IF (X.EQ.0.) RETURN
       IF (X.LT.0..OR.P.LE.0.) CALL MESSGE(500,'INGAMA',1)
-      CALL MACH(6,OFLO)
+      CALL MACHZ(6,OFLO)
       OFLO=OFLO*1.E-15
-      CALL LGAMA(P,GP)
+      CALL LGAMAZ(P,GP)
       GIN=0.0
       FACTOR=XEXP(P*ALOG(X)-X-GP)
       IF (X.GT.1.0.AND.X.GE.P) GOTO 30
@@ -2617,7 +2687,8 @@ C
       TERM=TERM+1.0
       AN=A*TERM
       DO 33 I=1,2
-   33 PN(I+4)=B*PN(I+2)-AN*PN(I)
+      PN(I+4)=B*PN(I+2)-AN*PN(I)
+   33 CONTINUE
       IF (PN(6).EQ.0.0) GOTO 35
       RN=PN(5)/PN(6)
       DIF=ABS(GIN-RN)
@@ -2625,10 +2696,12 @@ C
       IF (DIF.LE.TOL*RN) GOTO 42
    34 GIN=RN
    35 DO 36 I=1,4
-   36 PN(I)=PN(I+2)
+      PN(I)=PN(I+2)
+   36 CONTINUE
       IF (ABS(PN(5)).LT.OFLO) GOTO 32
       DO 41 I=1,4
-   41 PN(I)=PN(I)/OFLO
+      PN(I)=PN(I)/OFLO
+   41 CONTINUE
       GOTO 32
    42 GIN=1.0-FACTOR*GIN
    50 G=GIN
@@ -2637,7 +2710,7 @@ C
 C
 C-----------------------------------------------------------------------
 C
-      SUBROUTINE GAUSS  (KODE,X,P)
+      SUBROUTINE GAUSSZ(KODE,X,P)
 C.......................................................................
 C
 C   COPYRIGHT 1992 Alfio Marazzi
@@ -2649,8 +2722,8 @@ C
       REAL               P,X,SQR1D2
       DATA               SQR1D2/.7071068/
 C
-      IF (KODE.NE.1.AND.KODE.NE.2) CALL MESSGE(500,'GAUSS ',1)
-      CALL CERF(-X*SQR1D2,C)
+      IF (KODE.NE.1.AND.KODE.NE.2) CALL MESSGE(500,'GAUSSz',1)
+      CALL CERFZ(-X*SQR1D2,C)
       P = .5 * C
       IF (KODE.EQ.2) P=1.-P
       RETURN
@@ -2658,7 +2731,7 @@ C
 C
 C-----------------------------------------------------------------------
 C
-      SUBROUTINE GAUSSD (KODE,X,P)
+      SUBROUTINE GAUSSZD (KODE,X,P)
 C.......................................................................
 C
 C   COPYRIGHT 1992 Alfio Marazzi
@@ -2671,7 +2744,7 @@ C
       DATA               SQR1D2/.7071067811865475D0/
 C
       IF (KODE.NE.1.AND.KODE.NE.2) CALL MESSGE(500,'GAUSSD',1)
-      CALL CERFD(-X*SQR1D2,CD)
+      CALL CERFZD(-X*SQR1D2,CD)
       P = .5D0 * CD
       IF (KODE.EQ.2) P=1.D0-P
       RETURN
@@ -2679,7 +2752,7 @@ C
 C
 C-----------------------------------------------------------------------
 C
-      SUBROUTINE CERF(X,F)
+      SUBROUTINE CERFZ(X,F)
 C.......................................................................
 C
 C   COPYRIGHT 1992 Alfio Marazzi
@@ -2756,7 +2829,7 @@ C
 C
 C-----------------------------------------------------------------------
 C
-      SUBROUTINE CERFD(X,F)
+      SUBROUTINE CERFZD(X,F)
 C.......................................................................
 C
 C   COPYRIGHT 1992 Alfio Marazzi
@@ -2819,7 +2892,7 @@ C                                  CERFD(XBIG) .APPROX. DETAP
       DATA               XBIG/13.3D0/
       DATA               SQRPI/.5641895835477563D0/
 C
-      Y=X
+      Y=SNGL(X)
       XX = Y
       ISW = 1
       IF (XX.GE.0.0D0) GO TO 5
@@ -2905,7 +2978,7 @@ C
 C
 C-----------------------------------------------------------------------
 C
-      SUBROUTINE XERF(KODE,X,P)
+      SUBROUTINE XERFZ(KODE,X,P)
 C.......................................................................
 C
 C   COPYRIGHT 1992 Alfio Marazzi
@@ -2920,7 +2993,7 @@ C  EXMIN IS A MACHINE DEPENDENT PARAMETER SPECIFYING THE LARGEST NEGATIVE
 C  REAL VALUE SUCH THAT EXP(EXMIN) CAN BE SUCCESSFULLY EVALUATED WITHOUT
 C  UNDERFLOW.
 C
-      IF (KODE.NE.1.AND.KODE.NE.2) CALL MESSGE(500,'XERF  ',1)
+      IF (KODE.NE.1.AND.KODE.NE.2) CALL MESSGE(500,'XERFz ',1)
       X2=-X*X/2.
       P=XEXP(X2)
       IF (KODE.EQ.2) P=P/SPI
@@ -2929,7 +3002,7 @@ C
 C
 C-----------------------------------------------------------------------
 C
-      SUBROUTINE XERP(IP,XLCNST,S,F)
+      SUBROUTINE XERPZ(IP,XLCNST,S,F)
 C.......................................................................
 C
 C   COPYRIGHT 1992 Alfio Marazzi
@@ -2945,11 +3018,11 @@ C  EXMIN IS A MACHINE DEPENDENT PARAMETER SPECIFYING THE LARGEST NEGATIVE
 C  REAL VALUE SUCH THAT EXP(EXMIN) CAN BE SUCCESSFULLY EVALUATED WITHOUT
 C  UNDERFLOW.
 C
-      IF (IP.LE.0.OR.S.LT.0.) CALL MESSGE(500,'XERP  ',1)
+      IF (IP.LE.0.OR.S.LT.0.) CALL MESSGE(500,'XERPz ',1)
       S2=-S*S/2.
       PP=FLOAT(IP)
       IF (XLCNST.GT.CMIN.OR.XLCNST.EQ.0.) GOTO 30
-      CALL NLGM(IP,XLGM)
+      CALL NLGMZ(IP,XLGM)
       XLCNST=(1.-PP/2.)*ALOG(2.)-XLGM
    30 F=0.
       IF (S.LE.0.) RETURN
@@ -2960,7 +3033,7 @@ C
 C
 C-----------------------------------------------------------------------
 C
-      SUBROUTINE RUBEN(XLMBDA,DELTA,MULT,N,X,XMODE,MAXIT,EPS,
+      SUBROUTINE RUBENZ(XLMBDA,DELTA,MULT,N,X,XMODE,MAXIT,EPS,
      1               DNSTY,CUMDF,IFAULT,SG,ST,SA,SB)
 C.......................................................................
 C
@@ -2993,7 +3066,7 @@ C
 C  TOL IS A MACHINE DEPENDENT PARAMETER AND SHOULD BE SET AT A VALUE
 C  RATHER LARGER THAN THE LOGARITHM OF THE SMALLEST POSITIVE REAL NUMBER.
 C
-      CALL MACH(5,YLGMN)
+      CALL MACHZ(5,YLGMN)
       TOL=YLGMN+10.
 C
 C  PRELIMINARIES
@@ -3043,17 +3116,18 @@ C
       LANS=(-0.5*(Z+ALOG(Z))-0.22579135264473)
       DANS=XEXP(LANS)
       SQZ=SQRT(Z)
-      CALL GAUSS(1,SQZ,PANS)
+      CALL GAUSSZ(1,SQZ,PANS)
       PANS=2*PANS-1.
    60 CONTINUE
       K=K-2
-      DO 70 II=I,K,2
-      IF (LANS.LT.TOL) GOTO 75
+      DO 75 II=I,K,2
+      IF (LANS.LT.TOL) GOTO 65
       DANS=DANS*Z/FLOAT(II)
       GOTO 70
-   75 LANS=LANS+ALOG(Z/FLOAT(II))
+   65 LANS=LANS+ALOG(Z/FLOAT(II))
       DANS=XEXP(LANS)
    70 PANS=PANS-DANS
+   75 CONTINUE
 C
 C  EVALUATE SUCCESSIVE TERMS OF EXPANSION
 C
@@ -3068,13 +3142,15 @@ C
       HOLD=ST(I)
       ST(I)=HOLD*SG(I)
       HOLD2=ST(I)
-   80 SUM1=SUM1+HOLD2*MULT(I)+M*DELTA(I)*(HOLD-HOLD2)
+      SUM1=SUM1+HOLD2*MULT(I)+M*DELTA(I)*(HOLD-HOLD2)
+   80 CONTINUE
       SUM1=0.5*SUM1
       SB(M)=SUM1
       MM1=M-1
       IF (MM1.LE.0) GOTO 95
       DO 90 I=MM1,1,-1
-   90 SUM1=SUM1+SB(I)*SA(M-I)
+      SUM1=SUM1+SB(I)*SA(M-I)
+   90 CONTINUE
    95 SUM1=SUM1/FLOAT(M)
       SA(M)=SUM1
       K=K+2
@@ -3106,15 +3182,15 @@ C
       GOTO 160
   150 IF (DNSTY.LT.0.0) IFAULT=IFAULT+6
   160 CUMDF=PRBTY
-  400 IF (IFAULT.GT.0) CALL MESSGE(400+IFAULT,'RUBEN ',0)
+  400 IF (IFAULT.GT.0) CALL MESSGE(400+IFAULT,'RUBENz',0)
       RETURN
-  500 IF (IFAULT.LT.0) CALL MESSGE(500-IFAULT,'RUBEN ',0)
+  500 IF (IFAULT.LT.0) CALL MESSGE(500-IFAULT,'RUBENz',0)
       RETURN
       END
 C
 C-----------------------------------------------------------------------
 C
-      SUBROUTINE FCUM(N1,N2,X,P,IER)
+      SUBROUTINE FCUMZ(N1,N2,X,P,IER)
 C.......................................................................
 C
 C   AUTHORS :     W.J. KENNEDY JR & J.E. GENTLE (1980) 
@@ -3132,18 +3208,18 @@ C
       IF (Z.GT.0.0D0) GOTO 5
       POFF=0.0D0
       IER=1
-      P=POFF
+      P=SNGL(POFF)
       RETURN
     5 IF (N1.GT.0.AND.N2.GT.0) GOTO 10
       IER=2
       POFF=0.0D0
-      P=POFF
-      CALL MESSGE(402,'FCUM  ',0)
+      P=SNGL(POFF)
+      CALL MESSGE(402,'FCUMz ',0)
       RETURN
    10 CONTINUE
-      CALL PRECD(EPS)
-      AN1=N1
-      AN2=N2
+      CALL PRECDZ(EPS)
+      AN1=DFLOAT(N1)
+      AN2=DFLOAT(N2)
       A=AN1*Z/(AN1*Z+AN2)
       A1=1.D0-A
       IF (A1.LT.EPS) A1=EPS
@@ -3166,10 +3242,10 @@ C
 C
 C  TO SEE IF DEGREES OF FREEDOM ARE ODD OR EVEN
 C
-      M=D2
+      M=IDINT(D2)
       M=2*M
       IF (M.NE.N) GOTO 30
-      N=D2-1
+      N=IDINT(D2)-1
 C
 C  IF DEGREES OF FREEDOM ARE EVEN
 C  N=D.F./2-1
@@ -3194,7 +3270,7 @@ C
 C  IF DEGREES OF FREEDOM ARE ODD
 C  N=(D.F.-1)/2
 C
-   30 N=D2
+   30 N=IDINT(D2)
 C
 C  IF DEGREES OF FREEDOM EQUAL 1.
 C  DO NOT EXIT LOOP.
@@ -3227,19 +3303,19 @@ C
       GOTO 15
    50 IF (C.LT.1.125D0) DEL=4.D0/PI*DATAN(T)
       POFF=XM*(S2-S1)-DEL
-      P=POFF
+      P=SNGL(POFF)
       IF (0.0D0.LE.POFF.AND.1.0D0.GE.POFF) RETURN
       IF (POFF.LT.0.0D0) POFF=0.0D0
       IF (POFF.GT.1.0D0) POFF=1.0D0
       IER=3
       P=POFF
-      CALL MESSGE(403,'FCUM  ',0)
+      CALL MESSGE(403,'FCUMz ',0)
       RETURN
       END
 C
 C-----------------------------------------------------------------------
 C
-      SUBROUTINE PRECS(PREC)
+      SUBROUTINE PRECSZ(PREC)
 C.......................................................................
 C
 C   COPYRIGHT 1992 Alfio Marazzi
@@ -3261,7 +3337,7 @@ C
 C
 C-----------------------------------------------------------------------
 C
-      SUBROUTINE PRECD(PREC)
+      SUBROUTINE PRECDZ(PREC)
 C.......................................................................
 C
 C   COPYRIGHT 1992 Alfio Marazzi
@@ -3269,7 +3345,7 @@ C
 C   AUTHOR : A. MARAZZI
 C.......................................................................
 C
-      DOUBLE PRECISION PREC,S,T
+      DOUBLE PRECISION PREC,S,S0,T
 C
       S=0.5D0
    10 S=0.5D0*S
@@ -3285,7 +3361,7 @@ C
 C
 C-----------------------------------------------------------------------
 C
-      SUBROUTINE SRT1(A,N,K1,K2)
+      SUBROUTINE SRT1Z(A,N,K1,K2)
 C.......................................................................
 C
 C   COPYRIGHT 1992 Alfio Marazzi
@@ -3297,7 +3373,7 @@ C
       LOGICAL NPRCHK
 C
       NPRCHK=K1.GE.1.AND.K2.GT.K1.AND.K2.LE.N
-      IF (.NOT.NPRCHK) CALL MESSGE(500,'SRT1  ',1)
+      IF (.NOT.NPRCHK) CALL MESSGE(500,'SRT1z ',1)
       N1=K2-K1+1
 c      I=1
 c   10 I=I+I
@@ -3325,7 +3401,7 @@ c      IF (I.LE.N1) GOTO 10
 C
 C-----------------------------------------------------------------------
 C
-      SUBROUTINE SRT2(A,B,N,K1,K2)
+      SUBROUTINE SRT2Z(A,B,N,K1,K2)
 C.......................................................................
 C
 C   COPYRIGHT 1992 Alfio Marazzi
@@ -3337,7 +3413,7 @@ C
       LOGICAL NPRCHK
 C
       NPRCHK=N.GT.0.AND.K1.GE.1.AND.K2.GE.K1.AND.K2.LE.N
-      IF (.NOT.NPRCHK) CALL MESSGE(500,'SRT2  ',1)
+      IF (.NOT.NPRCHK) CALL MESSGE(500,'SRT2z ',1)
       N1=K2-K1+1
 c      I=1
 c   10 I=I+I
@@ -3368,7 +3444,7 @@ c      IF (I.LE.N1) GOTO 10
 C
 C----------------------------------------------------------------------
 C
-      SUBROUTINE FSTORD(Y,N,J,YJ)
+      SUBROUTINE FSTORDZ(Y,N,J,YJ)
 C.......................................................................
 C
 C   AUTHOR :     P.J. ROUSSEEUW & A.M. LEROY
@@ -3376,7 +3452,7 @@ C                PROGRESS PACKAGE (SUBROUTINE PULL)
 C                ADAPTED FOR ROBETH BY J. JOSS / A. RANDRIAMIHARISOA
 C.......................................................................
 C
-C  FSTORD SEARCHES THE J-TH VALUE IN ORDER OF MAGNITUDE IN A VECTOR
+C  FSTORDZ SEARCHES THE J-TH VALUE IN ORDER OF MAGNITUDE IN A VECTOR
 C  OF LENGTH N.
 C
       DIMENSION Y(N)
@@ -3410,7 +3486,7 @@ C
 C
 C-----------------------------------------------------------------------
 C
-      SUBROUTINE LMDD(X,Y,N,ISORT,XME,XMD,XSD)
+      SUBROUTINE LMDDZ(X,Y,N,ISORT,XME,XMD,XSD)
 C.......................................................................
 C
 C   COPYRIGHT 1992 Alfio Marazzi
@@ -3422,8 +3498,9 @@ C
 C
       KM=(N+1)/2
       DO 20 I=1,N
-   20 Y(I)=X(I)
-      IF (ISORT.NE.0) CALL SRT1(Y,N,1,N)
+      Y(I)=X(I)
+   20 CONTINUE
+      IF (ISORT.NE.0) CALL SRT1Z(Y,N,1,N)
       XME=Y(KM)
       IF (KM*2.EQ.N) XME=(XME+Y(KM+1))/2.
       K=0
@@ -3509,7 +3586,7 @@ C
 C
 C-----------------------------------------------------------------------
 C
-      SUBROUTINE TQUANT(P,IFN,X)
+      SUBROUTINE TQUANTZ(P,IFN,X)
 C.......................................................................
 C
 C   COPYRIGHT 1992 Alfio Marazzi
@@ -3558,7 +3635,7 @@ C
 C
 C-----------------------------------------------------------------------
 C
-      SUBROUTINE PROBST(X,IFN,P)
+      SUBROUTINE PROBSTZ(X,IFN,P)
 C.......................................................................
 C
 C   AUTHOR:     D.B. OWEN (1965)
@@ -3596,7 +3673,7 @@ C
 C
 C----------------------------------------------------------------------
 C
-      SUBROUTINE BINPRD(K,N,P,PS,PK)
+      SUBROUTINE BINPRDZ(K,N,P,PS,PK)
 C.......................................................................
 C
 C   COPYRIGHT 1992 Alfio Marazzi
@@ -3615,8 +3692,8 @@ C
       NPRCHK=(K .LE. N .AND. K .GE. 0).AND.
      +       (P .LE. 1. .AND. P .GE. 0.)
       IF (.NOT.NPRCHK) CALL MESSGE(500,'BINPRD',1)
-      CALL MACH(4,SML)
-      CALL MACH(5,ALSML)
+      CALL MACHZ(4,SML)
+      CALL MACHZ(5,ALSML)
       IF (P .NE. 0.) GO TO 15
       PS = 1.
       IF (K .NE. 0) GO TO 900
@@ -3637,7 +3714,7 @@ C
       Q1 = P
       K1 = N-K
    25 ALQN = XN*ALOG(Q1)
-      ICNT = ALQN/ALSML
+      ICNT =INT(ALQN/ALSML)
       ALQN = ALQN-ICNT*ALSML
       PK = XEXP(ALQN)
       IF (K1 .EQ. 0) GO TO 35
@@ -3651,7 +3728,8 @@ C
          IF (PK .LT. XJ) GO TO 30
          PK = PK*SML
          ICNT = ICNT-1
-   30    PK = PK/XJ
+         PK = PK/XJ
+   30 CONTINUE
    35 IF (ICNT .NE. 0) PK = 0.0
       IF (K .GT. XX) GO TO 40
       PS = PS+PK
@@ -3681,7 +3759,8 @@ C
         DO 100 I=1,128
         ISEED=ISEED*5761+999
         ISEED=MOD(ISEED,65536)
-  100   T(I)=FLOAT(ISEED)/65536.0
+        T(I)=FLOAT(ISEED)/65536.0
+  100   CONTINUE
       ENDIF
       ISEED=ISEED*5761+999
       ISEED=MOD(ISEED,65536)
@@ -3696,7 +3775,7 @@ C
 C
 C-----------------------------------------------------------------------
 C
-      SUBROUTINE POISSN(LAMBDA,K,PS,PK)
+      SUBROUTINE POISSNZ(LAMBDA,K,PS,PK)
 C.......................................................................
 C
 C   AUTHOR  :    L. KNUSEL (1986)
@@ -3716,8 +3795,8 @@ C
       PK = 0.
       NPRCHK=LAMBDA.GT.0. .AND. LAMBDA.LE.LAMAX .AND. K.GE.0
       IF (.NOT.NPRCHK) CALL MESSGE(500,'POISSN',1)
-      CALL MACH(3,EXMIN)
-      CALL MACH(4,XLGMN)
+      CALL MACHZ(3,EXMIN)
+      CALL MACHZ(4,XLGMN)
 C
 C     Returns the lower tail and point probabilities
 C     associated with a Poisson distribution.
@@ -3752,7 +3831,7 @@ C
       IF (A.EQ.1.0) THEN
          LPK = -X
       ELSE
-         CALL NLGM(I2A,GL)
+         CALL NLGMZ(I2A,GL)
          LPK=-X+(A-1.)*ALOG(X)-GL
       ENDIF
       PK = XEXP(LPK)
@@ -3911,7 +3990,8 @@ C  -----
    20   CONTINUE
       ENDIF
       DO 30 L=1,N
-   30 SN(L)=0.0
+      SN(L)=0.0
+   30 CONTINUE
 C
 C  STEP 1: COMPUTE WEIGHTED COVARIANCE (SU1) AND AUXILIARY VALUES
 C  ------
@@ -3931,8 +4011,9 @@ C
 C  STEP 4: SET SA0:=SA AND SA:=(I-SS)*SA0
 C  -------
       DO 410 IJ=1,NCOV
-  410 SA0(IJ)=SA(IJ)
-      CALL MTT3D(SA0,SU1,SA,NP,NCOV)
+      SA0(IJ)=SA(IJ)
+  410 CONTINUE
+      CALL MTT3ZD(SA0,SU1,SA,NP,NCOV)
       NIT=NIT+1
       GOTO 100
 C
@@ -3967,24 +4048,29 @@ C
       XN=DFLOAT(N)
    10 ZMAX=0.0
       DO 50 IJ=1,NCOV
-   50 SU1(IJ)=0.D0
+      SU1(IJ)=0.D0
+   50 CONTINUE
       DO 100 L=1,N
       DO  60 J=1,NP
-   60 SD(J)=DBLE(X(L,J))
-      CALL MLYD(SA,SD,NP,NCOV,NP,1)
-      CALL NRM2D(SD,NP,1,NP,ZNR)
+      SD(J)=DBLE(X(L,J))
+   60 CONTINUE
+      CALL MLYZD(SA,SD,NP,NCOV,NP,1)
+      CALL NRM2ZD(SD,NP,1,NP,ZNR)
       SNL=SNGL(ZNR)
       IF (ICNV.NE.1) ZMAX=AMAX1(ZMAX,ABS(SNL-SN(L)))
       SN(L)=SNL
       U=EXU(SNL,EXUP)
       IJ=0
       DO 90 I=1,NP
-      DO 90 J=1,I
+      DO 80 J=1,I
       IJ=IJ+1
-   90 SU1(IJ)=SU1(IJ)+(SD(I)*U)*SD(J)
+      SU1(IJ)=SU1(IJ)+(SD(I)*U)*SD(J)
+   80 CONTINUE
+   90 CONTINUE
   100 CONTINUE
       DO 110 IJ=1,NCOV
-  110 SU1(IJ)=SU1(IJ)/XN
+      SU1(IJ)=SU1(IJ)/XN
+  110 CONTINUE
       RETURN
       END
 C
@@ -4004,13 +4090,15 @@ C
       DOUBLE PRECISION EXU,DS
       EXTERNAL EXU,PSY
       COMMON/ALBEC/ZBAR2,BET2,IPP,ITP,XLCNST,SIGM
+      DATA NCALL,PSY1/0,0.0/
+      IF (NCALL.EQ.1) PSY1=PSY(1.0)
       S=SNGL(DS)
       IF (IPP.GT.0) GOTO 5
       Z=SQRT(ZBAR2)
       ANS=1.+0*WGT(1)
       GOTO 10
     5 SBAR=S/SIGM
-      CALL XERP(IPP,XLCNST,SBAR,ANS)
+      CALL XERPZ(IPP,XLCNST,SBAR,ANS)
       ANS=ANS/SIGM
       Z=SQRT(ZBAR2+BET2*S*S)
    10 UZED=EXU(Z)*DBLE(ANS)
@@ -4069,6 +4157,8 @@ C
       EXTERNAL EXU,PSY
       COMMON/ALBEC/ZBAR2,BET2,IPP,ITP,XLCNST,SIGM
       COMMON/UCVPR/IUCV,A2,B2,CHK,CKW,BB,BT,CW
+      DATA NCALL,PSY1/0,0.0/
+      IF (NCALL.EQ.1) PSY1=PSY(1.0)
       U=0.D0
       S=SNGL(DS)
       DO 10 L=1,N
@@ -4077,7 +4167,7 @@ C
       U=U+EXU(Z)
    10 CONTINUE
       SBAR=S/SIGM
-      CALL XERP(IPP,XLCNST,SBAR,ANS)
+      CALL XERPZ(IPP,XLCNST,SBAR,ANS)
       XN=DFLOAT(N)*SIGM
       UZED2=(U/XN)*DS*DS*DBLE(ANS)
       RETURN
@@ -4124,10 +4214,10 @@ C
 C  WEIGHTS FOR SCHWEPPE ESTIMATORS WHEN FUNCTION PSI IS FROM HUBER TYP
 C
    15 C0=C*WGT(I)
-      CALL LIEPSH(C0,EPSI2,RES1)
+      CALL LIEPSHZ(C0,EPSI2,RES1)
    10 IF(IPP.GT.0) THEN
        SBAR=S/SIGM
-       CALL XERP(IPP,XLCNST,SBAR,ANS)
+       CALL XERPZ(IPP,XLCNST,SBAR,ANS)
        ANS=ANS/SIGM
       ENDIF
 C
@@ -4180,13 +4270,13 @@ C
 C  WEIGHTS FOR SCHWEPPE ESTIMATORS (FUNCTION PSI IS FROM HUBER TYPE)
 C
    15 C1=C*WGT(I)
-      CALL LIEPSH(C1,RES1,EPSIP)
+      CALL LIEPSHZ(C1,RES1,EPSIP)
 C
 C  MALLOWS et SCHWEPPE E[ETA**2]*dG(S)
 C
    10 IF (IPP.GT.0) THEN
        SBAR=S/SIGM
-       CALL XERP(IPP,XLCNST,SBAR,ANS)
+       CALL XERPZ(IPP,XLCNST,SBAR,ANS)
        ANS=ANS/SIGM
       ENDIF
       IF (ITP.LT.3) INS2=WGT(I)*WGT(I)*DBLE(ANS)
@@ -4217,7 +4307,8 @@ C
       DO 10 J=1,N
       I=J
       ZBAR2=WGT(I)
-   10 SUM=SUM+INS1(DS,WGT,N,EXW,EXPSI)
+      SUM=SUM+INS1(DS,WGT,N,EXW,EXPSI)
+   10 CONTINUE
       INS3=SUM*DS*DS/DFLOAT(N)
       RETURN
       END
@@ -4244,7 +4335,8 @@ C
       DO 10 J=1,N
       I=J
       ZBAR2=WGT(I)
-   10 SUM=SUM+INS2(DS,WGT,N,EXW,EXPSI)
+      SUM=SUM+INS2(DS,WGT,N,EXW,EXPSI)
+   10 CONTINUE
       INS4=SUM*DS*DS/DFLOAT(N)
       RETURN
       END
@@ -4265,11 +4357,11 @@ C
 C   AUTHORS : A. MARAZZI / C. RUFFIEUX
 C.......................................................................
 C
+      EXTERNAL UZED,UZED2,EXPSI,EXU,EXW,INS1,INS2,INS3,INS4
       DIMENSION WGT(1),IWORK(40)
       DOUBLE PRECISION EXU,EXW,UZED,UZED2,
      *      INS1,INS2,INS3,INS4,WORK(80),
      *      UPERD,TILD,ERRSTD,ANS1,ANS2,ANS3,ANS4,DS
-      EXTERNAL UZED,UZED2,EXPSI,EXU,EXW,INS1,INS2,INS3,INS4
       LOGICAL NPRCHK
       COMMON/ALBEC/ALF2,BET2,IPP,ITP,XLCNST,SIGM
       COMMON/INTEG/UUPER,TTIL,IWORK,WORK,IER1,ERRST1
@@ -4296,7 +4388,7 @@ C
        IF (ITYP.EQ.3) GOTO 5
        IF (IPSI.EQ.1) THEN
         IF (C.LE.0.) C=1.345
-        CALL LIEPSH(C,G1,G0)
+        CALL LIEPSHZ(C,G1,G0)
        ELSE
         CALL LIEPSU(EXPSI,UPPER,TIL,ERREST,G1,G0)
        ENDIF
@@ -4473,7 +4565,7 @@ C
        IF (ITYP.EQ.3) GOTO 5
        IF (IPSI.EQ.1) THEN
         IF (C.LE.0.) C=1.345
-        CALL LIEPSH(C,G1,G0)
+        CALL LIEPSHZ(C,G1,G0)
        ELSE
         CALL LIEPSU(EXPSI,UPPER,TIL,ERREST,G1,G0)
        ENDIF
@@ -4500,11 +4592,12 @@ C
 C   COVARIANCE LS-ESTIMATOR (unscaled)
 C
       FATT=FLOAT(NOBS)
-      CALL KTASKV(T,NOBS,NU,MDX,NCOV,TAU,FATT,SS,SS(ICOV))
+      CALL KTASKVZ(T,NOBS,NU,MDX,NCOV,TAU,FATT,SS,SS(ICOV))
       TRCVLS=0.
       DO 155 J0=1,NU
       J1=J0*(J0+1)/2
-  155 TRCVLS=TRCVLS+SS(ICOV+J1-1)
+      TRCVLS=TRCVLS+SS(ICOV+J1-1)
+  155 CONTINUE
       TRCVLS=(TRCVLS)+P/(SIGMX*SIGMX)
 C
 C   COMPUTATION OF ALFA AND BETA (ITERATIVE ALGORITHM)
@@ -4513,9 +4606,10 @@ C
       DALF=0.
       DBET=0.
       NIT=1
-      CALL WIMEDV(T,NOBS,NU,NCOV,MDX,1,INIT,NOBS,A,DL)
+      CALL WIMEDVZ(T,NOBS,NU,NCOV,MDX,1,INIT,NOBS,A,DL)
       DO 10 L=1,NCOV
-   10 SA(L)=A(L)
+      SA(L)=A(L)
+   10 CONTINUE
 C
 C  STEP 1: SOLVE FOR A
 C  ------
@@ -4528,7 +4622,7 @@ C  ------
       CALL INTGRD(UZED2,WGT,NOBS,EXU,EXPSI,0.D0,UPERD,TILD,0.D0,KEY,
      *     LIMIT,ANS2,ERRSTD,NEVAL,IER,WORK,IWORK)
         IF (IER.GT.0) CALL MESSGE (300+IER,'AIREFQ',0)
-      BET2=P/ANS2
+      BET2=P/SNGL(ANS2)
       BET=SQRT(BET2)
       DBET=ABS(BETA-BET)
       BETA=BET
@@ -4539,7 +4633,8 @@ C  STEP 3: CHECK CONVERGENCE
 C  ------
       I=ICNVA(NCOV,DALF,SA,A,TOL,1)
       DO 25 L=1,NCOV
-   25 A(L)=SA(L)
+      A(L)=SA(L)
+   25 CONTINUE
       IF ((DALF.LT.TOL.AND.DBET.LT.TOL).OR.(NIT.GE.MAXIT)) GOTO 40
       NIT=NIT+1
       GOTO 15
@@ -4572,15 +4667,17 @@ C  ------
      *       LIMIT,ANS1,ERRSTD,NEVAL,IER,WORK,IWORK)
         IF (IER.GT.0) CALL MESSGE (300+IER,'AIREFQ',0)
       ENDIF
-   50 DL(L)=SNGL(ANS1)
+      DL(L)=SNGL(ANS1)
+   50 CONTINUE
       FACT=1.
       JAINV=1
-      CALL KTASKW(T,DL,EL,NOBS,NU,MDX,MDZ,NCOV,TAU,1,FACT,0.,JAINV,
+      CALL KTASKWZ(T,DL,EL,NOBS,NU,MDX,MDZ,NCOV,TAU,1,FACT,0.,JAINV,
      *            SS,SS(ISS2),SS(ISS3),SS(ISS4),SS(ICOV),SZ)
       TRCOV=0.
       DO 55 J0=1,NU
       J1=J0*(J0+1)/2
-   55 TRCOV=TRCOV+SS(ICOV+J1-1)
+      TRCOV=TRCOV+SS(ICOV+J1-1)
+   55 CONTINUE
       IF (MU.EQ.0) THEN
        REFF=TRCVLS/TRCOV
        GOTO 70
@@ -4601,7 +4698,7 @@ C
 C
 C  STEP 5: COMPUTE ARE1
 C  ------
-      FONCT=P*P*ANS4/(ANS3**2)
+      FONCT=P*P*SNGL(ANS4/(ANS3**2))
       TRCOV=TRCOV+FONCT
       REFF=(TRCVLS)/TRCOV
    70 IF (ITYP.EQ.3) RETURN
@@ -4642,14 +4739,14 @@ C
         P4=0.
       ELSE
         P1=0.
-        IF (AT.GT.0..AND.IFN.GE.1) CALL CHISQ(1,IFN,AT,P1)
+        IF (AT.GT.0..AND.IFN.GE.1) CALL CHISQZ(1,IFN,AT,P1)
         P4=0.
-        IF (AT.GT.0..AND.IFN.GE.-1) CALL CHISQ(1,IFN+2,AT,P4)
+        IF (AT.GT.0..AND.IFN.GE.-1) CALL CHISQZ(1,IFN+2,AT,P4)
       ENDIF
       P2=0.
-      IF (BT.GT.0..AND.IFN.GE.1) CALL CHISQ(1,IFN,BT,P2)
+      IF (BT.GT.0..AND.IFN.GE.1) CALL CHISQZ(1,IFN,BT,P2)
       P3=0.
-      IF (BT.GT.0..AND.IFN.GE.-1) CALL CHISQ(1,IFN+2,BT,P3)
+      IF (BT.GT.0..AND.IFN.GE.-1) CALL CHISQZ(1,IFN+2,BT,P3)
       EXPU=A2*P1+B2*(1.-P2)+TAU2*XP*(P3-P4)
       RETURN
       END
@@ -4685,10 +4782,10 @@ C
       A=SQRT(A2)
       B=SQRT(B2)
       PA=0.
-      IF (A2.GT.0..AND.IP.GE.1) CALL CHISQ(1,IP,A2,PA)
+      IF (A2.GT.0..AND.IP.GE.1) CALL CHISQZ(1,IP,A2,PA)
       PB=0.
-      IF (B2.GT.0..AND.IP.GE.1) CALL CHISQ(1,IP,B2,PB)
-      CALL NLGM(IP,XLGM)
+      IF (B2.GT.0..AND.IP.GE.1) CALL CHISQZ(1,IP,B2,PB)
+      CALL NLGMZ(IP,XLGM)
       XLCP=(1.-XP/2.)*ALOG(2.)-XLGM
 C
 C  COMPUTE INTEGRAL PARTS AND EPSC
@@ -4733,14 +4830,17 @@ C
       S1P=0.D0
       S2=0.D0
       DO 10 I=1,NP
-   10 SR(I)=0.D0
+      SR(I)=0.D0
+   10 CONTINUE
       DO 20 IJ=1,NCOV
-   20 ST(IJ)=0.D0
+      ST(IJ)=0.D0
+   20 CONTINUE
       DO 100 L=1,N
       DO  30 J=1,NP
-   30 SD(J)=DBLE(X(L,J)-T(J))
-      CALL MLYD(SA,SD,NP,NCOV,NP,1)
-      CALL NRM2D(SD,NP,1,NP,ZNR)
+      SD(J)=DBLE(X(L,J)-T(J))
+   30 CONTINUE
+      CALL MLYZD(SA,SD,NP,NCOV,NP,1)
+      CALL NRM2ZD(SD,NP,1,NP,ZNR)
       DISTL=SNGL(ZNR)
       IF (ICNV.EQ.2) DELTA=AMAX1(DELTA,ABS(DISTL-DIST(L)))
       DIST(L)=DISTL
@@ -4757,13 +4857,16 @@ C
         GOTO 60
       ENDIF
       DO 50 I=1,NP
-   50 SZ(L,I)=SNGL(SD(I))
+      SZ(L,I)=SNGL(SD(I))
+   50 CONTINUE
    60 IJ=0
       DO 90 I=1,NP
       IF (ILOC.EQ.1) SR(I)=SR(I)+DBLE(X(L,I)-T(I))*W
-      DO 90 J=1,I
+      DO 80 J=1,I
       IJ=IJ+1
-   90 ST(IJ)=ST(IJ)+(SD(I)*U)*SD(J)
+      ST(IJ)=ST(IJ)+(SD(I)*U)*SD(J)
+   80 CONTINUE
+   90 CONTINUE
       IF (IALG.EQ.1) GOTO 100
       SU(L)=U
       SUP(L)=UP
@@ -4771,7 +4874,8 @@ C
       DEN=DBLE(XN)
       IF (IALG.NE.2.AND.DABS(S1).GT.TL) DEN=S1
       DO 110 IJ=1,NCOV
-  110 ST(IJ)=ST(IJ)/DEN
+      ST(IJ)=ST(IJ)/DEN
+  110 CONTINUE
       RETURN
       END
 C
@@ -4788,11 +4892,11 @@ C
 C  PRESCRIPTION F0 (TO BE USED WITH IALG=1)
 C
       DOUBLE PRECISION SU1(NCOV)
-      CALL MCHLD(SU1,NP,NCOV,INFO)
+      CALL MCHLZD(SU1,NP,NCOV,INFO)
       IF (INFO.EQ.0) GOTO 100
       INFO=1
       RETURN
-  100 CALL MINVD(SU1,NP,NCOV,TAU,INFO)
+  100 CALL MINVZD(SU1,NP,NCOV,TAU,INFO)
       IF (INFO.NE.0) INFO=2
       RETURN
       END
@@ -4844,9 +4948,11 @@ C
       I1=I-1
       DO 50 J=1,I1
       IJ=IJ+1
-   50 SS(IJ)=SU1(IJ)*DBLE(XPDEN)
+      SS(IJ)=SU1(IJ)*DBLE(XPDEN)
+   50 CONTINUE
    60 IJ=IJ+1
-   70 SS(IJ)=(SU1(IJ)+DBLE(BTMD))*DBLE(XPDEN/2.)
+      SS(IJ)=(SU1(IJ)+DBLE(BTMD))*DBLE(XPDEN/2.)
+   70 CONTINUE
       RETURN
       END
 C
@@ -4872,13 +4978,16 @@ C
       II=0
       DO 10 I=1,NP
       II=II+I
-   10 SU1(II)=SU1(II)-1.D0
+      SU1(II)=SU1(II)-1.D0
+   10 CONTINUE
       IF (NIT.EQ.0) THEN
         DO 20 IJ=1,NCOV
-   20   SU2(IJ)=0.D0
+        SU2(IJ)=0.D0
+   20 CONTINUE
       ELSE
         DO 30 IJ=1,NCOV
-   30   SU2(IJ)=GAM*SS(IJ)
+        SU2(IJ)=GAM*SS(IJ)
+   30 CONTINUE
       ENDIF
 C
 C COMPUTE BETA1,BETA2,ALFA11,ALFA12,ALFA21,ALFA22
@@ -4894,10 +5003,11 @@ C
       DSZ=DBLE(SZ(L,J))
       SS(J)=DSZ
       SY2(J)=DSZ
-  230 SY1(J)=DSZ
-      CALL MLYD(SU1,SY1,NP,NCOV,NP,1)
-      CALL DOTPD(SY2,SY1,NP,1,1,NP,NP,S1)
-      CALL DOTPD(SY1,SY1,NP,1,1,NP,NP,S3)
+      SY1(J)=DSZ
+  230 CONTINUE
+      CALL MLYZD(SU1,SY1,NP,NCOV,NP,1)
+      CALL DOTPZD(SY2,SY1,NP,1,1,NP,NP,S1)
+      CALL DOTPZD(SY1,SY1,NP,1,1,NP,NP,S3)
       ZNR=DIST(L)
       U=SU(L)
       IF (ZNR.GE.GAM) GOTO 250
@@ -4907,10 +5017,10 @@ C
       BETA1=BETA1+U*S1
       ALFA11=ALFA11+(UP*S1)*S1+U*S3
       IF (NIT.EQ.0) GOTO 300
-      CALL MLYD(SU2,SY2,NP,NCOV,NP,1)
-      CALL DOTPD(SS,SY2,NP,1,1,NP,NP,S2)
-      CALL DOTPD(SY2,SY2,NP,1,1,NP,NP,S4)
-      CALL DOTPD(SY1,SY2,NP,1,1,NP,NP,S5)
+      CALL MLYZD(SU2,SY2,NP,NCOV,NP,1)
+      CALL DOTPZD(SS,SY2,NP,1,1,NP,NP,S2)
+      CALL DOTPZD(SY2,SY2,NP,1,1,NP,NP,S4)
+      CALL DOTPZD(SY1,SY2,NP,1,1,NP,NP,S5)
       BETA2=BETA2+U*S2
       ALFA22=ALFA22+(UP*S2)*S2+U*S4
       ALFA12=ALFA12+(UP*S1)*S2+U*S5
@@ -4955,10 +5065,12 @@ C
 C  FIND IMPROVEMENT MATRIX
 C
       IJ=0
-      DO 510 I=1,NP
+      DO 520 I=1,NP
       DO 510 J=1,I
       IJ=IJ+1
-  510 SS(IJ)=S1*SU1(IJ)+S2*SU2(IJ)
+      SS(IJ)=S1*SU1(IJ)+S2*SU2(IJ)
+  510 CONTINUE
+  520 CONTINUE
       RETURN
       END
 C
@@ -4979,7 +5091,8 @@ C
       DO 10 I=1,NP
       II=I*(I+1)/2
       SII=SNGL(SS(II))
-   10 E=AMAX1(E,ABS(SII))
+      E=AMAX1(E,ABS(SII))
+   10 CONTINUE
       GAMMA=1.0/AMAX1(1.0,XKAP*E)
       RETURN
       END
@@ -4997,12 +5110,14 @@ C
       DOUBLE PRECISION SS(NCOV),SA0(NCOV),SA(NCOV),GAMD
       IJ=0
       GAMD=DBLE(-GAMMA)
-      DO 10 I=1,NP
+      DO 20 I=1,NP
       DO 10 J=1,I
       IJ=IJ+1
       SA(IJ)=GAMD*SS(IJ)
-   10 IF (I.EQ.J) SA(IJ)=1.D0+SA(IJ)
-      CALL MTT3D(SA0,SA,SA,NP,NCOV)
+      IF (I.EQ.J) SA(IJ)=1.D0+SA(IJ)
+   10 CONTINUE
+   20 CONTINUE
+      CALL MTT3ZD(SA0,SA,SA,NP,NCOV)
       RETURN
       END
 C
@@ -5020,8 +5135,9 @@ C
       ICNVA=0
       IF (ICNV.EQ.1) THEN
         DO 10 IJ=1,NCOV
-   10   SA0(IJ)=SA(IJ)-SA0(IJ)
-        CALL NRM2D(SA0,NCOV,1,NCOV,SDMAX)
+        SA0(IJ)=SA(IJ)-SA0(IJ)
+   10   CONTINUE
+        CALL NRM2ZD(SA0,NCOV,1,NCOV,SDMAX)
         DELTA=SNGL(SDMAX)
       ENDIF
       IF (DELTA.LT.TOL) ICNVA=1
@@ -5041,7 +5157,7 @@ C
       DOUBLE PRECISION H(NVAR),HDMAX
       ICNVH=0
       IF (ICNV.EQ.1) THEN
-        CALL NRM2D(H,NVAR,1,NVAR,HDMAX)
+        CALL NRM2ZD(H,NVAR,1,NVAR,HDMAX)
         HMAX=SNGL(HDMAX)
       ENDIF
       IF (HMAX.LT.TOL) ICNVH=1
@@ -5055,7 +5171,7 @@ C  File CVMAIN.F  Main subroutines of Chapter 8
 C
 C-----------------------------------------------------------------------
 C
-      SUBROUTINE CIMEDV(X,NOBS,NVAR,NCOV,MDX,NFIRST,ILOC,A,T,SC)
+      SUBROUTINE CIMEDVZ(X,NOBS,NVAR,NCOV,MDX,NFIRST,ILOC,A,T,SC)
 C.......................................................................
 C
 C   COPYRIGHT 1992 Alfio Marazzi
@@ -5081,9 +5197,10 @@ C  COMPUTE INITIAL VALUES FOR A AND T
 C
       N0=MIN0(NFIRST,NOBS)
       DO 20 I=1,NCOV
-   20 A(I)=0.D0
+      A(I)=0.D0
+   20 CONTINUE
       DO 50 J=1,NVAR
-      CALL LMDD(X(1,J),SC,N0,1,XME,XMD,XSD)
+      CALL LMDDZ(X(1,J),SC,N0,1,XME,XMD,XSD)
       IF (ILOC.EQ.1) T(J)=XME
       SQDEV2=SQRT(XSD**2+(XME-T(J))**2)
       JJ=(J*J+J)/2
@@ -5134,7 +5251,8 @@ C  ------
       NIT=0
       HMAX=10.*TOL
       DO 10 I=1,NVAR
-   10 SR(I)=DBLE(HMAX)
+      SR(I)=DBLE(HMAX)
+   10 CONTINUE
       IF (ICNV.EQ.1) THEN
         L=0
         DO 30 I=1,NVAR
@@ -5146,7 +5264,8 @@ C  ------
    30   CONTINUE
       ENDIF
       DO 40 L=1,NOBS
-   40 DIST(L)=-1.0
+      DIST(L)=-1.0
+   40 CONTINUE
 C
 C  STEP 1: COMPUTE WEIGHTED COVARIANCE (ST) AND AUXILIARY VALUES
 C  ------
@@ -5184,8 +5303,9 @@ C
 C  STEP 5: SET SA:=A AND A:=(I-SS)*SA
 C  ------
   500 DO 510 IJ=1,NCOV
-  510 SA(IJ)=A(IJ)
-      CALL MTT3D(SA,ST,A,NVAR,NCOV)
+      SA(IJ)=A(IJ)
+  510 CONTINUE
+      CALL MTT3ZD(SA,ST,A,NVAR,NCOV)
       NIT=NIT+1
 C
 C  STEP 5A: ITERATION MONITORING
@@ -5238,7 +5358,8 @@ C  ------
       NIT=0
       HMAX=10.*TOL
       DO 10 I=1,NVAR
-   10 SD(I)=DBLE(HMAX)
+      SD(I)=DBLE(HMAX)
+   10 CONTINUE
       IF (ICNV.EQ.1) THEN
         L=0
         DO 30 I=1,NVAR
@@ -5250,7 +5371,8 @@ C  ------
    30   CONTINUE
       ENDIF
       DO 40 L=1,NOBS
-   40 DIST(L)=-1.0
+      DIST(L)=-1.0
+   40 CONTINUE
 C
 C  STEP 1: COMPUTE WEIGHTED COVARIANCE (ST) AND AUXILIARY VALUES
 C  ------
@@ -5287,7 +5409,8 @@ C
 C  STEP 5: Compute GAM0, Set SA:=A and A:=(I-GAM0*SS)*SA
 C  -------
   500 DO 510 IJ=1,NCOV
-  510 SA(IJ)=A(IJ)
+      SA(IJ)=A(IJ)
+  510 CONTINUE
       CALL FUDGE(SS,NVAR,NCOV,XFUD,GAM0)
       CALL UPDATA(SS,SA,A,GAM0,NVAR,NCOV)
       NIT=NIT+1
@@ -5342,7 +5465,8 @@ C  ------
       NIT=0
       HMAX=10.*TOL
       DO 10 I=1,NVAR
-   10 SD(I)=DBLE(HMAX)
+      SD(I)=DBLE(HMAX)
+   10 CONTINUE
       IF (ICNV.EQ.1) THEN
         L=0
         DO 30 I=1,NVAR
@@ -5354,7 +5478,8 @@ C  ------
    30   CONTINUE
       ENDIF
       DO 40 L=1,NOBS
-   40 DIST(L)=-1.0
+      DIST(L)=-1.0
+   40 CONTINUE
 C
 C  STEP 1: COMPUTE WEIGHTED COVARIANCE (ST) AND AUXILIARY VALUES
 C  ------
@@ -5391,7 +5516,8 @@ C
 C  STEP 5: Compute GAM0, Set SA:=A and A:=(I-GAM0*SS)*SA
 C  -------
   500 DO 510 IJ=1,NCOV
-  510 SA(IJ)=A(IJ)
+      SA(IJ)=A(IJ)
+  510 CONTINUE
       CALL FUDGE(SS,NVAR,NCOV,XFUD,GAM0)
       CALL UPDATA(SS,SA,A,GAM0,NVAR,NCOV)
       NIT=NIT+1
@@ -5409,7 +5535,7 @@ C  ------
 C
 C----------------------------------------------------------------------
 C
-      SUBROUTINE CFRCOV(A,NVAR,NCOV,FC,TAU,AINV,COV)
+      SUBROUTINE CFRCOVZ(A,NVAR,NCOV,FC,TAU,AINV,COV)
 C.......................................................................
 C
 C   COPYRIGHT 1992 Alfio Marazzi
@@ -5430,8 +5556,9 @@ C
 C  COMPUTE INVERSE OF A
 C
       DO 20 I=1,NCOV
-   20 AINV(I)=SNGL(A(I))
-      CALL MINV(AINV,NVAR,NCOV,TAU,ISING)
+      AINV(I)=SNGL(A(I))
+   20 CONTINUE
+      CALL MINVZ(AINV,NVAR,NCOV,TAU,ISING)
       IF (ISING.NE.1) GOTO 30
       CALL MESSGE(401,'CFRCOV',0)
       RETURN
@@ -5439,14 +5566,14 @@ C
 C
 C  COMPUTE COVARIANCE MATRIX
 C
-      CALL MTT2(AINV,COV,NVAR,NCOV)
-      CALL SCAL(COV,FC,NCOV,1,NCOV)
+      CALL MTT2Z(AINV,COV,NVAR,NCOV)
+      CALL SCALZ(COV,FC,NCOV,1,NCOV)
       RETURN
       END
 C
 C-----------------------------------------------------------------------
 C
-      SUBROUTINE CICLOC(EPS,TOL,C)
+      SUBROUTINE CICLOCZ(EPS,TOL,C)
 C.......................................................................
 C
 C   COPYRIGHT 1992 Alfio Marazzi
@@ -5463,8 +5590,8 @@ C
 C
       CONST=(EPS-2.)/(1.-EPS)/2.
       C=0.
-   20 CALL XERF(2,C,EX)
-      CALL GAUSS(1,C,PH)
+   20 CALL XERFZ(2,C,EX)
+      CALL GAUSSZ(1,C,PH)
       F=EX+C*(PH+CONST)
       IF (ABS(F).LT.TOL) GOTO 30
       FP=PH+CONST
@@ -5475,7 +5602,7 @@ C
 C
 C-----------------------------------------------------------------------
 C
-      SUBROUTINE CIA2B2(EPS,NVAR,TOL,MAXIT,A2,B2)
+      SUBROUTINE CIA2B2Z(EPS,NVAR,TOL,MAXIT,A2,B2)
 C.......................................................................
 C
 C   COPYRIGHT 1992 Alfio Marazzi
@@ -5520,7 +5647,7 @@ C
 C
 C-----------------------------------------------------------------------
 C
-      SUBROUTINE CIFACT(A2,B2,NVAR,TOL,MAXIT,FC)
+      SUBROUTINE CIFACTZ(A2,B2,NVAR,TOL,MAXIT,FC)
 C.......................................................................
 C
 C   COPYRIGHT 1992 Alfio Marazzi
@@ -5557,7 +5684,7 @@ C
 C
 C-----------------------------------------------------------------------
 C
-      SUBROUTINE CIBEAT(A2,B2,NVAR,D)
+      SUBROUTINE CIBEATZ(A2,B2,NVAR,D)
 C.......................................................................
 C
 C   COPYRIGHT 1992 Alfio Marazzi
@@ -5591,19 +5718,22 @@ C
       EXTERNAL EXU,EXV
       COMMON/UCV56/EM,CR,VK,NP,ENU,V7
       DATA NCALL,XLCNST/0,0./
-      I=WGT(1)
+      I=INT(WGT(1))
       S=SNGL(DX)
       IF (NCALL.NE.NP) THEN
         XX=EXU(0.)
         P=EXV(0.)
-        CALL NLGM(NP,GL)
+        CALL NLGMZ(NP,GL)
         P=FLOAT(NP)
         XLCNST=(1.0-P/2.)*ALOG(2.)-GL
         NCALL=NP
       ENDIF
-      CALL XERP(NP,XLCNST,S,ANS)
-      GOTO (10,20,30,40) I
-   10 USSANS=(DX**2)*DBLE(ANS)
+      CALL XERPZ(NP,XLCNST,S,ANS)
+C     GOTO (10,20,30,40) I
+      IF (I.EQ.2) GOTO 20
+      IF (I.EQ.3) GOTO 30
+      IF (I.EQ.4) GOTO 40
+      USSANS=(DX**2)*DBLE(ANS)
       RETURN
    20 ZED=S*(1.0-((S-EM)/CR)**2)
       XX=DBLE(ZED)**2
@@ -5684,7 +5814,7 @@ C
 C
 C----------------------------------------------------------------------
 C
-      SUBROUTINE CIROCK(EM,CR,NVAR,IOPT,VK)
+      SUBROUTINE CIROCKZ(EM,CR,NVAR,IOPT,VK)
 C.......................................................................
 C
 C   COPYRIGHT 2000 Alfio Marazzi
@@ -5888,7 +6018,7 @@ C
       ELSE
         SUMNRM=0.D0
         DO 36 I=1,N
-        CALL NRM2(X(I,1),N,MDX,MDX*(NP-1)+1,XNRM)
+        CALL NRM2Z(X(I,1),N,MDX,MDX*(NP-1)+1,XNRM)
         SUMNRM=SUMNRM+DBLE(XNRM)
    36   CONTINUE
         CHK=1.05*FLOAT(NP)*SQRT(1.5707963)
@@ -5910,7 +6040,7 @@ C
       ELSE
         SUMNRM=0.D0
         DO 41 I=1,N
-        CALL NRM2(X(I,1),N,MDX,MDX*(NP-1)+1,XNRM)
+        CALL NRM2Z(X(I,1),N,MDX,MDX*(NP-1)+1,XNRM)
         SUMNRM=SUMNRM+DBLE(XNRM)
    41   CONTINUE
         BB=1.05*FLOAT(NP)
@@ -6132,7 +6262,7 @@ C
       ELSE
         SUMNRM=0.D0
         DO 36 I=1,N
-        CALL NRM2(X(I,1),N,MDX,MDX*(NP-1)+1,XNRM)
+        CALL NRM2Z(X(I,1),N,MDX,MDX*(NP-1)+1,XNRM)
         SUMNRM=SUMNRM+DBLE(XNRM)
    36   CONTINUE
         CHK=1.05*FLOAT(NP)*SQRT(1.5707963)
@@ -6154,7 +6284,7 @@ C
       ELSE
         SUMNRM=0.D0
         DO 41 I=1,N
-        CALL NRM2(X(I,1),N,MDX,MDX*(NP-1)+1,XNRM)
+        CALL NRM2Z(X(I,1),N,MDX,MDX*(NP-1)+1,XNRM)
         SUMNRM=SUMNRM+DBLE(XNRM)
    41   CONTINUE
         BB=1.05*FLOAT(NP)
@@ -6250,21 +6380,24 @@ C
 
       IF (IO.EQ.0) THEN
        DO 100 I=1,66
- 100   DFV(I)=VALS(I)
+       DFV(I)=VALS(I)
+  100  CONTINUE
       ELSEIF (IO.EQ.1) THEN
        DO 200 I=1,66
- 200   VALS(I)=DFV(I)
+       VALS(I)=DFV(I)
+  200  CONTINUE
       ELSE
        DO 300 I=1,66
- 300   VALS(I)=VALZ(I)
+       VALS(I)=VALZ(I)
+  300  CONTINUE
       ENDIF
       RETURN 
       END
 C
 C-----------------------------------------------------------------------
 C
-      SUBROUTINE DFCOMN(IPSI,C,H1,H2,H3,XK,D,BTA,BT0,IUCV,A2,B2,CHK,CKW,
-     +                  BB,BT,CW,EM,CR,VK,NP,ENU,V7,IWWW)
+      SUBROUTINE DFCOMNZ(IPSI,C,H1,H2,H3,XK,D,BTA,BT0,IUCV,A2,B2,CHK,
+     +                   CKW,BB,BT,CW,EM,CR,VK,NP,ENU,V7,IWWW)
 C.......................................................................
 C
 C   COPYRIGHT  1992  Alfio Marazzi
@@ -6307,7 +6440,7 @@ C
 C
 C-----------------------------------------------------------------------
 C
-      SUBROUTINE COMVAL(IPSI,C,H1,H2,H3,XK,D,BTA,BT0,IUCV,A2,B2,CHK,
+      SUBROUTINE COMVALZ(IPSI,C,H1,H2,H3,XK,D,BTA,BT0,IUCV,A2,B2,CHK,
      +                  CKW,BB,BT,CW,EM,CR,VK,NP,ENU,V7,IWWW)
 C.......................................................................
 C
@@ -6427,7 +6560,7 @@ C
 C
 C-----------------------------------------------------------------------
 C
-      SUBROUTINE LRFNCT(ICASE,Y,C,VTHETA,OI,WA,NN,N,I0,I1,I2,F0,F1,F2,
+      SUBROUTINE LRFNCTZ(ICASE,Y,C,VTHETA,OI,WA,NN,N,I0,I1,I2,F0,F1,F2,
      +                  SF0)
 C.......................................................................
 C
@@ -6445,10 +6578,10 @@ C
       DATA NCALL,DMIN,XMIN,YMIN,DMAX/0,0.D0,0.D0,0.D0,0.D0/
 C
       IF (NCALL.EQ.1) GOTO 10
-      CALL MACHD(3,DMIN)
-      CALL MACHD(4,XMIN)
-      CALL MACHD(5,YMIN)
-      CALL MACHD(6,XBIG)
+      CALL MACHZD(3,DMIN)
+      CALL MACHZD(4,XMIN)
+      CALL MACHZD(5,YMIN)
+      CALL MACHZD(6,XBIG)
       XBIG=XBIG/10.D0 
       DMAX=DLOG(XBIG)
       NCALL=1
@@ -6554,7 +6687,7 @@ C**     IF (-YI.LT.AI) THEN
 C
 C-----------------------------------------------------------------------
 C
-      SUBROUTINE LRFCTD(ICASE,Y,C,VTHETA,OI,WA,NN,N,I0,I1,I2,F0,F1,F2,
+      SUBROUTINE LRFCTDZ(ICASE,Y,C,VTHETA,OI,WA,NN,N,I0,I1,I2,F0,F1,F2,
      +                  SF0)
 C.......................................................................
 C
@@ -6572,10 +6705,10 @@ C
       DATA NCALL,DMIN,XMIN,YMIN,DMAX/0,0.D0,0.D0,0.D0,0.D0/
 C
       IF (NCALL.EQ.1) GOTO 10
-      CALL MACHD(3,DMIN)
-      CALL MACHD(4,XMIN)
-      CALL MACHD(5,YMIN)
-      CALL MACHD(6,XBIG)
+      CALL MACHZD(3,DMIN)
+      CALL MACHZD(4,XMIN)
+      CALL MACHZD(5,YMIN)
+      CALL MACHZD(6,XBIG)
       XBIG=XBIG/10.D0 
       DMAX=DLOG(XBIG)
       NCALL=1
@@ -6705,13 +6838,15 @@ C
       XN=DFLOAT(N)
    10 ZMAX=0.0
       DO 20 IJ=1,NCOV
-   20 ST(IJ)=0.D0
+      ST(IJ)=0.D0
+   20 CONTINUE
       NL=1
       DO 100 L=1,N
       DO  50 J=1,NP
-   50 SD(J)=DBLE(X(L,J))
-      CALL MLYD(SA,SD,NP,NCOV,NP,1)
-      CALL NRM2D(SD,NP,1,NP,ZNR)
+      SD(J)=DBLE(X(L,J))
+   50 CONTINUE
+      CALL MLYZD(SA,SD,NP,NCOV,NP,1)
+      CALL NRM2ZD(SD,NP,1,NP,ZNR)
       DISTL=SNGL(ZNR)
       IF (ICNT.EQ.2) ZMAX=AMAX1(ZMAX,ABS(DISTL-DIST(L)))
       DIST(L)=DISTL
@@ -6725,12 +6860,15 @@ C
       SU(L)=U
       IJ=0
       DO 90 I=1,NP
-      DO 90 J=1,I
+      DO 80 J=1,I
       IJ=IJ+1
-   90 ST(IJ)=ST(IJ)+(SD(I)*U)*SD(J)
+      ST(IJ)=ST(IJ)+(SD(I)*U)*SD(J)
+   80 CONTINUE
+   90 CONTINUE
   100 CONTINUE
       DO 110 IJ=1,NCOV
-  110 ST(IJ)=ST(IJ)/XN
+      ST(IJ)=ST(IJ)/XN
+  110 CONTINUE
       RETURN
       END
 C
@@ -6750,8 +6888,8 @@ C
       DATA NCALL,DMIN,DMAX,XBIG/0,0.D0,0.D0,0.D0/
 C
       IF (NCALL.EQ.1) GOTO 10
-c     CALL MACHD(3,DMIN)
-c     CALL MACHD(6,XBIG)
+c     CALL MACHZD(3,DMIN)
+c     CALL MACHZD(6,XBIG)
 c     XBIG=XBIG/10.D0
       DMIN=-35.D0
       XBIG=1.D6
@@ -6797,15 +6935,16 @@ C
       DIMENSION X(MDX,NP),Y(N),C(N),THETA(NP),DELTA(NP),WA(N),NI(N),
      1   GRAD(NP),GRAD1(NP),ST(NP),F0(N),F1(N),F2(N),VTHETA(N),OI(N)
 
-      CALL DOTP(DELTA,GRAD,NP,1,1,NP,NP,S0)
+      CALL DOTPZ(DELTA,GRAD,NP,1,1,NP,NP,S0)
 C     S0=-S0
       ETA=AMIN1(1.0,-2.*SF0/S0)
       DO 10 J=1,NP
-  10  ST(J)=THETA(J)+ETA*DELTA(J)
-      CALL MFY(X,ST,VTHETA,N,NP,MDX,NP,1,N,1)
-      CALL LRFNCT(ICASE,Y,C,VTHETA,OI,WA,NI,N,1,1,0,F0,F1,F2,SF1)
+      ST(J)=THETA(J)+ETA*DELTA(J)
+   10 CONTINUE
+      CALL MFYZ(X,ST,VTHETA,N,NP,MDX,NP,1,N,1)
+      CALL LRFNCTZ(ICASE,Y,C,VTHETA,OI,WA,NI,N,1,1,0,F0,F1,F2,SF1)
       CALL GRADNT(X,F1,N,NP,MDX,GRAD1)
-      CALL DOTP(DELTA,GRAD1,NP,1,1,NP,NP,S1)
+      CALL DOTPZ(DELTA,GRAD1,NP,1,1,NP,NP,S1)
 C     S1=-S1
       Z=(3./ETA)*(SF0-SF1)+S0+S1
       A=Z*Z-S0*S1
@@ -6817,7 +6956,7 @@ C     S1=-S1
 C
 C-----------------------------------------------------------------------
 C
-      SUBROUTINE STPLRG(ICASE,X,Y,C,OI,ZETA,IQ,THETA,DELTA,WA,NI,GRAD,
+      SUBROUTINE STPLRGZ(ICASE,X,Y,C,OI,ZETA,IQ,THETA,DELTA,WA,NI,GRAD,
      1                  N,NP,MDX,SF0,SF1,GAM,ST,F0,VTHETA)
 C.......................................................................
 C
@@ -6831,15 +6970,16 @@ C
       DIMENSION X(MDX,NP),Y(N),C(N),THETA(NP),DELTA(NP),WA(N),NI(N),
      1          GRAD(NP),ST(NP),F0(N),VTHETA(N),OI(N)
 C
-      CALL DOTP(DELTA,GRAD,NP,1,1,NP,NP,S0)
+      CALL DOTPZ(DELTA,GRAD,NP,1,1,NP,NP,S0)
       IF (ABS(S0).GT.1.E-5) GOTO 10
       ETA=1.
       DO 450 NLOOP=1,IQ
       ETA=ETA*0.5
       DO 400 J=1,NP
-  400 ST(J)=THETA(J)+ETA*DELTA(J)
-      CALL MFY(X,ST,VTHETA,N,NP,MDX,NP,1,N,1)
-      CALL LRFNCT(ICASE,Y,C,VTHETA,OI,WA,NI,N,1,0,0,F0,F0,F0,SF1)
+      ST(J)=THETA(J)+ETA*DELTA(J)
+  400 CONTINUE
+      CALL MFYZ(X,ST,VTHETA,N,NP,MDX,NP,1,N,1)
+      CALL LRFNCTZ(ICASE,Y,C,VTHETA,OI,WA,NI,N,1,0,0,F0,F0,F0,SF1)
       IF (SF1.LT.SF0) GOTO 500
   450 CONTINUE
       GOTO 300
@@ -6848,9 +6988,10 @@ C
   100 IF (IP.EQ.IQ) GOTO 300
       ETA=0.5**IP
       DO 200 J=1,NP
-  200 ST(J)=THETA(J)+ETA*DELTA(J)
-      CALL MFY(X,ST,VTHETA,N,NP,MDX,NP,1,N,1)
-      CALL LRFNCT(ICASE,Y,C,VTHETA,OI,WA,NI,N,1,0,0,F0,F0,F0,SF1)
+      ST(J)=THETA(J)+ETA*DELTA(J)
+  200 CONTINUE
+      CALL MFYZ(X,ST,VTHETA,N,NP,MDX,NP,1,N,1)
+      CALL LRFNCTZ(ICASE,Y,C,VTHETA,OI,WA,NI,N,1,0,0,F0,F0,F0,SF1)
       IF (SF1.LT.SF0) GOTO 500
       IF ((SF1-SF0)/ETA/S0.GT.ZETA) GOTO 500
       IP=IP+1
@@ -6859,13 +7000,14 @@ C
   500 GAM=ETA
       DO 600 J=1,NP
       DELTA(J)=DELTA(J)*ETA
-  600 THETA(J)=ST(J)
+      THETA(J)=ST(J)
+  600 CONTINUE
       RETURN
       END
 C
 C-----------------------------------------------------------------------
 C
-      SUBROUTINE GICSTP(ICASE,IALG,NN,VTHETA,WA,OI,N,TOL,MAXIT,CI)
+      SUBROUTINE GICSTPZ(ICASE,IALG,NN,VTHETA,WA,OI,N,TOL,MAXIT,CI)
 C.......................................................................
 C
 C   COPYRIGHT 1992 Alfio Marazzi
@@ -6898,7 +7040,7 @@ C
       PP=GFUN(ICASE,NI,GI)
       E=SNGL(PP) 
       T=CI(I)+E
-      CALL GYCSTP(ICASE,IALG,NI,A,E,TOL,MAXIT,T)  
+      CALL GYCSTPZ(ICASE,IALG,NI,A,E,TOL,MAXIT,T)  
       CI(I)=T-E
   500 CONTINUE
       RETURN
@@ -6906,9 +7048,9 @@ C
 C
 C-----------------------------------------------------------------------
 C
-      SUBROUTINE PROBIN(K,N,P,ILG,PK)
+      SUBROUTINE PROBINZ(K,N,P,ILG,PK)
       DOUBLE PRECISION LPL,P,PL,PK,EMIN,SML,ALSML,P1,Q1,ALQ,ALP,
-     +       QP,XN,XX,XK,ICNT,PAR
+     +       XN,XX,XK,ICNT,PAR,XLMN,YLMN
       INTEGER K,N,ILG
       LOGICAL NPRCHK
       DATA NCALL,KL,LPL,EMIN,SML,ALSML/0,0,0.D0,0.D0,0.D0,0.D0/
@@ -6920,9 +7062,11 @@ C
      +       (ILG .EQ. 0. .OR. ILG .EQ. 1)
       IF (.NOT.NPRCHK) CALL MESSGE(500,'PROBIN',1)
       IF (NCALL.EQ.0) THEN
-        CALL MACHD(3,EMIN)
-        CALL MACHD(4,SML)
-        CALL MACHD(5,ALSML)
+        CALL MACHZD(3,EMIN)
+        CALL MACHZD(4,SML)
+        CALL MACHZD(5,ALSML)
+        XLMN=SML
+        YLMN=ALSML
         NCALL=1
       ENDIF
       IF (ALP.EQ.0.D0) THEN
@@ -6961,7 +7105,7 @@ C
         LPL=DFLOAT(N)*ALQ
         IF (LPL.GT.EMIN) PL=DEXP(LPL)
       ELSEIF (KL+1.NE.K.OR.LPL.LE.ALSML) THEN 
-c       CALL BINPRD(K,N,P,S1,PK)
+c       CALL BINPRDZ(K,N,P,S1,PK)
         P1 = P
         Q1 = 1.D0-P
         K1 = K
@@ -7002,7 +7146,7 @@ c       CALL BINPRD(K,N,P,S1,PK)
 C
 C-----------------------------------------------------------------------
 C
-      SUBROUTINE PRPOIS(E,K,ILG,PK)
+      SUBROUTINE PRPOISZ(E,K,ILG,PK)
       DOUBLE PRECISION E,PK,LPL,LGE,ESML,XLMN,YLMN,PAR 
       INTEGER K,ILG
       LOGICAL NPRCHK
@@ -7013,9 +7157,9 @@ C
      +       (ILG.EQ.0 .OR. ILG.EQ.1)) 
       IF (.NOT.NPRCHK) CALL MESSGE(500,'PRPOIS',1)
       IF (NCALL.EQ.0) THEN
-        CALL MACHD(3,ESML)
-        CALL MACHD(4,XLMN)
-        CALL MACHD(5,YLMN)
+        CALL MACHZD(3,ESML)
+        CALL MACHZD(4,XLMN)
+        CALL MACHZD(5,YLMN)
         NCALL=1
       ENDIF
       IF (LGE.EQ.0.D0) THEN
@@ -7052,7 +7196,7 @@ C       problems
       IF (K.EQ.0) THEN
         LPL = -E
       ELSEIF (KL+1.NE.K) THEN
-C       CALL POISSN(E,K,S1,PK) 
+C       CALL POISSNZ(E,K,S1,PK) 
         LGE = YLMN
         IF (E.GT.XLMN) LGE = DLOG(E)
         LPL=DFLOAT(K)*LGE - E
@@ -7068,9 +7212,9 @@ c       IF (K.LE.4) CALL DBLEPR('LGE',3,LGE,1)
   750 CONTINUE    
   800 PK=0.
       IF (LPL.GT.ESML) PK = DEXP(LPL)
-      GOTO 950
-  900 LPL=YLMN 
-      IF (PK.GT.XLMN) LPL=DLOG(PK) 
+c     GOTO 950
+c 900 LPL=YLMN 
+c     IF (PK.GT.XLMN) LPL=DLOG(PK) 
   950 KL=K
       IF (ILG.EQ.1) PK=LPL
       RETURN
@@ -7083,7 +7227,7 @@ C  File GLMDEV.F  Subroutines for the computation of deviance in GLM
 C
 C-----------------------------------------------------------------------
 C
-      SUBROUTINE GLMDEV(Y,NI,CI,WA,VTHETA,OI,N,ICASE,DEV,THETAS,LI,SC)
+      SUBROUTINE GLMDEVZ(Y,NI,CI,WA,VTHETA,OI,N,ICASE,DEV,THETAS,LI,SC)
 C.......................................................................
 C
 C   COPYRIGHT 1996 Alfio Marazzi
@@ -7094,19 +7238,19 @@ C
 C  GLM DEVIANCE COMPUTATION 
 C   
       REAL  Y(N),CI(N),WA(N),VTHETA(N),OI(N)
-      DOUBLE PRECISION DEV,THETAS(N),ENI,YI,ENYI,TMPDEV,LI(N),SC(N),Q,
-     +       QS,TMP,FLINK
+      DOUBLE PRECISION DEV,THETAS(N),ENI,YI,ENYI,LI(N),SC(N),Q,QS,
+     +       TMP,FLINK
       INTEGER NI(N)
       LOGICAL NPRCHK 
       EXTERNAL FLINK
       NPRCHK=(ICASE.EQ.1.OR.ICASE.EQ.2.OR.ICASE.EQ.3)
       IF (.NOT.NPRCHK) CALL MESSGE(500,'GLMDEV',1)
-      CALL LRFCTD(ICASE,Y,CI,VTHETA,OI,WA,NI,N,1,0,0,LI,LI,LI,Q)
+      CALL LRFCTDZ(ICASE,Y,CI,VTHETA,OI,WA,NI,N,1,0,0,LI,LI,LI,Q)
       DO 700 I=1,N
       TMP=DBLE(Y(I)-CI(I))/DFLOAT(NI(I))
       THETAS(I)=FLINK(ICASE,TMP)-DBLE(OI(I))
   700 CONTINUE 
-c     CALL LRFNCT(ICASE,Y,CI,THETAS,OI,WA,NI,N,1,0,0,SC,WA,WA,QS)
+c     CALL LRFNCTZ(ICASE,Y,CI,THETAS,OI,WA,NI,N,1,0,0,SC,WA,WA,QS)
       QS=0.D0
       DO 800 I=1,N
       ENI=DFLOAT(NI(I))
@@ -7143,8 +7287,8 @@ C
       DATA NCALL,XMIN,YMIN/0,0.D0,0.D0/
 C
       IF (NCALL.EQ.1) GOTO 10
-      CALL MACHD(4,XMIN)
-      CALL MACHD(5,YMIN)
+      CALL MACHZD(4,XMIN)
+      CALL MACHZD(5,YMIN)
       NCALL=1
       IF (ICASE.NE.3) GOTO 10
       FLINK=DLOG(0.5D0)
@@ -7170,7 +7314,7 @@ C  File GLMAIN.F  Main subroutines of Chapter 10
 C
 C-----------------------------------------------------------------------
 C
-      SUBROUTINE GYMAIN(X,Y,NI,COV,A,THETA,OI,MDX,N,NP,NCOV,B,GAM,TAU,
+      SUBROUTINE GYMAINZ(X,Y,NI,COV,A,THETA,OI,MDX,N,NP,NCOV,B,GAM,TAU,
      +       ICASE,IUGL,IOPT,IALG,ICNVT,ICNVA,MAXIT,MAXTT,MAXTA,MAXTC,
      +       NITMNT,NITMNA,TOL,TOLT,TOLA,TOLC,NIT,CI,WA,VTHETA,
      +       DELTA,GRAD,HESSNV,RW1,RW2,IW1,DW1)
@@ -7239,7 +7383,7 @@ C
      1          THETA(NP),DELTA(NP),GRAD(NP),COV(NCOV),HESSNV(NCOV),
      2          SC(NCOV),SE(NCOV),SF(NP),SG(NP),SH(NP),SX(MDX,NP),OI(N)
       DOUBLE PRECISION A(NCOV),SA(NCOV),SD(NP),ST(NCOV),SU(N),Z
-      INTEGER SP(NP),NI(N), jjj(11)  
+      INTEGER SP(NP),NI(N)    !, jjj(11)  
       LOGICAL NPRCHK
       EXTERNAL ICTHET
       NN=NP*(NP+1)/2
@@ -7258,12 +7402,14 @@ C  STEP 0 : INITIALIZATIONS
 C  ------
       NIT=1
       DO 10 I=1,N
-   10 CI(I)=0.
+      CI(I)=0.
+   10 CONTINUE
       DO 40 I=1,N
-      DO  20 J=1,NP
-   20 SD(J)=DBLE(X(I,J))
-      CALL MLYD(A,SD,NP,NCOV,NP,1)
-      CALL NRM2D(SD,NP,1,NP,Z)
+      DO 20 J=1,NP
+      SD(J)=DBLE(X(I,J))
+   20 CONTINUE
+      CALL MLYZD(A,SD,NP,NCOV,NP,1)
+      CALL NRM2ZD(SD,NP,1,NP,Z)
       ZNR=SNGL(Z)
       IF (ZNR.GT.ZMIN) GOTO 30
       CALL MESSGE(201,'GYMAIN',0)
@@ -7276,7 +7422,8 @@ C
 C  STEP 1 : COMPUTE THETA
 C  ------
   100 DO 150 I=1,NP
-  150 SD(I)=DBLE(THETA(I))
+      SD(I)=DBLE(THETA(I))
+  150 CONTINUE
       CALL GYTST2(X,Y,CI,THETA,WA,COV,NI,OI,N,NP,MDX,NCOV,GAM,TOLT,
      +     TAU,0.01,10,IOPT,ICASE,ICNVT,MAXTT,NITMNT,NITT,Q0,DELTA,
      +     F0,F1,F2,VTHETA,GRAD,HESSNV,SE,SF,SG,SH,SC,SX,SP,INI,QMIN)
@@ -7286,12 +7433,13 @@ C  STEP 2 : CHECK CONVERGENCE
 C  ------
       IF (NIT.EQ.MAXIT.OR.NITT.LT.0) GOTO 500
       DO 200 I=1,NP
-  200 DELTA(I)=THETA(I)-SNGL(SD(I))
+      DELTA(I)=THETA(I)-SNGL(SD(I))
+  200 CONTINUE
       IF (ICTHET(NP,NCOV,DELTA,1.0,COV,TOL,ICNVT).EQ.1) GOTO 500
 C
 C  STEP 3 : COMPUTE THE A MATRIX AND THE ai's
 C  ------
-      CALL GYASTP(X,Y,NI,VTHETA,CI,A,OI,B,IUGL,ICASE,N,NP,NCOV,MDX,
+      CALL GYASTPZ(X,Y,NI,VTHETA,CI,A,OI,B,IUGL,ICASE,N,NP,NCOV,MDX,
      1            TAU,MAXTA,NITMNA,ICNVA,TOLA,NITA,WA,SU,SA,ST,SD)
 C
       IF (NITA.LT.0) GOTO 500
@@ -7306,7 +7454,7 @@ C
 C
 C  STEP 4 : COMPUTE THE ci's 
 C  ------
-      CALL GICSTP(ICASE,IALG,NI,VTHETA,WA,OI,N,TOLC,MAXTC,CI)
+      CALL GICSTPZ(ICASE,IALG,NI,VTHETA,WA,OI,N,TOLC,MAXTC,CI)
 C
 C  STEP 5 : SET NIT:=NIT+1 AND GOTO STEP 1
 C  ------
@@ -7319,7 +7467,7 @@ C  ------
 C
 C-----------------------------------------------------------------------
 C
-      SUBROUTINE GINTAC(X,Y,NI,OI,MDX,MDT,N,NP,NCOV,ICASE,MAXTT,MAXTA,
+      SUBROUTINE GINTACZ(X,Y,NI,OI,MDX,MDT,N,NP,NCOV,ICASE,MAXTT,MAXTA,
      +                  TOLT,TOLA,B,C,NITT,NITA,SIGMA,A,THETA,CI,DIST,
      +                  RW1,RW2,IW1,DW1)
 C.......................................................................
@@ -7400,7 +7548,7 @@ C
       TOLARS=TAU  
       INIT=1
       ICNV=2
-      CALL WIMEDV(X,N,NP,NCOV,MDX,1,INIT,NFIRST,A,SY)
+      CALL WIMEDVZ(X,N,NP,NCOV,MDX,1,INIT,NFIRST,A,SY)
       CALL WYFALG(X,A,SW,UCV,N,NP,0,NCOV,MDX,TAU,MAXTA,NITMON,ICNV,
      1            1,0,TOLA,NITA,WGT,SU,SA,ST,SD,SD)
       CPSO=CPSI
@@ -7430,8 +7578,8 @@ C
       SX(L,K)=X(L,K)
    20 CONTINUE
    30 CONTINUE
-      CALL RIBET0(WGT,N,2,1,TOLT,BET0)
-      CALL RILARS(SX,SY,N,NP,MDX,MDT,TOLARS,NIT,K,KODE,
+      CALL RIBET0Z(WGT,N,2,1,TOLT,BET0)
+      CALL RILARSZ(SX,SY,N,NP,MDX,MDT,TOLARS,NIT,K,KODE,
      +  SIG0,THETA,SW,CI,SF,SG,SH)
       IF (SIG0.LE.TOLARS) SIG0=1.
       CPSI=C
@@ -7448,12 +7596,14 @@ C
       F1=1./FLOAT(N)
       F0=0.
       DO 40 L=1,N
-   40 SY(L)=SNGL(SU(L))
+      SY(L)=SNGL(SU(L))
+   40 CONTINUE
       DO 50 L=1,N
-   50 SU(L)=DBLE(Y(L))
-      CALL KIEDCH(WGT,N,CPSI,ITYP,CI,SW)
+      SU(L)=DBLE(Y(L))
+   50 CONTINUE
+      CALL KIEDCHZ(WGT,N,CPSI,ITYP,CI,SW)
       JAINV=IAINV
-      CALL KTASKW(X,CI,SW,N,NP,MDX,MDX,NCOV,TAU,IA,F1,F0,JAINV,
+      CALL KTASKWZ(X,CI,SW,N,NP,MDX,MDX,NCOV,TAU,IA,F1,F0,JAINV,
      +  SC,SF,SG,SH,COV,SX)
       IF (JAINV.GT.400) CALL MESSGE(400,'GITAC2',0)
       CALL RYWALG(X,SY,THETA,WGT,COV,PSP0,PSY,CHI,RHO,SIG0,N,NP,MDX,MDT,
@@ -7466,14 +7616,17 @@ C
       IPSI=IPSO
       CPSI=CPSO
       DO 60 L=1,N
-   60 CI(L)=0.
+      CI(L)=0.
+   60 CONTINUE
       DO 70 L=1,N
-   70 Y(L)=SNGL(SU(L))
+      Y(L)=SNGL(SU(L))
+   70 CONTINUE
       DO 90 I=1,N
       DO 80 J=1,NP
-   80 SD(J)=DBLE(X(I,J))
-      CALL MLYD(A,SD,NP,NCOV,NP,1)
-      CALL NRM2D(SD,NP,1,NP,Z)
+      SD(J)=DBLE(X(I,J))
+   80 CONTINUE
+      CALL MLYZD(A,SD,NP,NCOV,NP,1)
+      CALL NRM2ZD(SD,NP,1,NP,Z)
       DIST(I)=SNGL(Z)
    90 CONTINUE
       RETURN
@@ -7481,7 +7634,7 @@ C
 C 
 C-----------------------------------------------------------------------
 C
-      SUBROUTINE GFEDCA(VTHETA,CI,WA,NI,OI,N,ICASE,D,E)
+      SUBROUTINE GFEDCAZ(VTHETA,CI,WA,NI,OI,N,ICASE,D,E)
 C.......................................................................
 C
 C   COPYRIGHT 1992 Alfio Marazzi
@@ -7501,9 +7654,9 @@ c     EXTERNAL GFUN
       IF (.NOT.NPRCHK) CALL MESSGE(500,'GFEDCA',1)
 C
       IF (PREC.EQ.0.D0) THEN
-        CALL MACH(2,PRCS)
-        CALL MACHD(4,SML)
-        CALL MACHD(5,ALSML)
+        CALL MACHZ(2,PRCS)
+        CALL MACHZD(4,SML)
+        CALL MACHZD(5,ALSML)
         PREC = DBLE(PRCS)
         DMIN = -30.D0
         DMAX = 70.D0
@@ -7549,10 +7702,10 @@ C==>    LOGISTIC POISSON (ICASE=3)
   250   IF (DMAX1(ETERM,DTERM).LE.PREC) GOTO 350 
         IF (ICASE.LE.2) THEN
 C==>    LOGISTIC BERNOUILLI OR BINOMIAL
-          CALL PROBIN(J,NN,PROBI,ILG,LPIJ)
+          CALL PROBINZ(J,NN,PROBI,ILG,LPIJ)
         ELSE
 C==>    LOGISTIC POISSON (ICASE=3)
-          CALL PRPOIS(GFUN,J,ILG,LPIJ)
+          CALL PRPOISZ(GFUN,J,ILG,LPIJ)
         ENDIF
         TMP=DFLOAT(J)-CC-GFUN
         TMPSI=DMIN1(AA,TMP)
@@ -7584,7 +7737,7 @@ C==>    LOGISTIC POISSON (ICASE=3)
 C
 C-----------------------------------------------------------------------
 C
-      SUBROUTINE GYCSTP(ICASE,IALG,NI,A,E,TOL,MAXIT,T)
+      SUBROUTINE GYCSTPZ(ICASE,IALG,NI,A,E,TOL,MAXIT,T)
 C.......................................................................
 C
 C   COPYRIGHT 1992 Alfio Marazzi
@@ -7606,8 +7759,8 @@ C
      2       IALG.EQ.-2).AND.(NI.GT.0.OR.ICASE.NE.2).AND.
      3       A.GT.0..AND.E.GT.0..AND.TOL.GT.0..AND.MAXIT.GT.0
       IF (PREC.EQ.0.0) THEN
-       CALL MACH(2,PRCS)
-       CALL MACHD(2,DPREC)
+       CALL MACHZ(2,PRCS)
+       CALL MACHZD(2,DPREC)
        PREC=100.*PRCS
        XP30=EXP(-30.0)
       ENDIF
@@ -7666,7 +7819,7 @@ C  _______
 C==>    LOGISTIC BINOMIAL
         DPI=DBLE(PI)
         DO 220 J=J1,J2
-          CALL PROBIN(J,NI,DPI,0,PJ)
+          CALL PROBINZ(J,NI,DPI,0,PJ)
           DEN=(FLOAT(J)-T)
           TEMP=AMIN1(A,ABS(DEN))
           IF (DEN.LT.0.) TEMP=-TEMP
@@ -7684,7 +7837,7 @@ C==>    LOGISTIC POISSON
          IF (E.GT.1.E6) EE=1.E6
          DPI=DBLE(EE)
          DO 230 J=J1,J2
-          CALL PRPOIS(DPI,J,0,PJ)
+          CALL PRPOISZ(DPI,J,0,PJ)
           DEN=(FLOAT(J)-T)
           TEMP=AMIN1(A,ABS(DEN))
           IF (DEN.LT.0.) TEMP=-TEMP
@@ -7762,7 +7915,7 @@ C
 C
 C-----------------------------------------------------------------------
 C
-      SUBROUTINE GYTSTP(X,Y,CI,THETA,WA,COV,NI,OI,N,NP,MDX,NCOV,GAM,
+      SUBROUTINE GYTSTPZ(X,Y,CI,THETA,WA,COV,NI,OI,N,NP,MDX,NCOV,GAM,
      1           TOL,TAU,IOPT,ICASE,ICNV,MAXIT,NITMON,NIT,Q0,DELTA,
      2           F0,F1,F2,VTHETA,GRAD,HESSNV,RW1,RW2,IW1)
 C.......................................................................
@@ -7842,13 +7995,14 @@ C
 C
 C  STEP 2.   COMPUTE CURRENT OBJECTIVE FUNCTION VALUE AND (-)DERIVATIVES
 C  ------
-  200 CALL MFY(X,THETA,VTHETA,N,NP,MDX,NP,1,N,1)
-      CALL LRFNCT(ICASE,Y,CI,VTHETA,OI,WA,NI,N,1,1,1,F0,F1,F2,Q0)
+  200 CALL MFYZ(X,THETA,VTHETA,N,NP,MDX,NP,1,N,1)
+      CALL LRFNCTZ(ICASE,Y,CI,VTHETA,OI,WA,NI,N,1,1,1,F0,F1,F2,Q0)
       IF (INI.EQ.1) THEN
        INI=-1
        QMIN=Q0
        DO 210 J=1,NP
-  210  SE(J)=THETA(J)
+       SE(J)=THETA(J)
+  210  CONTINUE
       ENDIF
 C
 C  ITERATION MONITORING
@@ -7866,34 +8020,37 @@ C  ------
 C
       FIRST=.TRUE.
   400 NULF2=.TRUE.
-      DO 410 I=1,N
+      DO 420 I=1,N
       SQF2=SQRT(F2(I))
       IF (SQF2.GE.1.E-4) NULF2=.FALSE.
       DO 410 J=1,NP
-  410 SX(I,J)=X(I,J)*SQF2
+      SX(I,J)=X(I,J)*SQF2
+  410 CONTINUE
+  420 CONTINUE
       IF (NULF2) THEN
-        DO 420 J=1,NP
+        DO 430 J=1,NP
         THETA(J)=SE(J)
-  420   DELTA(J)=-GRAD(J)
+        DELTA(J)=-GRAD(J)
+  430   CONTINUE
         NIT=-NIT
         GOTO 730
       ELSE
-        CALL RIMTRF(SX,N,NP,MDX,INTCH,TAU,K,SF,SG,SH,IP)
+        CALL RIMTRFZ(SX,N,NP,MDX,INTCH,TAU,K,SF,SG,SH,IP)
         IF (K.NE.NP) THEN
 c          CALL MESSGE(111,'GYTSTP',0)
            call intpr('GYTSTP: Inverse hessian rank',28,K,1)
         ENDIF
-        CALL KIASCV(SX,K,NP,MDX,NCOV,1.,1.,HESSNV)
-        CALL KFASCV(SX,HESSNV,K,NP,MDX,NCOV,1.,DELTA,SG,IP) 
+        CALL KIASCVZ(SX,K,NP,MDX,NCOV,1.,1.,HESSNV)
+        CALL KFASCVZ(SX,HESSNV,K,NP,MDX,NCOV,1.,DELTA,SG,IP) 
       ENDIF
 C
 C  STEP 5.   COMPUTE THE INCREMENT VECTOR
 C  ------
 C
-  500 CALL MSF(HESSNV,GRAD,DELTA,NP,NCOV,1,NP,NP)
+      CALL MSFZ(HESSNV,GRAD,DELTA,NP,NCOV,1,NP,NP)
       GAM0=GAM
 C     IF (K.LT.NP.AND.IOPT.NE.2) THEN     ! 25.10.12 AR
-C       CALL DOTP(DELTA,DELTA,NP,1,1,NP,NP,GAM0)
+C       CALL DOTPZ(DELTA,DELTA,NP,1,1,NP,NP,GAM0)
 C       IF (GAM0.GT.1.) GAM0=1./SQRT(GAM0)
 C       call realpr('gam0',4,gam0,1)
 C     ENDIF
@@ -7910,32 +8067,35 @@ C
 C  STEP 6.   DETERMINE THE STEP-LENGTH
 C  ------
 C
-      CALL MFY(X,THETA,F2,N,NP,MDX,NP,1,N,1)
+      CALL MFYZ(X,THETA,F2,N,NP,MDX,NP,1,N,1)
       IF (.NOT.FIRST) Q01=Q0L
-      CALL LRFNCT(ICASE,Y,CI,F2,OI,WA,NI,N,1,0,0,F1,F1,F1,Q0L)
+      CALL LRFNCTZ(ICASE,Y,CI,F2,OI,WA,NI,N,1,0,0,F1,F1,F1,Q0L)
       IF (Q0L.LE.QMIN) THEN
         QMIN=Q0L
         DO 520 J=1,NP
-  520   SE(J)=THETA(J)
+        SE(J)=THETA(J)
+  520   CONTINUE
       ENDIF 
       IF (Q0L.LE.Q0) GOTO 700
       IF (.NOT.FIRST) GOTO 650
       FIRST=.FALSE.
       IF (IOPT.EQ.1) THEN
         IF (ICASE.LE.2) CALL DBINOM(Y,CI,VTHETA,WA,NI,F0,OI,N,1.E-6,F2)
-        IF (ICASE.EQ.3) CALL DPOISS(Y,CI,VTHETA,WA,F0,OI,N,1.E-6,F2)
+        IF (ICASE.EQ.3) CALL DPOISSZ(Y,CI,VTHETA,WA,F0,OI,N,1.E-6,F2)
         GOTO 400
       ELSE
-        CALL STPLRG(ICASE,X,Y,CI,OI,ZETA,IQ,ST,DELTA,WA,NI,GRAD,
+        CALL STPLRGZ(ICASE,X,Y,CI,OI,ZETA,IQ,ST,DELTA,WA,NI,GRAD,
      1              N,NP,MDX,Q0,Q01,GAM0,ST,F0,VTHETA)
         DO 600 J=1,NP
-  600   THETA(J)=ST(J)+DELTA(J)*GAM0
+        THETA(J)=ST(J)+DELTA(J)*GAM0
+  600   CONTINUE
         GOTO 700
       ENDIF   
   650 IF (Q01.LT.Q0L) THEN
         DO 670 J=1,NP
         DELTA(J)=ST(J)-THETA(J)
-  670   THETA(J)=ST(J)
+        THETA(J)=ST(J)
+  670   CONTINUE
       ENDIF
 C     STEP LENGTH BY CUBIC INTERPOLATION (USE THE ARRAY SE)
 C     CALL STEPLR(ICASE,X,Y,CI,OI,THETA,DELTA,WA,NI,GRAD,SE,
@@ -7948,14 +8108,14 @@ C  -------
       IF (ICTHET(NP,NCOV,DELTA,1.0,COV,TOL,ICNV).EQ.1) GOTO 730
       NIT=NIT+1
       GOTO 200
-  730 CALL MFY(X,THETA,VTHETA,N,NP,MDX,NP,1,N,1)
-      CALL LRFNCT(ICASE,Y,CI,VTHETA,OI,WA,NI,N,1,1,1,F0,F1,F2,Q0)
+  730 CALL MFYZ(X,THETA,VTHETA,N,NP,MDX,NP,1,N,1)
+      CALL LRFNCTZ(ICASE,Y,CI,VTHETA,OI,WA,NI,N,1,1,1,F0,F1,F2,Q0)
       RETURN
       END
 C     
 C-----------------------------------------------------------------------
 C
-      SUBROUTINE DPOISS(Y,CI,VTHETA,WA,F0,OI,N,KAP,D)
+      SUBROUTINE DPOISSZ(Y,CI,VTHETA,WA,F0,OI,N,KAP,D)
 C.......................................................................
 C
 C   COPYRIGHT 1992 Alfio Marazzi
@@ -7965,17 +8125,18 @@ C.......................................................................
 C
 C  APPROXIMATION FOR D(I) IN THE THETA STEP. POISSON CASE.
 C
-      DOUBLE PRECISION GG,DMIN,XMIN,YMIN,T1,T2,S1,S2,DXLOG,XBIG,YY,OO
+      DOUBLE PRECISION GG,DMIN,XMIN,YMIN,DMAX,T1,T2,S1,S2,
+     +       DXLOG,XBIG,YY,OO
       REAL Y(N),CI(N),VTHETA(N),OI(N),WA(N),F0(N),KAP,D(N)
       EXTERNAL DXLOG
       DATA NCALL,DMIN,XMIN,YMIN,DMAX/0,0.D0,0.D0,0.D0,0.D0/
 C
       IF (NCALL.EQ.1) GOTO 10
       IF (KAP.LT.0.) CALL MESSGE(500,'DPOISS',1)
-      CALL MACHD(3,DMIN)
-      CALL MACHD(4,XMIN)
-      CALL MACHD(5,YMIN)
-      CALL MACHD(6,XBIG)
+      CALL MACHZD(3,DMIN)
+      CALL MACHZD(4,XMIN)
+      CALL MACHZD(5,YMIN)
+      CALL MACHZD(6,XBIG)
       XBIG=XBIG/10.D0
       DMAX=DLOG(XBIG)
       NCALL=1
@@ -8041,10 +8202,10 @@ C
 C
       IF (KAP.LT.0.) CALL MESSGE(500,'DBINOM',1)
       IF (NCALL.EQ.1) GOTO 10
-      CALL MACHD(3,DMIN)
-      CALL MACHD(4,XMIN)
-      CALL MACHD(5,YMIN)
-      CALL MACHD(6,XBIG)
+      CALL MACHZD(3,DMIN)
+      CALL MACHZD(4,XMIN)
+      CALL MACHZD(5,YMIN)
+      CALL MACHZD(6,XBIG)
       XBIG=XBIG/10.D0
       DMAX=DLOG(XBIG)
       NCALL=1
@@ -8137,7 +8298,7 @@ C
 C
 C-----------------------------------------------------------------------
 C
-      SUBROUTINE GYASTP(X,Y,NI,VTHETA,CI,A,OI,B,IUGL,ICASE,NOBS,NVAR,
+      SUBROUTINE GYASTPZ(X,Y,NI,VTHETA,CI,A,OI,B,IUGL,ICASE,NOBS,NVAR,
      1                  NCOV,MDX,TAU,MAXIT,NITMON,ICNV,TOL,NIT,DIST,
      2                  SU,SA,ST,SD)
 C.......................................................................
@@ -8180,11 +8341,12 @@ C  ------
         L=L+1
         SA(L)=0.D0
         IF (I.EQ.J) SA(L)=-1.D0
-  10    CONTINUE
-  20    CONTINUE
+   10   CONTINUE
+   20   CONTINUE
       ENDIF
       DO 30 L=1,NOBS
-  30  DIST(L)=-1.0
+      DIST(L)=-1.0
+   30 CONTINUE
 C
 C  STEP 1: COMPUTE WEIGHTED COVARIANCE (ST) AND AUXILIARY VALUES
 C  ------
@@ -8209,8 +8371,9 @@ C
 C  STEP 4: SET SA:=A AND A:=(I-SS)*SA
 C  -------
       DO 410 IJ=1,NCOV
-  410 SA(IJ)=A(IJ)
-      CALL MTT3D(SA,ST,A,NVAR,NCOV)
+      SA(IJ)=A(IJ)
+  410 CONTINUE
+      CALL MTT3ZD(SA,ST,A,NVAR,NCOV)
       NIT=NIT+1
 C
 C  STEP 4A: ITERATION MONITORING
@@ -8245,8 +8408,12 @@ C
       DIMENSION NREPQ(8),NREPE(5)
       DATA NREPQ/150,300,400,500,600,700,850,1250/
       DATA NREPE/500,1000,1500,2000,2500/
-      GOTO (1,2,3,4) IOPT+1
-    1 IF(NP .GE. 9) THEN
+C     GOTO (1,2,3,4) IOPT+1
+      ICNREP=0
+      IF (IOPT.EQ.1) GOTO 2
+      IF (IOPT.EQ.2) GOTO 3
+      IF (IOPT.EQ.3) GOTO 4
+      IF(NP .GE. 9) THEN
          ICNREP=1500
       ELSE
          ICNREP=NREPQ(NP)
@@ -8262,7 +8429,8 @@ C
       NR=1
       DO 10 I=1,NP
          NR=(NR*NN)/I
-   10    NN=NN-1
+         NN=NN-1
+   10 CONTINUE
       IF (IMODE.GE.3) NR=NR*2**(NP-1)
       ICNREP=NR
       RETURN
@@ -8289,7 +8457,8 @@ C
       ENDIF
       IF(IN.NE.NP) THEN
          DO 20 I=IN+1,NP
-   20    IT(I)=IT(I-1)+1
+         IT(I)=IT(I-1)+1
+   20    CONTINUE
       ENDIF
       RETURN
       END
@@ -8310,12 +8479,14 @@ C  HOUSHOLDER TRANSFORMATION OF THE RIGHT SIDE
 C
       DO 20 JJ=1,NP
       J=JJ
-   20 CALL H12(2,J,J+1,N,XT(1,J),1,SH(J),Y,1,N,1,N)
+      CALL H12Z(2,J,J+1,N,XT(1,J),1,SH(J),Y,1,N,1,N)
+   20 CONTINUE
 C
 C  SOLVE THE SYSTEM
 C
       DO 30 I=1,N
-   30 THETA(I)=Y(I)
+      THETA(I)=Y(I)
+   30 CONTINUE
       CALL SOLV(XT,THETA,NP,NP,MDXT,N)
 C
 C  TRANSFORM THE SOLUTION VECTOR FOR OUTPUT
@@ -8338,8 +8509,9 @@ C
 C     N2=N/2
 C     N2P=N-N2
       DO 100 I=1,N
-  100 SZ(I)=RS(I)
-      CALL SRT1(SZ,N,1,N)
+      SZ(I)=RS(I)
+  100 CONTINUE
+      CALL SRT1Z(SZ,N,1,N)
       EM=SZ(1+N2)-SZ(1)
       JP=1
       DO 200 J=1,N2P
@@ -8353,7 +8525,8 @@ C     N2P=N-N2
       CSTETA=CSTETA+0.5*(SZ(JP)+SZ(JP+N2))
       IF (IR.EQ.0) RETURN
       DO 300 I=1,N
-  300 RS(I)=RS(I)+T-CSTETA
+      RS(I)=RS(I)+T-CSTETA
+  300 CONTINUE
       RETURN
       END
 C
@@ -8372,15 +8545,18 @@ C     K1=N/2+1
 C     K2=N-K1+1
       FK=FLOAT(K1)
       DO 100 I=1,N
-  100 SZ(I)=RS(I)
-      CALL SRT1(SZ,N,1,N)
+      SZ(I)=RS(I)
+  100 CONTINUE
+      CALL SRT1Z(SZ,N,1,N)
       ZM=0.
       DO 200 I=1,K1
-  200 ZM=ZM+SZ(I)
+      ZM=ZM+SZ(I)
+  200 CONTINUE
       ZM=ZM/FK
       Q=0.
       DO 300 I=1,K1
-  300 Q=Q+(SZ(I)-ZM)**2
+      Q=Q+(SZ(I)-ZM)**2
+  300 CONTINUE
       T=CSTETA
       S=Q
       CSTETA=T+ZM
@@ -8395,7 +8571,8 @@ C     K2=N-K1+1
   400 CONTINUE
       IF (IR.EQ.0) RETURN
       DO 500 I=1,N
-  500 RS(I)=RS(I)+T-CSTETA
+      RS(I)=RS(I)+T-CSTETA
+  500 CONTINUE
       RETURN
       END
 C
@@ -8443,7 +8620,7 @@ C
 C***********************************************************************
 C***************************  H B M A I N  *****************************
 C
-      SUBROUTINE HYLMSE(X,Y,N,NP,NQ,MDX,MDW,MDI,IK,IOPT,INTCH,NREP,
+      SUBROUTINE HYLMSEZ(X,Y,N,NP,NQ,MDX,MDW,MDI,IK,IOPT,INTCH,NREP,
      *           TOL,TAU,ISEED,IERR,XMIN,THETA,RS,IT1,WORK,IWORK)
 C.......................................................................
 C
@@ -8522,7 +8699,8 @@ C ------
       IERR=2
       XMIN=0.
       DO 10 I=1,NP
-   10 SP(I)=I
+      SP(I)=I
+   10 CONTINUE
 C
 C  Check for a constant term and set NC to the constant index
 C
@@ -8542,7 +8720,7 @@ C ------
   100 IF (IOPT.NE.3) THEN
         DO 130 K=1,NQ
   110     CALL RANDOW(ISEED,RND)
-          ITK=RND*N+1
+          ITK=INT(RND*FLOAT(N))+1
           IF (ITK.GT.N) ITK=N
           DO 120 KK=1,K-1
           IF (ITK.EQ.IT(KK)) GOTO 110
@@ -8552,7 +8730,8 @@ C ------
       ELSE
         IF (NIT.EQ.1) THEN
           DO 140 K=1,NQ
-  140     IT(K)=K
+          IT(K)=K
+  140     CONTINUE
         ELSE
           CALL  NCOMB(N,NQ,IT)
         ENDIF
@@ -8560,12 +8739,14 @@ C ------
       DO 160 K=1,NQ
       ITK=IT(K)
       DO 150 J=1,NP
-  150 XX(K,J)=X(ITK,J)
-  160 YY(K)=Y(ITK)
+      XX(K,J)=X(ITK,J)
+  150 CONTINUE
+      YY(K)=Y(ITK)
+  160 CONTINUE
 C
 C STEP 2: DECOMPOSE SAMPLE MATRIX
 C -------
-      CALL RIMTRF(XX,NQ,NP,NQ,INTCH,TAU,KK,SF,SG,SH,SP)
+      CALL RIMTRFZ(XX,NQ,NP,NQ,INTCH,TAU,KK,SF,SG,SH,SP)
       IF(KK.NE.NP) GOTO 800
 C
 C STEP 3: SOLVE SYSTEM OF LINEAR EQUATIONS
@@ -8578,7 +8759,8 @@ C -------
         ITK=IT(I)
         RI=Y(ITK)
         DO 310 J=1,NP
-  310   RI=RI-XTHETA(J)*X(ITK,J)
+        RI=RI-XTHETA(J)*X(ITK,J)
+  310   CONTINUE
         YY(I)=SIGN(1.,RI)
         SUMAR=SUMAR+ABS(RI)
         SUMR2=SUMR2+RI**2
@@ -8598,18 +8780,20 @@ C -------
       DO 420 I=1,N
       RI=Y(I)
       DO 410 J=1,NP
-  410 RI=RI-XTHETA(J)*X(I,J)
-      IF (IK.EQ.2) GOTO 420
+      RI=RI-XTHETA(J)*X(I,J)
+  410 CONTINUE
+      IF (IK.EQ.2) GOTO 415
       ARI=ABS(RI)
       IF (ARI.GT.XMIN) L=L+1
       IF (XMIN.NE.0..AND.L.GE.NK1) GOTO 800
       SZ(I)=ARI
-  420 RS(I)=RI
+  415 RS(I)=RI
+  420 CONTINUE
 C
 C STEP 5: IF K.LT.1 COMPUTE THE K-TH ORDER STATISTIC OF THE |RS(I)|
 C -------
       IF (IK.EQ.2) GOTO 600
-      CALL FSTORD(SZ,N,K1,XRES)
+      CALL FSTORDZ(SZ,N,K1,XRES)
       GOTO 700
 C
 C STEP 6: COMPUTE XRES, ADJUST CONSTANT COEFFICIENT AND RS
@@ -8622,9 +8806,11 @@ C ------
       IERR=0
       XMIN=XRES
       DO 710 K=1,NP
-  710 THETA(K)=XTHETA(K)
+      THETA(K)=XTHETA(K)
+  710 CONTINUE
       DO 720 K=1,NQ
-  720 IT1(K)=IT(K)
+      IT1(K)=IT(K)
+  720 CONTINUE
       IF (XRES .LE. TOL) THEN
         IERR=1
         GOTO 900
@@ -8642,8 +8828,10 @@ C --------
       DO 920 I=1,N
       S=Y(I)
       DO 910 J=1,NP
-  910 S=S-THETA(J)*X(I,J)
-  920 RS(I)=S
+      S=S-THETA(J)*X(I,J)
+  910 CONTINUE
+      RS(I)=S
+  920 CONTINUE
       IF (IK.EQ.1) CALL LMSADJ(N,N2,N2P,1,THETA(NC),RS,XMIN,SZ)
 C
 C STEP 10: EXIT
@@ -8653,7 +8841,7 @@ C --------
 C
 C-----------------------------------------------------------------------
 C
-      SUBROUTINE HYLTSE(X,Y,N,NP,NQ,MDX,MDW,MDI,IK,IOPT,INTCH,NREP,
+      SUBROUTINE HYLTSEZ(X,Y,N,NP,NQ,MDX,MDW,MDI,IK,IOPT,INTCH,NREP,
      *           TOL,TAU,ISEED,IERR,SMIN,THETA,RS,IT1,WORK,IWORK)
 C.......................................................................
 C
@@ -8729,7 +8917,8 @@ C ------
       IERR=2
       SMIN=0.
       DO 10 I=1,NP
-   10 SP(I)=I
+      SP(I)=I
+   10 CONTINUE
 C
 C  Check for a constant term and set NC to the constant index
 C
@@ -8750,7 +8939,7 @@ C ------
   100 IF (IOPT.NE.3) THEN
         DO 130 K=1,NQ
   110     CALL RANDOW(ISEED,RND)
-          ITK=RND*N+1
+          ITK=(RND*FLOAT(N))+1
           IF (ITK.GT.N) ITK=N
           DO 120 KK=1,K-1
           IF (ITK.EQ.IT(KK)) GOTO 110
@@ -8760,7 +8949,8 @@ C ------
       ELSE
         IF (NIT.EQ.1) THEN
           DO 140 K=1,NQ
-  140     IT(K)=K
+          IT(K)=K
+  140     CONTINUE
         ELSE
           CALL  NCOMB(N,NQ,IT)
         ENDIF
@@ -8768,12 +8958,14 @@ C ------
       DO 160 K=1,NQ
       ITK=IT(K)
       DO 150 J=1,NP
-  150 XX(K,J)=X(ITK,J)
-  160 YY(K)=Y(ITK)
+      XX(K,J)=X(ITK,J)
+  150 CONTINUE
+      YY(K)=Y(ITK)
+  160 CONTINUE
 C
 C STEP 2: DECOMPOSE SAMPLE MATRIX
 C -------
-      CALL RIMTRF(XX,NQ,NP,NQ,INTCH,TAU,KK,SF,SG,SH,SP)
+      CALL RIMTRFZ(XX,NQ,NP,NQ,INTCH,TAU,KK,SF,SG,SH,SP)
       IF(KK.NE.NP) GOTO 800
 C
 C STEP 3: SOLVE SYSTEM OF LINEAR EQUATIONS
@@ -8785,17 +8977,20 @@ C -------
       DO 420 I=1,N
       S=Y(I)
       DO 410 J=1,NP
-  410 S=S-XTHETA(J)*X(I,J)
+      S=S-XTHETA(J)*X(I,J)
+  410 CONTINUE
       IF (IK.NE.2) SZ(I)=S*S
-  420 RS(I)=S
+      RS(I)=S
+  420 CONTINUE
 C
 C STEP 5: COMPUTE THE K-TH ORDER STATISTIC OF THE |RS(I)|-S
 C -------
       IF (IK.EQ.2) GOTO 600
-      CALL SRT1(SZ,N,1,N)
+      CALL SRT1Z(SZ,N,1,N)
       SRES=0.
       DO 510 I=1,K1
-  510 SRES=SRES+SZ(I)
+      SRES=SRES+SZ(I)
+  510 CONTINUE
       GOTO 700
 C
 C STEP 6: COMPUTE SRES, ADJUST CONSTANT COEFFICIENT AND RS
@@ -8808,9 +9003,11 @@ C ------
       IERR=0
       SMIN=SRES
       DO 710 K=1,NP
-  710 THETA(K)=XTHETA(K)
+      THETA(K)=XTHETA(K)
+  710 CONTINUE
       DO 720 K=1,NQ
-  720 IT1(K)=IT(K)
+      IT1(K)=IT(K)
+  720 CONTINUE
       IF (SRES .LE. TOL) THEN
         IERR=1
         GOTO 900
@@ -8828,8 +9025,10 @@ C --------
       DO 920 I=1,N
       S=Y(I)
       DO 910 J=1,NP
-  910 S=S-THETA(J)*X(I,J)
-  920 RS(I)=S
+      S=S-THETA(J)*X(I,J)
+  910 CONTINUE
+      RS(I)=S
+  920 CONTINUE
       IF (IK.NE.2) CALL LTSADJ(N,K1,NK1,1,THETA(NC),RS,SMIN,SZ)
 C
 C STEP 10: EXIT
@@ -8938,7 +9137,7 @@ c         IF (irep.eq.5) then
 c           call realpr('rnd',3,ver,5)
 c           irep=0
 c         endif
-          ITK=RND*N+1
+          ITK=(RND*FLOAT(N))+1
           DO 120 KK=1,K-1
           IF (ITK.EQ.IT(KK)) GOTO 110
   120     CONTINUE
@@ -8947,7 +9146,8 @@ c         endif
       ELSE
         IF (NIT.EQ.1) THEN
           DO 140 K=1,NQ
-  140     IT(K)=K
+          IT(K)=K
+  140     CONTINUE
         ELSE
           CALL  NCOMB(N,NQ,IT)
         ENDIF
@@ -8955,12 +9155,14 @@ c         endif
       DO 160 K=1,NQ
       ITK=IT(K)
       DO 150 J=1,NP
-  150 XX(K,J)=X(ITK,J)
-  160 YY(K)=Y(ITK)
+      XX(K,J)=X(ITK,J)
+  150 CONTINUE
+      YY(K)=Y(ITK)
+  160 CONTINUE
 C
 C STEP 2: DECOMPOSE SAMPLE MATRIX
 C -------
-      CALL RIMTRF(XX,NQ,NP,NQ,INTCH,TAU,KK,SF,SG,SH,SP)
+      CALL RIMTRFZ(XX,NQ,NP,NQ,INTCH,TAU,KK,SF,SG,SH,SP)
       IF(KK.NE.NP) GOTO 700
 C
 C STEP 3: SOLVE SYSTEM OF LINEAR EQUATIONS
@@ -8972,8 +9174,10 @@ C -------
       DO 420 I=1,N
       S=Y(I)
       DO 410 J=1,NP
-  410 S=S-XTHETA(J)*X(I,J)
-  420 RS(I)=S
+      S=S-XTHETA(J)*X(I,J)
+  410 CONTINUE
+      RS(I)=S
+  420 CONTINUE
       IF (SMIN.EQ.0.) THEN
         S=1.0E7
         DO 430 I=1,N
@@ -8982,14 +9186,15 @@ C -------
         IF (ARI.NE.0.) S=AMIN1(S,ARI)
   430   CONTINUE
         IF (S.EQ.1.0E7) GOTO 915
-        CALL FSTORD(SZ,N,K1,S0)
+        CALL FSTORDZ(SZ,N,K1,S0)
         S0=2.*S0
         IF (S0.EQ.0.) S0=S
         SRES=S0
       ENDIF
   435 D=0.
       DO 440 I=1,N
-  440 D=D+EXCHI(RS(I)/SRES)
+      D=D+EXCHI(RS(I)/SRES)
+  440 CONTINUE
       IF (SMIN.NE.0..AND.D.GT.CONST) GOTO 700
       IF (D.LE.CONST) GOTO 500
       S0=1.5*S0
@@ -9008,7 +9213,7 @@ C ------
       S0=SMIN
       DO 610 K=1,NP
       THETA(K)=XTHETA(K)
-  610 continue
+  610 CONTINUE
       DO 620 K=1,NQ
       IT1(K)=IT(K)
   620 CONTINUE
@@ -9029,8 +9234,10 @@ C --------
       DO 820 I=1,N
       S=Y(I)
       DO 810 J=1,NP
-  810 S=S-THETA(J)*X(I,J)
-  820 RS(I)=S
+      S=S-THETA(J)*X(I,J)
+  810 CONTINUE
+      RS(I)=S
+  820 CONTINUE
       K=1
       MAXIW=1
       ISIGMA=-1
@@ -9043,17 +9250,19 @@ C --------
       SWI=SWI+WI
       WI=SQRT(WI)
   840 DO 850 J=1,NP
-  850 SX(I,J)=WI*X(I,J)
+      SX(I,J)=WI*X(I,J)
+  850 CONTINUE
   860 CONTINUE
       CALL KFFACV(RS,EXPSI,EXPSP,N,NP,SMIN,FH)
       FACT=FH*SWI/FLOAT(N)
       IF (K.EQ.0) FACT=FACT*SMIN*SMIN
-      CALL KTASKV(SX,N,NP,MDX,NCOV,TAU,FACT,XX,COV)
+      CALL KTASKVZ(SX,N,NP,MDX,NCOV,TAU,FACT,XX,COV)
       IF (K.EQ.0) RETURN
       SRES=SMIN
       ICNV=1
       DO 870 J=1,NP
-  870 XTHETA(J)=THETA(J)
+      XTHETA(J)=THETA(J)
+  870 CONTINUE
       IF (MAXIW.EQ.1) CALL QRSSH(RS,EXCHI,N,NP,SRES,QR0)
   880 CONTINUE
        CALL RYWALG(X,Y,THETA,SZ,COV,PSP0,EXPSI,EXCHI,EXCHI,SRES,
@@ -9077,14 +9286,17 @@ C -------
   910 CALL MESSGE(112,'HSEST2',0)
       SMIN=SRES
       FACT=SMIN*SMIN
-      CALL SCAL(COV,FACT,NCOV,1,NCOV)
+      CALL SCALZ(COV,FACT,NCOV,1,NCOV)
   915 DO 920 J=1,NP
-  920 THETA(J)=XTHETA(J)
+      THETA(J)=XTHETA(J)
+  920 CONTINUE
       DO 940 I=1,N
       S=Y(I)
       DO 930 J=1,NP
-  930 S=S-THETA(J)*X(I,J)
-  940 RS(I)=S
+      S=S-THETA(J)*X(I,J)
+  930 CONTINUE
+      RS(I)=S
+  940 CONTINUE
       RETURN
       END
 C
@@ -9191,7 +9403,7 @@ c         IF (irep.eq.5) then
 c           call realpr('rnd',3,ver,5)
 c           irep=0
 c         endif
-          ITK=RND*N+1
+          ITK=INT(RND*FLOAT(N))+1
           DO 120 KK=1,K-1
           IF (ITK.EQ.IT(KK)) GOTO 110
   120     CONTINUE
@@ -9200,7 +9412,8 @@ c         endif
       ELSE
         IF (NIT.EQ.1) THEN
           DO 140 K=1,NQ
-  140     IT(K)=K
+          IT(K)=K
+  140     CONTINUE
         ELSE
           CALL  NCOMB(N,NQ,IT)
         ENDIF
@@ -9208,12 +9421,14 @@ c         endif
       DO 160 K=1,NQ
       ITK=IT(K)
       DO 150 J=1,NP
-  150 XX(K,J)=X(ITK,J)
-  160 YY(K)=Y(ITK)
+      XX(K,J)=X(ITK,J)
+  150 CONTINUE
+      YY(K)=Y(ITK)
+  160 CONTINUE
 C
 C STEP 2: DECOMPOSE SAMPLE MATRIX
 C -------
-      CALL RIMTRF(XX,NQ,NP,NQ,INTCH,TAU,KK,SF,SG,SH,SP)
+      CALL RIMTRFZ(XX,NQ,NP,NQ,INTCH,TAU,KK,SF,SG,SH,SP)
       IF(KK.NE.NP) GOTO 700
 C
 C STEP 3: SOLVE SYSTEM OF LINEAR EQUATIONS
@@ -9225,8 +9440,10 @@ C -------
       DO 420 I=1,N
       S=Y(I)
       DO 410 J=1,NP
-  410 S=S-XTHETA(J)*X(I,J)
-  420 RS(I)=S
+      S=S-XTHETA(J)*X(I,J)
+  410 CONTINUE
+      RS(I)=S
+  420 CONTINUE
       IF (SMIN.EQ.0.) THEN
         S=1.0E7
         DO 430 I=1,N
@@ -9235,14 +9452,15 @@ C -------
         IF (ARI.NE.0.) S=AMIN1(S,ARI)
   430   CONTINUE
         IF (S.EQ.1.0E7) GOTO 915
-        CALL FSTORD(SZ,N,K1,S0)
+        CALL FSTORDZ(SZ,N,K1,S0)
         S0=2.*S0
         IF (S0.EQ.0.) S0=S
         SRES=S0
       ENDIF
   435 D=0.
       DO 440 I=1,N
-  440 D=D+WGT(I)*EXCHI(RS(I)/SRES)
+      D=D+WGT(I)*EXCHI(RS(I)/SRES)
+  440 CONTINUE
       IF (SMIN.NE.0..AND.D.GT.CONST) GOTO 700
       IF (D.LE.CONST) GOTO 500
       S0=1.5*S0
@@ -9261,9 +9479,11 @@ C ------
       SMIN=SRES
       S0=SMIN
       DO 610 K=1,NP
-  610 THETA(K)=XTHETA(K)
+      THETA(K)=XTHETA(K)
+  610 CONTINUE
       DO 620 K=1,NQ
-  620 IT1(K)=IT(K)
+      IT1(K)=IT(K)
+  620 CONTINUE
       IF (SRES .LE. TOLS) THEN
         IERR=1
         GOTO 800
@@ -9281,8 +9501,10 @@ C --------
       DO 820 I=1,N
       S=Y(I)
       DO 810 J=1,NP
-  810 S=S-THETA(J)*X(I,J)
-  820 RS(I)=S
+      S=S-THETA(J)*X(I,J)
+  810 CONTINUE
+      RS(I)=S
+  820 CONTINUE
       K=1
       MAXIW=1
       ISIGMA=-1
@@ -9295,17 +9517,19 @@ C --------
       SWI=SWI+WI
       WI=SQRT(WI)
   840 DO 850 J=1,NP
-  850 SX(I,J)=WI*X(I,J)
+      SX(I,J)=WI*X(I,J)
+  850 CONTINUE
   860 CONTINUE
       CALL KFFACV(RS,EXPSI,EXPSP,N,NP,SMIN,FH)
       FACT=FH*SWI/FLOAT(N)
       IF (K.EQ.0) FACT=FACT*SMIN*SMIN
-      CALL KTASKV(SX,N,NP,MDX,NCOV,TAU,FACT,XX,COV)
+      CALL KTASKVZ(SX,N,NP,MDX,NCOV,TAU,FACT,XX,COV)
       IF (K.EQ.0) RETURN
       SRES=SMIN
       ICNV=1
       DO 870 J=1,NP
-  870 XTHETA(J)=THETA(J)
+      XTHETA(J)=THETA(J)
+  870 CONTINUE
       IF (MAXIW.EQ.1) CALL QRSSHW(RS,WGT,EXCHI,N,NP,SRES,QR0)
   880  CALL RYWALG(X,Y,THETA,WGT,COV,PSP0,EXPSI,EXCHI,EXCHI,SRES,
      * N,NP,MDX,MDX,NCOV,TOLR,GAM,TAU,ITYPE,ISIGMA,ICNV,MAXIW,
@@ -9328,14 +9552,17 @@ C -------
   910 CALL MESSGE(112,'HSESTW2',0)
       SMIN=SRES
       FACT=SMIN*SMIN
-      CALL SCAL(COV,FACT,NCOV,1,NCOV)
+      CALL SCALZ(COV,FACT,NCOV,1,NCOV)
   915 DO 920 J=1,NP
-  920 THETA(J)=XTHETA(J)
+      THETA(J)=XTHETA(J)
+  920 CONTINUE
       DO 940 I=1,N
       S=Y(I)
       DO 930 J=1,NP
-  930 S=S-THETA(J)*X(I,J)
-  940 RS(I)=S
+      S=S-THETA(J)*X(I,J)
+  930 CONTINUE
+      RS(I)=S
+  940 CONTINUE
       RETURN
       END
 C-----------------------------------------------------------------------
@@ -11140,7 +11367,7 @@ C  File KVMAIN.F  Main subroutines of Chapter 4
 C
 C-----------------------------------------------------------------------
 C
-      SUBROUTINE KIEDCH(WGT,N,C,ITYPE,D,E)
+      SUBROUTINE KIEDCHZ(WGT,N,C,ITYPE,D,E)
 C.......................................................................
 C
 C   COPYRIGHT 1992 Alfio Marazzi
@@ -11160,13 +11387,14 @@ C
 C  MALLOWS CASE
 C
       C2=C*C
-      CALL GAUSS(1,C,PC)
-      CALL XERF(2,C,PD)
+      CALL GAUSSZ(1,C,PC)
+      CALL XERFZ(2,C,PD)
       G1=C2+(1.-C2)*(2.*PC-1.)-2.*C*PD
       F1=2.*PC-1.
       DO 20 I=1,N
       D(I)=F1*WGT(I)
-   20 E(I)=G1*WGT(I)*WGT(I)
+      E(I)=G1*WGT(I)*WGT(I)
+   20 CONTINUE
       RETURN
 C
 C  SCHWEPPE CASE
@@ -11174,10 +11402,11 @@ C
    30 DO 40 I=1,N
       Z=C*WGT(I)
       Z2=Z*Z
-      CALL GAUSS(1,Z,PC)
-      CALL XERF(2,Z,PD)
+      CALL GAUSSZ(1,Z,PC)
+      CALL XERFZ(2,Z,PD)
       E(I)=Z2+(1.-Z2)*(2.*PC-1.)-2.*Z*PD
-   40 D(I)=2.*PC-1.
+      D(I)=2.*PC-1.
+   40 CONTINUE
       RETURN
       END
 C
@@ -11254,7 +11483,7 @@ C
 C
 C-----------------------------------------------------------------------
 C
-      SUBROUTINE KIASCV(XT,K,NP,MDX,NCOV,FU,FB,COV)
+      SUBROUTINE KIASCVZ(XT,K,NP,MDX,NCOV,FU,FB,COV)
 C.......................................................................
 C
 C   COPYRIGHT 1992 Alfio Marazzi
@@ -11281,48 +11510,57 @@ C
       DO 20 J=1,K
       DO 10 I=1,J
       L=L+1
-   10 COV(L)=XT(I,J)
+      COV(L)=XT(I,J)
+   10 CONTINUE
    20 CONTINUE
 C
 C  INVERT U UPON ITSELF
 C
       DO 30 J=1,K
-   30 XT(J,J)=1./XT(J,J)
+      XT(J,J)=1./XT(J,J)
+   30 CONTINUE
       IF (K.EQ.1) GOTO 60
       KM1=K-1
       DO 50 I=1,KM1
       IP1=I+1
-      DO 50 J=IP1,K
+      DO 45 J=IP1,K
       JM1=J-1
       SM=DZERO
       DO 40 L=I,JM1
-   40 SM=SM+XT(I,L)*DBLE(XT(L,J))
-   50 XT(I,J)=-SM*XT(J,J)
+      SM=SM+XT(I,L)*DBLE(XT(L,J))
+   40 CONTINUE 
+      XT(I,J)=-SNGL(SM)*XT(J,J)
+   45 CONTINUE
+   50 CONTINUE
 C
 C  REPLACE U**(-1) BY UPPER TRIANG.PART OF (U*U**T)**(-1)
 C
    60 CONTINUE
-      DO 80 I=1,K
+      DO 90 I=1,K
       DO 80 J=I,K
       SM=DZERO
       DO 70 L=J,K
-   70 SM=SM+XT(I,L)*DBLE(XT(J,L))
-   80 XT(I,J)=SM
+      SM=SM+XT(I,L)*DBLE(XT(J,L))
+   70 CONTINUE
+      XT(I,J)=SNGL(SM)
+   80 CONTINUE
+   90 CONTINUE
 C
 C  INTERCH. (U*U**T)**(-1) WITH COV(1)...COV(K*(K+1)/2)
 C
       L=0
-      DO 100 J=1,K
-      DO 90 I=1,J
+      DO 130 J=1,K
+      DO 120 I=1,J
       L=L+1
       AIJ=XT(I,J)
       XT(I,J)=COV(L)
-   90 COV(L)=AIJ
-  100 CONTINUE
+      COV(L)=AIJ
+  120 CONTINUE
+  130 CONTINUE
 C
 C  MULTIPLY COV BY THE SCALE FACTOR FU
 C
-      IF (FU.GT.0.) CALL SCAL(COV,FU,NCOV,1,NCOV)
+      IF (FU.GT.0.) CALL SCALZ(COV,FU,NCOV,1,NCOV)
 C
 C  COMPLETE COV
 C
@@ -11342,7 +11580,7 @@ C
 C
 C-----------------------------------------------------------------------
 C
-      SUBROUTINE KFASCV(XT,COV,K,NP,MDX,NCOV,F,SE,SG,IP)
+      SUBROUTINE KFASCVZ(XT,COV,K,NP,MDX,NCOV,F,SE,SG,IP)
 C.......................................................................
 C
 C   COPYRIGHT 1992 Alfio Marazzi
@@ -11368,24 +11606,25 @@ C
       IF (K.EQ.NP) GOTO 130
       DO 120 II=1,K
       I=II
-  120 CALL VSV(I,KP1,NP,XT(I,1),MDX,SG(I),COV,NCOV,SE)
+      CALL VSV(I,KP1,NP,XT(I,1),MDX,SG(I),COV,NCOV,SE)
+  120 CONTINUE
   130 CONTINUE
       DO 150 JJ=1,LDIAG
       J=LDIAG-JJ+1
       IF (IP(J).EQ.J) GOTO 150
       L=IP(J)
-      CALL EXCH(COV,NP,NCOV,J,L)
+      CALL EXCHZ(COV,NP,NCOV,J,L)
   150 CONTINUE
 C
 C  MULTIPLY COV BY THE SCALE FACTOR F
 C
-      IF (F.GT.0.) CALL SCAL(COV,F,NCOV,1,NCOV)
+      IF (F.GT.0.) CALL SCALZ(COV,F,NCOV,1,NCOV)
       RETURN
       END
 C
 C-----------------------------------------------------------------------
 C
-      SUBROUTINE KTASKV(X,N,NP,MDX,NCOV,TAU,F,A,COV)
+      SUBROUTINE KTASKVZ(X,N,NP,MDX,NCOV,TAU,F,A,COV)
 C.......................................................................
 C
 C   COPYRIGHT 1992 Alfio Marazzi
@@ -11410,35 +11649,38 @@ C  COMPUTE X**T*X AND STORE IT TEMPORARILY IN COV
 C
       L=0
       DO 60 I=1,NP
-      DO 60 J=1,I
+      DO 50 J=1,I
       L=L+1
       SM1=DZERO
-      DO 50 K=1,N
-   50 SM1=SM1+DBLE(X(K,I))*X(K,J)
-      COV(L)=SM1
+      DO 20 K=1,N
+      SM1=SM1+DBLE(X(K,I))*X(K,J)
+   20 CONTINUE
+      COV(L)=SNGL(SM1)
+   50 CONTINUE
    60 CONTINUE
 C
 C  COMPUTE A LOWER TRIANGULAR MATRIX A SUCH THAT
 C  (X**T*X)**(-1)=A**T*A; SET COV=A**T*A.
 C
-      CALL MCHL(COV,NP,NN,INFO)
+      CALL MCHLZ(COV,NP,NN,INFO)
       IF (INFO.EQ.0) GOTO 65
       CALL MESSGE(400+INFO,'KTASKV',0)
       RETURN
    65 DO 70 L=1,NN
-   70 A(L)=COV(L)
-      CALL MINV(A,NP,NN,TAU,ISING)
+      A(L)=COV(L)
+   70 CONTINUE
+      CALL MINVZ(A,NP,NN,TAU,ISING)
       IF (ISING.EQ.0) GOTO 75
       CALL MESSGE(450,'KTASKV',0)
       RETURN
-   75 CALL MTT1(A,COV,NP,NN)
-      IF (F.GT.0.) CALL SCAL(COV,F,NCOV,1,NCOV)
+   75 CALL MTT1Z(A,COV,NP,NN)
+      IF (F.GT.0.) CALL SCALZ(COV,F,NCOV,1,NCOV)
       RETURN
       END
 C
 C-----------------------------------------------------------------------
 C
-      SUBROUTINE KTASKW(X,D,E,N,NP,MDX,MDSC,NCOV,TAU,IA,F,F1,
+      SUBROUTINE KTASKWZ(X,D,E,N,NP,MDX,MDSC,NCOV,TAU,IA,F,F1,
      1                  IAINV,A,S1INV,S2,AINV,COV,SC)
 C.......................................................................
 C
@@ -11467,15 +11709,16 @@ C  IF IA.EQ.-1 SET S1INV=F1*A
 C
       IF (IA.NE.-1) GOTO 40
       DO 35 L=1,NCOV
-   35 S1INV(L)=A(L)
-      IF (F1.GT.0.) CALL SCAL(S1INV,F1,NN,1,NN)
+      S1INV(L)=A(L)
+   35 CONTINUE
+      IF (F1.GT.0.) CALL SCALZ(S1INV,F1,NN,1,NN)
    40 CONTINUE
 C
 C  IF IA.EQ.0 SET S1INV=F1*(A**T)*A
 C
       IF (IA.NE.0) GOTO 45
-      CALL MTT1(A,S1INV,NP,NN)
-      IF (F1.GT.0.) CALL SCAL(S1INV,F1,NN,1,NN)
+      CALL MTT1Z(A,S1INV,NP,NN)
+      IF (F1.GT.0.) CALL SCALZ(S1INV,F1,NN,1,NN)
    45 CONTINUE
 C
 C  COMPUTE S2=X**T*E*X/N (AND STORE IT IN S2).
@@ -11483,17 +11726,18 @@ C  IF IA.EQ.1 COMPUTE S1=X**T*D*X/N (AND STORE IT TEMPORARILY IN COV)
 C
       L=0
       DO 60 I=1,NP
-      DO 60 J=1,I
+      DO 50 J=1,I
       L=L+1
       SM2=DZERO
       SM1=DZERO
-      DO 50 K=1,N
+      DO 20 K=1,N
       DXX=DBLE(X(K,I))*X(K,J)
       SM2=SM2+DXX*E(K)
       IF (IA.EQ.1) SM1=SM1+DXX*D(K)
+   20 CONTINUE
+      S2(L)=SNGL(SM2)/XN1
+      IF (IA.EQ.1) COV(L)=SNGL(SM1)/XN1
    50 CONTINUE
-      S2(L)=SM2/XN1
-      IF (IA.EQ.1) COV(L)=SM1/XN1
    60 CONTINUE
 C
 C  IF IA .EQ.1 COMPUTE A LOWER TRIANGULAR MATRIX A (AND ITS INVERSE)
@@ -11502,7 +11746,7 @@ C  OF A IN AINV)
 C
 C
       IF (IA.EQ.-1.OR.IA.EQ.0) GOTO 80
-      CALL MCHL(COV,NP,NN,INFO)
+      CALL MCHLZ(COV,NP,NN,INFO)
       IF (INFO.EQ.0) GOTO 65
       CALL MESSGE(400+INFO,'KTASKW',0)
       IAINV=400+INFO
@@ -11510,31 +11754,33 @@ C
    65 CONTINUE
       DO 70 L=1,NN
       IF (IAINV.EQ.1) AINV(L)=COV(L)
-   70 A(L)=COV(L)
-      CALL MINV(A,NP,NN,TAU,ISING)
+      A(L)=COV(L)
+   70 CONTINUE
+      CALL MINVZ(A,NP,NN,TAU,ISING)
       IF (ISING.EQ.0) GOTO 75
       CALL MESSGE(450,'KTASKW',0)
       IAINV=450
       RETURN
    75 CONTINUE
-      CALL MTT1(A,S1INV,NP,NN)
+      CALL MTT1Z(A,S1INV,NP,NN)
 C
 C  COMPUTE S2*S1**(-1) (AND STORE IT IN SC)
 C
-   80 CALL MSS(S2,S1INV,SC,NP,NN,MDSC)
+   80 CALL MSSZ(S2,S1INV,SC,NP,NN,MDSC)
 C
 C  COMPUTE COV=F*S1**(-1)*S2*S1**(-1)
 C
-      CALL MSF1(S1INV,SC,COV,NP,NN,MDSC)
-      IF (F.GT.0.) CALL SCAL(COV,F,NN,1,NN)
+      CALL MSF1Z(S1INV,SC,COV,NP,NN,MDSC)
+      IF (F.GT.0.) CALL SCALZ(COV,F,NN,1,NN)
 C
 C  IF IAINV.EQ.1 (AND IA.NE.1) COMPUTE THE INVERSE
 C  OF A AND STORE IT IN AINV
 C
       IF (IA.EQ.1.OR.IAINV.EQ.0) RETURN
       DO 90 L=1,NN
-   90 AINV(L)=A(L)
-      CALL MINV(AINV,NP,NN,TAU,ISING)
+      AINV(L)=A(L)
+   90 CONTINUE
+      CALL MINVZ(AINV,NP,NN,TAU,ISING)
       IF (ISING.NE.0) CALL MESSGE(460,'KTASKW',0)
       IAINV=460
       RETURN
@@ -11599,7 +11845,8 @@ C
       GOTO 10
     5 X=RS(I)/SIGMA
       D(I)=EXPSP(X)*WGT(I)
-   10 E(I)=(EXPSI(X)*WGT(I))**2
+      E(I)=(EXPSI(X)*WGT(I))**2
+   10 CONTINUE
       RETURN
 C
 C  SCHWEPPE CASE
@@ -11650,7 +11897,8 @@ C
       S2=S2/FLOAT(N)
       DO 20 I=1,N
       D(I)=S1*WGT(I)
-   20 E(I)=S2*WGT(I)*WGT(I)
+      E(I)=S2*WGT(I)*WGT(I)
+   20 CONTINUE
       RETURN
 C
 C  SCHWEPPE CASE
@@ -11662,9 +11910,11 @@ C
       DO 40 J=1,N
       X=RS(J)/SIGMA/WGT(I)
       S1=S1+EXPSP(X)
-   40 S2=S2+(EXPSI(X))**2
+      S2=S2+(EXPSI(X))**2
+   40 CONTINUE
    45 D(I)=S1/FLOAT(N)
-   50 E(I)=S2/FLOAT(N)*WGT(I)*WGT(I)
+      E(I)=S2/FLOAT(N)*WGT(I)*WGT(I)
+   50 CONTINUE
       RETURN
       END
 C-----------------------------------------------------------------------
@@ -11763,7 +12013,7 @@ C
 C
 C-----------------------------------------------------------------------
 C
-      REAL FUNCTION RANK(N,II)
+      REAL FUNCTION RANKZ(N,II)
 C.......................................................................
 C
 C   COPYRIGHT 1992 Alfio Marazzi
@@ -11773,11 +12023,11 @@ C.......................................................................
 C
       I=II
       IF(I.GT.N/2) GOTO 10
-      RANK=(I/2)*4+MOD(I,2)
+      RANKZ=(I/2)*4+MOD(I,2)
       RETURN
    10 CONTINUE
       I=N-I+1
-      RANK=(I/2)*4+3*MOD(I,2)-1
+      RANKZ=(I/2)*4+3*MOD(I,2)-1
       RETURN
       END
 C
@@ -11818,8 +12068,10 @@ C  AUXILIARY ROUTINE FOR LIBETU
 C
       DIMENSION AUX(N)
       EXTERNAL CHI,FEXT
-      CHIFI=0.*AUX(1)
-      CALL XERF(2,S,PHI)
+      DATA NCALL,FX1/0,0.0/
+      IF (NCALL.EQ.1) FX1=FEXT(1.0)
+      CHIFI=FX1*AUX(1)
+      CALL XERFZ(2,S,PHI)
       CHIFI=CHI(S)*PHI
       RETURN
       END
@@ -11831,7 +12083,7 @@ C  File LCMAIN.F  Main subroutines of Chapter 1
 C
 C-----------------------------------------------------------------------
 C
-      SUBROUTINE LIBETH(D,BTA)
+      SUBROUTINE LIBETHZ(D,BTA)
       COMMON/BETA/BETA,BET0
 C.......................................................................
 C
@@ -11844,8 +12096,8 @@ C  COMPUTE BETA AS A FUNCTION OF D
 C
       IF (D.LE.0.) CALL MESSGE(500,'LIBETH',1)
       D2=D*D
-      CALL GAUSS(1,D,PD)
-      CALL XERF(2,D,DD)
+      CALL GAUSSZ(1,D,PD)
+      CALL XERFZ(2,D,DD)
       BETA=-D*DD+PD-.5+D2*(1.-PD)
       BTA=BETA
       RETURN
@@ -11886,7 +12138,7 @@ C
 C
 C-----------------------------------------------------------------------
 C
-      SUBROUTINE LIEPSH(C,EPSI2,EPSIP)
+      SUBROUTINE LIEPSHZ(C,EPSI2,EPSIP)
 C.......................................................................
 C
 C   COPYRIGHT 1992 Alfio Marazzi
@@ -11898,8 +12150,8 @@ C  EXPECTED VALUE OF PSI(X,C)**2 AND PSP(X,C)
 C  (WHERE X IS A STANDARD NORMAL DEVIATE)
 C
       IF (C.LE.0.) CALL MESSGE(500,'LIEPSH',1)
-      CALL GAUSS(1,C,PC)
-      CALL XERF(2,C,PD)
+      CALL GAUSSZ(1,C,PC)
+      CALL XERFZ(2,C,PD)
       C2=C*C
       EPSI2=C2+(1.-C2)*(2.*PC-1.)-2.*C*PD
       EPSIP=(2.*PC-1.)
@@ -11946,7 +12198,7 @@ C
 C
 C-----------------------------------------------------------------------
 C
-      SUBROUTINE LIBET0(BT0)
+      SUBROUTINE LIBET0Z(BT0)
       COMMON/BETA/BETA,BET0
 C.......................................................................
 C
@@ -11963,7 +12215,7 @@ C
 C
 C-----------------------------------------------------------------------
 C
-      SUBROUTINE LICLLS(Y,N,THETA,SIGMA,VAR,RS)
+      SUBROUTINE LICLLSZ(Y,N,THETA,SIGMA,VAR,RS)
 C.......................................................................
 C
 C   COPYRIGHT 1992 Alfio Marazzi
@@ -11981,17 +12233,19 @@ C  COMPUTE THETA
 C
       SUM=0.D0
       DO 100 I=1,N
-  100 SUM=SUM+DBLE(Y(I))
-      THETA=SUM/FLOAT(N)
+      SUM=SUM+DBLE(Y(I))
+  100 CONTINUE
+      THETA=SNGL(SUM)/FLOAT(N)
 C
 C  COMPUTE SIGMA, UNSCALED VAR. AND RESIDUALS
 C
       SUM=0.D0
       DO 200 I=1,N
       RS(I)=Y(I)-THETA
-  200 SUM=SUM+RS(I)*DBLE(RS(I))
+      SUM=SUM+DBLE(RS(I)*RS(I))
+  200 CONTINUE
       DF=FLOAT(N-1)
-      VAR=SUM/DF
+      VAR=SNGL(SUM)/DF
       SIGMA=SQRT(VAR)
       VAR=VAR/FLOAT(N)
       RETURN
@@ -11999,7 +12253,7 @@ C
 C
 C-----------------------------------------------------------------------
 C
-      SUBROUTINE LILARS(Y,N,ISORT,THETA,SIGMA,XMAD,VAR,RS)
+      SUBROUTINE LILARSZ(Y,N,ISORT,THETA,SIGMA,XMAD,VAR,RS)
 C.......................................................................
 C
 C   COPYRIGHT 1992 Alfio Marazzi
@@ -12014,11 +12268,13 @@ C
 C
       IF (N.LE.0) CALL MESSGE(500,'LILARS',1)
       DO 100 I=1,N
-  100 RS(I)=Y(I)
-      CALL LMDD(RS,Y,N,ISORT,THETA,XMAD,SIGMA)
+      RS(I)=Y(I)
+  100 CONTINUE
+      CALL LMDDZ(RS,Y,N,ISORT,THETA,XMAD,SIGMA)
       VAR=PI*SIGMA*SIGMA/FLOAT(2*N)
       DO 200 I=1,N
-  200 RS(I)=RS(I)-THETA
+      RS(I)=RS(I)-THETA
+  200 CONTINUE
       RETURN
       END
 C
@@ -12060,7 +12316,8 @@ C
 C  STEP2  -  COMPUTE RESIDUALS Y-THETA
 C
    10 DO 20 I=1,N
-   20 RS(I)=Y(I)-THETA
+      RS(I)=Y(I)-THETA
+   20 CONTINUE
       IF (ISIGMA.LT.0.AND.NIT.EQ.1) GOTO 50
       IF (ISIGMA.EQ.0) GOTO 50
 C
@@ -12076,13 +12333,15 @@ C  STEP4  -  WINSORIZE THE RESIDUALS
 C
    50 DO 55 I=1,N
       RSS=RS(I)/SIGMB
-   55 RS(I)=EXPSI(RSS)*SIGMB
+      RS(I)=EXPSI(RSS)*SIGMB
+   55 CONTINUE
 C
 C  STEP5  -  COMPUTE THE INCREMENT
 C
       D=0.
       DO 60 I=1,N
-   60 D=D+RS(I)
+      D=D+RS(I)
+   60 CONTINUE
       D=D/FLOAT(N)
 C
 C  STEP6  -  UPDATE THETA
@@ -12125,7 +12384,7 @@ C
 C
 C-----------------------------------------------------------------------
 C
-      SUBROUTINE LYHDLE(Y,N,ISORT,K,TOL,MAXIT,NIT,HDLE)
+      SUBROUTINE LYHDLEZ(Y,N,ISORT,K,TOL,MAXIT,NIT,HDLE)
 C.......................................................................
 C
 C   COPYRIGHT 1992 Alfio Marazzi
@@ -12144,7 +12403,7 @@ C
       IF (.NOT.NPRCHK) CALL MESSGE(500,'LYHDLE',1)
       M=N*(N+1)/2
       NPRCHK=K.LT.M.AND.K.GT.1
-      IF (ISORT.NE.0) CALL SRT1(Y,N,1,N)
+      IF (ISORT.NE.0) CALL SRT1Z(Y,N,1,N)
       IF (NPRCHK) GO TO 30
       IF (K.EQ.1) GOTO 10
       IF (K.EQ.M) GOTO 20
@@ -12229,7 +12488,7 @@ C
 C
 C-----------------------------------------------------------------------
 C
-      SUBROUTINE LIINDS(ALPHA,N,K,ALPHA1)
+      SUBROUTINE LIINDSZ(ALPHA,N,K,ALPHA1)
 C.......................................................................
 C
 C   COPYRIGHT 1992 Alfio Marazzi
@@ -12252,7 +12511,7 @@ C
       IF (ABS(XI-FLOAT(I)).LE.1.E-6) GOTO 50
     5 XI=FLOAT(I)
       X=(2.*XI-TNUM)/TDEN
-      CALL GAUSS(1,X,PH)
+      CALL GAUSSZ(1,X,PH)
       IF (PH.LT.GAM) GOTO 10
       I=I-1
       GOTO 5
@@ -12262,8 +12521,8 @@ C
       X0=X
    20 XI1=FLOAT(I1)
       X1=(2.*XI1-TNUM)/TDEN
-      CALL GAUSS(1,X0,PH0)
-      CALL GAUSS(1,X1,PH1)
+      CALL GAUSSZ(1,X0,PH0)
+      CALL GAUSSZ(1,X1,PH1)
       IF (PH0.LT.GAM.AND.PH1.GE.GAM) GOTO 30
       I0=I0+1
       I1=I0+1
@@ -12289,7 +12548,7 @@ C
 C
 C-----------------------------------------------------------------------
 C
-      SUBROUTINE LIINDH(ALPHA,N,K,ALPHA1)
+      SUBROUTINE LIINDHZ(ALPHA,N,K,ALPHA1)
 C.......................................................................
 C
 C   COPYRIGHT 1992 Alfio Marazzi
@@ -12315,7 +12574,7 @@ C
     5 CONTINUE
       XI=FLOAT(I)
       X=(2.*XI-1.-EW)/SQ
-      CALL GAUSS(1,X,PH)
+      CALL GAUSSZ(1,X,PH)
       IF (PH.LT.ALFA) GOTO 10
       I=I-1
       GOTO 5
@@ -12325,8 +12584,8 @@ C
       X0=X
    20 XI1=FLOAT(I1)
       X1=(2.*XI1-1.-EW)/SQ
-      CALL GAUSS(1,X0,PH0)
-      CALL GAUSS(1,X1,PH1)
+      CALL GAUSSZ(1,X0,PH0)
+      CALL GAUSSZ(1,X1,PH1)
       IF(PH0.LT.ALFA.AND.PH1.GE.ALFA) GOTO 30
       I0=I0+1
       I1=I0+1
@@ -12352,7 +12611,7 @@ C
 C
 C-----------------------------------------------------------------------
 C
-      SUBROUTINE LITTST(X,Y,M,N,ALPHA,DELTA,S1,S2,SIGMA,TL,TU,P)
+      SUBROUTINE LITTSTZ(X,Y,M,N,ALPHA,DELTA,S1,S2,SIGMA,TL,TU,P)
 C.......................................................................
 C
 C   COPYRIGHT 1992 Alfio Marazzi
@@ -12372,12 +12631,14 @@ C  COMPUTE AN ESTIMATE OF DELTA
 C
       SUM=0.D0
       DO 100 I=1,M
-  100 SUM=SUM+DBLE(X(I))
-      XBAR=SUM/FLOAT(M)
+      SUM=SUM+DBLE(X(I))
+  100 CONTINUE
+      XBAR=SNGL(SUM)/FLOAT(M)
       SUM=0.D0
       DO 200 I=1,N
-  200 SUM=SUM+DBLE(Y(I))
-      YBAR=SUM/FLOAT(N)
+      SUM=SUM+DBLE(Y(I))
+  200 CONTINUE
+      YBAR=SNGL(SUM)/FLOAT(N)
       DELTA=YBAR-XBAR
 C
 C  COMPUTE S1, S2 AND SIGMA
@@ -12385,15 +12646,17 @@ C
       SUM=0.D0
       DO 300 I=1,M
       RS=X(I)-XBAR
-  300 SUM=SUM+RS*DBLE(RS)
+      SUM=SUM+RS*DBLE(RS)
+  300 CONTINUE
       DF1=FLOAT(M-1)
-      S1=SUM
+      S1=SNGL(SUM)
       SUM=0.D0
       DO 400 I=1,N
       RS=Y(I)-YBAR
-  400 SUM=SUM+RS*DBLE(RS)
+      SUM=SUM+RS*DBLE(RS)
+  400 CONTINUE
       DF2=FLOAT(N-1)
-      S2=SUM
+      S2=SNGL(SUM)
       SIGMA=SQRT((S1+S2)/(DF1+DF2))
       S1=SQRT(S1/DF1)
       S2=SQRT(S2/DF2)
@@ -12401,7 +12664,7 @@ C
 C  COMPUTE CONFIDENCE INTERVAL FOR DELTA WITH COEFF. 1-2*ALPHA AND P
 C
       IFN=INT(DF1+DF2)
-      CALL TQUANT(ALPHA,IFN,T)
+      CALL TQUANTZ(ALPHA,IFN,T)
       EM=FLOAT(M)
       EN=FLOAT(N)
       DEN=SIGMA*SQRT(1./EM+1./EN)
@@ -12409,7 +12672,7 @@ C
       TL=DELTA-DEL
       TU=DELTA+DEL
       T=DELTA/DEN
-      CALL PROBST(T,IFN,P)
+      CALL PROBSTZ(T,IFN,P)
       P=1-P
       RETURN
       END
@@ -12484,15 +12747,16 @@ C
         X(I+M,1)=1.
         X(I+M,2)=1.
    20 CONTINUE
-      DO 30 I=1,MPN
+      DO 40 I=1,MPN
         SY(I)=Z(I)
         DO 30 J=1,2
         SX(I,J)=X(I,J)
    30 CONTINUE
+   40 CONTINUE
 C
 C  INITIAL VALUES OF THETA AND SIGMA
 C
-      CALL RILARS(SX,SY,MPN,NP,MPN,MPN,TOL,NIT,K,KODE,
+      CALL RILARSZ(SX,SY,MPN,NP,MPN,MPN,TOL,NIT,K,KODE,
      +     SIG0,THETA,RS1,RS2,SF,SG,SH)
       IF (SIG0.LE.1.E-3) SIG0=1.
 C
@@ -12538,14 +12802,14 @@ C
 C  COMPUTE TAU-TEST SIGNIFICANCE
 C
       CALL TFTAUT(RS1,RS2,SY,EXRHO,MPN,2,1,SIGMAF,ITYPE,S0,S1,FTAU)
-      CALL CHISQ(1,1,FTAU*EPSIP/EPSI2,P)
+      CALL CHISQZ(1,1,FTAU*EPSIP/EPSI2,P)
       P=1.-P
       RETURN
       END
 C
 C-----------------------------------------------------------------------
 C
-      SUBROUTINE LYMNWT(X,Y,M,N,ISORT,K,TOL,MAXIT,NIT,TMNWT)
+      SUBROUTINE LYMNWTZ(X,Y,M,N,ISORT,K,TOL,MAXIT,NIT,TMNWT)
 C.......................................................................
 C
 C   COPYRIGHT 1992 Alfio Marazzi
@@ -12565,8 +12829,8 @@ C
       NPRCHK=K.LT.MN.AND.K.GT.0
       SCONST=FLOAT(K-MN)-ZETA
       IF (ISORT.EQ.0) GOTO 5
-      CALL SRT1(X,M,1,M)
-      CALL SRT1(Y,N,1,N)
+      CALL SRT1Z(X,M,1,M)
+      CALL SRT1Z(Y,N,1,N)
     5 IF (NPRCHK) GO TO 30
       IF (K.EQ.0) GOTO 10
       IF (K.EQ.MN) GOTO 20
@@ -12610,7 +12874,7 @@ C
 C
 C----------------------------------------------------------------------
 C
-      SUBROUTINE LIINDW(ALPHA,M,N,K,ALPHA1)
+      SUBROUTINE LIINDWZ(ALPHA,M,N,K,ALPHA1)
 C.......................................................................
 C
 C   COPYRIGHT 1992 Alfio Marazzi
@@ -12635,7 +12899,7 @@ C
       IF (ABS(XI-FLOAT(I)).LE.1.E-6) GOTO 50
     5 XI=FLOAT(I)
       X=(2.*XI-TNUM)/TDEN
-      CALL GAUSS(1,X,PH)
+      CALL GAUSSZ(1,X,PH)
       IF (PH.LT.GAM) GOTO 10
       I=I-1
       GOTO 5
@@ -12645,8 +12909,8 @@ C
       X0=X
    20 XI1=FLOAT(I1)
       X1=(2.*XI1-TNUM)/TDEN
-      CALL GAUSS(1,X0,PH0)
-      CALL GAUSS(1,X1,PH1)
+      CALL GAUSSZ(1,X0,PH0)
+      CALL GAUSSZ(1,X1,PH1)
       IF (PH0.LT.GAM.AND.PH1.GE.GAM) GOTO 30
       I0=I0+1
       I1=I0+1
@@ -12765,12 +13029,14 @@ C  HOUSEHOLDER TRANSFORMATIONS OF THE OBSERVATIONS VECTOR
 C
       DO 20 JJ=1,NP
       J=JJ
-   20 CALL H12(2,J,J+1,N,XT(1,J),1,SH(J),Y,1,N,1,N)
+      CALL H12Z(2,J,J+1,N,XT(1,J),1,SH(J),Y,1,N,1,N)
+   20 CONTINUE
 C
 C  SOLVE THE TRANSFORMED LS-PROBLEM
 C
       DO 30 I=1,N
-   30 THETA(I)=Y(I)
+      THETA(I)=Y(I)
+   30 CONTINUE
       CALL SOLV(XT,THETA,NP,NP,MDX,MDT)
 C
 C  COMPUTE THE TRANSFORMED RESIDUAL VECTOR
@@ -12781,7 +13047,7 @@ C  COMPUTE SIGMA
 C
       SIGMA=0.
       IF (NP.EQ.N) GOTO 80
-      CALL NRM2(RS,N,1,N,SIGMA)
+      CALL NRM2Z(RS,N,1,N,SIGMA)
       SIGMA=SIGMA/SQRT(FLOAT(N-NP))
    80 CONTINUE
       RETURN
@@ -12794,7 +13060,7 @@ C  File MXMAIN.F  Main subroutines of Chapter 9
 C
 C-----------------------------------------------------------------------
 C
-      SUBROUTINE MIRTSR(X,Y,N,NP,MDX,MDT,NCOV,ITYPE,C,D,TOL,GAM,
+      SUBROUTINE MIRTSRZ(X,Y,N,NP,MDX,MDT,NCOV,ITYPE,C,D,TOL,GAM,
      1                  MAXIT,MAXIS,TAU,K,NIT,SIGMA,THETA,COV,T,
      2                  RS,DELTA,SC,SE,SF,SG,SH,IP)
 C.......................................................................
@@ -12829,26 +13095,26 @@ C
 C  HOUSEHOLDER TRANSFORMATION OF THE DESIGN MATRIX
 C  AND DETERMINATION OF THE PSEUDORANK K
 C
-      CALL RIMTRF(X,N,NP,MDX,1,TAU,K,SF,SG,SH,IP)
+      CALL RIMTRFZ(X,N,NP,MDX,1,TAU,K,SF,SG,SH,IP)
 C
 C  LEAST SQUARES SOLUTION FOR THE COMPLETE MODEL
 C
-      CALL RICLLS(X,Y,N,NP,MDX,MDT,K,0,1,SIGMA,THETA,RS,SC,
+      CALL RICLLSZ(X,Y,N,NP,MDX,MDT,K,0,1,SIGMA,THETA,RS,SC,
      1            SE,SF,SG,SH,IP)
 C
 C  COMPUTE UNSCALED COVARIANCE MATRIX OF PARAMETER ESTIMATES
 C  IN TRANSFORMED COORD. SYSTEM
 C
-      CALL KIASCV(X,K,NP,MDX,NCOV,1.,0.,COV)
+      CALL KIASCVZ(X,K,NP,MDX,NCOV,1.,0.,COV)
       IF (ITYPE.EQ.0) GOTO 50
 C
 C  COMPUTE AN HUBER ESTIMATE
 C
-      CALL RIBETH(SC,N,D,ITYPE,BETA1)
-      CALL LIEPSH(C,EPSI2,EPSIP)
+      CALL RIBETHZ(SC,N,D,ITYPE,BETA1)
+      CALL LIEPSHZ(C,EPSI2,EPSIP)
       FCTI=EPSI2/(EPSIP**2)
       SIG0=SIGMA
-      CALL SCAL(COV,FCTI,NCOV,1,NCOV)
+      CALL SCALZ(COV,FCTI,NCOV,1,NCOV)
       CALL RYHALG(X,Y,THETA,SC,COV,PSY,CHI,CHI,SIG0,
      1            N,NP,MDX,MDT,NCOV,K,TOL,GAM,TAU,ITYPE,
      2            0,0,0,1,1,MAXIT,MAXIS,-1,NIT,SIGMA,
@@ -12860,7 +13126,7 @@ C  ESTIMATES IN ORIGINAL COORD. SYSTEM
 C
    50 IF (ITYPE.EQ.0) SCLF=SIGMA**2
       IF (ITYPE.EQ.1) SCLF=FCTF/FCTI
-      CALL KFASCV(X,COV,K,NP,MDX,NCOV,SCLF,SE,SG,IP)
+      CALL KFASCVZ(X,COV,K,NP,MDX,NCOV,SCLF,SE,SG,IP)
 C
 C  COMPUTE T-VALUES
 C
@@ -12875,7 +13141,7 @@ C
 C
 C-----------------------------------------------------------------------
 C
-      SUBROUTINE MFRAGR(X,Y,VP,N,NP,MDX,NCOV,NC,ITYPE,C,TOL,GAM,
+      SUBROUTINE MFRAGRZ(X,Y,VP,N,NP,MDX,NCOV,NC,ITYPE,C,TOL,GAM,
      1                  MAXIT,SIGMAC,SIGMAR,CPC,CPR,IPC,IPR,
      2                  SC1,SC2,SC3,SC4,SC5,SC6,SC7,IA,IB,IC)
 C.......................................................................
@@ -12907,9 +13173,9 @@ C
       IF (ITYPE.EQ.0) GOTO 10
       IPSI=1
       CC=C
-      CALL LIEPSH(C,EPSI2,EPSIP)
+      CALL LIEPSHZ(C,EPSI2,EPSIP)
       FCTI=EPSI2/(EPSIP**2)
-      ALPHA=EPSI2/EPSIP*2.
+      ALPHA=2.*EPSI2/EPSIP
    10 CONTINUE
       N0=0
       L=0
@@ -12925,7 +13191,8 @@ C
    40 CONTINUE
       IBMAX=2**N0
       DO 50 I=1,N
-   50 SC1(I)=Y(I)
+      SC1(I)=Y(I)
+   50 CONTINUE
       SIGMC2=SIGMAC*SIGMAC
 C
 C  INTRODUCE VARIABLES WITH POSITIVE PRIORITY
@@ -12944,7 +13211,8 @@ C
 C  LOCATE POSITION OF VARIABLE JINC
 C
       DO 80 J=1,NP
-   80 IF (IC(J).EQ.JINC) JPOS=J
+      IF (IC(J).EQ.JINC) JPOS=J
+   80 CONTINUE
 C
 C  INTRODUCE VARIABLE JINC (POSITION JPOS)
 C
@@ -12961,14 +13229,15 @@ C
 C  COMPUTE ROBUST CP
 C
       LCOV=L*(L+1)/2
-      CALL KIASCV(X,L,L,MDX,LCOV,FCTI,0.,SC7)
+      CALL KIASCVZ(X,L,L,MDX,LCOV,FCTI,0.,SC7)
       CALL HALG(1,X,Y,SC2,SC4,SC4,SC7,SC3,SC6,SIGMAR,0,N,L,
      1          MDX,N,LCOV,L,TOL,GAM,MAXIT,MAXIS,-1,1,NIT,
      2          PSY,RHO,RHO,SC4,SC4,SC4,SC4,SC5)
       CALL RES(2,X,Y,SC2,SC3,SC7,SC4,N,L,L,NCOV,MDX,N)
       DO 85 J1=1,L
       J=L-J1+1
-   85 CALL H12(2,J,J+1,N,X(1,J),1,SC5(J),SC3,1,N,1,N)
+      CALL H12Z(2,J,J+1,N,X(1,J),1,SC5(J),SC3,1,N,1,N)
+   85 CONTINUE
       CALL QRSS(SC3,SC4,SC4,RHO,N,ITYPE,SIGMAR,0.,QR)
       IP1=IP0
       CP1=2.*QR/SIGMAR+ALPHA*FLOAT(L)-FLOAT(N)
@@ -12978,7 +13247,8 @@ C
 C  REGENERATE Y
 C
       DO 90 I=1,N
-   90 Y(I)=SC1(I)
+      Y(I)=SC1(I)
+   90 CONTINUE
       GOTO 60
 C
 C  INITIALIZE NEXT STEP PROCEDURE
@@ -12992,7 +13262,8 @@ C
       GOTO 120
   110 IB(J)=JB
       JB=2*JB
-  120 IA(J)=2*IB(J)
+      IA(J)=2*IB(J)
+  120 CONTINUE
 C
 C  ADD AND REMOVE OPTIONAL VARIABLES
 C  ---------------------------------
@@ -13005,7 +13276,8 @@ C
 C  LOCATE POSITION OF VARIABLE JINC
 C
       DO 130 J=1,NP
-  130 IF (IC(J).EQ.JINC) JPOS=J
+      IF (IC(J).EQ.JINC) JPOS=J
+  130 CONTINUE
 C
 C  ADD OR REMOVE VARIABLE JINC (POSITION JPOS)
 C
@@ -13013,7 +13285,7 @@ C
       CALL ADDCoL(X,N,NP,MDX,L,JPOS,SC5,IC,SC4)
       IP0=IP0+2**(JINC-1)
       GOTO 150
-  140 CALL RMVC(X,N,NP,MDX,L,JPOS,SC5,IC,SC4)
+  140 CALL RMVCZ(X,N,NP,MDX,L,JPOS,SC5,IC,SC4)
       IP0=IP0-2**(JINC-1)
 C
 C  COMPUTE CLASSICAL CP
@@ -13026,14 +13298,15 @@ C
 C  COMPUTE ROBUST CP
 C
       LCOV=L*(L+1)/2
-      CALL KIASCV(X,L,L,MDX,LCOV,FCTI,0.,SC7)
+      CALL KIASCVZ(X,L,L,MDX,LCOV,FCTI,0.,SC7)
       CALL HALG(1,X,Y,SC2,SC4,SC4,SC7,SC3,SC6,SIGMAR,0,N,L,
      1          MDX,N,LCOV,L,TOL,GAM,MAXIT,MAXIS,-1,1,NIT,
      2          PSY,RHO,RHO,SC4,SC4,SC4,SC4,SC5)
       CALL RES(2,X,Y,SC2,SC3,SC7,SC4,N,L,L,NCOV,MDX,N)
       DO 155 J1=1,L
       J=L-J1+1
-  155 CALL H12(2,J,J+1,N,X(1,J),1,SC5(J),SC3,1,N,1,N)
+      CALL H12Z(2,J,J+1,N,X(1,J),1,SC5(J),SC3,1,N,1,N)
+  155 CONTINUE
       CALL QRSS(SC3,SC4,SC4,RHO,N,ITYPE,SIGMAR,0.,QR)
       IP1=IP0
       CP1=2.*QR/SIGMAR+ALPHA*FLOAT(L)-FLOAT(N)
@@ -13043,14 +13316,15 @@ C
 C  REGENERATE Y
 C
       DO 160 I=1,N
-  160 Y(I)=SC1(I)
+      Y(I)=SC1(I)
+  160 CONTINUE
   200 CONTINUE
       RETURN
       END
 C
 C-----------------------------------------------------------------------
 C
-      SUBROUTINE MYMVLM(X,Y,N,NP,NQ,NCOV,MDX,MDW,MDI,ILMS,IOPT,INTCH,
+      SUBROUTINE MYMVLMZ(X,Y,N,NP,NQ,NCOV,MDX,MDW,MDI,ILMS,IOPT,INTCH,
      1           NREP,TOLV,TOLM,TAU,ISEED,IERR,XVOL,XMIN,COV,T,THETA,
      2           RS,D,ITV,ITM,WORK,IWORK)
 C.......................................................................
@@ -13132,7 +13406,8 @@ C ------
       XVOL=0.
       XMIN=0.
       DO 10 I=1,NP
-   10 SP(I)=I
+      SP(I)=I
+   10 CONTINUE
       IF (IOPT.NE.2) NREP=ICNREP(N,NQ,IOPT,0)
 C
 C Check for a constant term
@@ -13153,7 +13428,7 @@ C ------
   100 IF (IOPT.NE.3) THEN
         DO 130 K=1,NQ
   110     CALL RANDOW(ISEED,RND)
-          ITK=RND*N+1
+          ITK=INT(RND*N)+1
           IF (ITK.GT.N) ITK=N
           DO 120 KK=1,K-1
           IF (ITK.EQ.IT(KK)) GOTO 110
@@ -13163,7 +13438,8 @@ C ------
       ELSE
         IF (NIT.EQ.1) THEN
           DO 140 K=1,NQ
-  140     IT(K)=K
+          IT(K)=K
+  140     CONTINUE
         ELSE
           CALL NCOMB(N,NQ,IT)
         ENDIF
@@ -13174,7 +13450,8 @@ C
       DO 160 K=1,NQ
       ITK=IT(K)
       DO 150 L=1,NP
-  150 XX(K,L)=X(ITK,L)
+      XX(K,L)=X(ITK,L)
+  150 CONTINUE
       IF (IM.EQ.1) YY(K)=Y(ITK)
   160 CONTINUE
 C
@@ -13183,23 +13460,27 @@ C ------
       DO 230 K=1,NP
         S=0.
         DO 210 L=1,NQ
-  210   S=S+XX(L,K)
+        S=S+XX(L,K)
+  210   CONTINUE
         S=S/Q
         XM(K)=S
         DO 220 L=1,NQ
-  220   XX(L,K)=XX(L,K)-S
+        XX(L,K)=XX(L,K)-S
+  220   CONTINUE
   230 CONTINUE
       IF (IM.EQ.0) GOTO 300
       YM=0.
       DO 240 L=1,NQ
-  240 YM=YM+YY(L)
+      YM=YM+YY(L)
+  240 CONTINUE
       YM=YM/Q
       DO 250 L=1,NQ
-  250 YY(L)=YY(L)-YM
+      YY(L)=YY(L)-YM
+  250 CONTINUE
 C
 C STEP 3 : DECOMPOSE SAMPLE MATRIX
 C ------
-  300 CALL RIMTRF(XX,NQ,NP,NQ,INTCH,TAU,KK,SF,SG,SH,SP)
+  300 CALL RIMTRFZ(XX,NQ,NP,NQ,INTCH,TAU,KK,SF,SG,SH,SP)
       IF (KK.NE.NP) GOTO 1200
 C
 C STEP 4 : SOLVE SYSTEM OF LINEAR EQUATIONS
@@ -13208,7 +13489,8 @@ C ------
       CALL RICLL1(XX,YY,NQ,NP,NQ,SF,SH,SP)
       B=YM
       DO 410 L=1,NP
-  410 B=B-XM(L)*SF(L)
+      B=B-XM(L)*SF(L)
+  410 CONTINUE
 C
 C STEP 5 : COMPUTE RESIDUALS
 C ------
@@ -13216,15 +13498,17 @@ C ------
       DO 520 I=1,N
       RI=Y(I)-B
       DO 510 J=1,NP
-  510 RI=RI-SF(J)*X(I,J)
+      RI=RI-SF(J)*X(I,J)
+  510 CONTINUE
       ARI=ABS(RI)
       IF (ARI.GT.XMIN) EL=EL+1
       IF (XMIN.NE.0.AND.EL.GE.NK1) GOTO 800
-  520 SZ(I)=ARI
+      SZ(I)=ARI
+  520 CONTINUE
 C
 C STEP 6 : COMPUTE THE K-TH ORDER STATISTIC OF THE |RS(I)|
 C ------
-      CALL FSTORD(SZ,N,K1,XRES)
+      CALL FSTORDZ(SZ,N,K1,XRES)
 C
 C STEP 7 : UPDATE BEST FIT FOR XMIN
 C ------
@@ -13232,10 +13516,12 @@ C ------
       IERR=0
       XMIN=XRES
       DO 710 K=1,NP
-  710 THETA(K)=SF(K)
+      THETA(K)=SF(K)
+  710 CONTINUE
       THETA(NQ)=B
       DO 720 K=1,NQ
-  720 ITM(K)=IT(K)
+      ITM(K)=IT(K)
+  720 CONTINUE
       IF (XRES .LE. TOLM) THEN
         IERR=1
         IM=0
@@ -13246,7 +13532,8 @@ C ------
   800 IF (IV.EQ.0) GOTO 1200
       DET=0.
       DO 810 K=1,NP
-  810 DET=DET+ALOG(ABS(XX(K,K)))
+      DET=DET+ALOG(ABS(XX(K,K)))
+  810 CONTINUE
       DET=2.*DET
       G=XEXP((XVOL-DET)/P)
 C
@@ -13255,12 +13542,14 @@ C ------
       EL=0
       DO 930 K=1,N
         DO 910 L=1,NP
-  910   YY(L)=X(K,L)-XM(L)
+        YY(L)=X(K,L)-XM(L)
+  910   CONTINUE
         CALL MYP(YY,SP,NP)
         CALL SOLVT(XX,YY,NP,NP,NQ,NP)
         AI2=0.
         DO 920 L=1,NP
-  920   AI2=AI2+YY(L)*YY(L)
+        AI2=AI2+YY(L)*YY(L)
+  920   CONTINUE
         SZ(K)=AI2
         IF (AI2.GT.G) EL=EL+1
         IF (XVOL.NE.0..AND.EL.GE.N1H) GOTO 1200
@@ -13269,7 +13558,7 @@ C ------
 C
 C STEP 10 : COMPUTE H-TH ORDER OF THE AI2 and VOLUME
 C -------
-      CALL FSTORD(SZ,N,H,DIST)
+      CALL FSTORDZ(SZ,N,H,DIST)
       VOL=DET+P*ALOG(DIST)
 C
 C STEP 11 : UPDATE BEST FIT FOR XVOL
@@ -13288,9 +13577,11 @@ C -------
         STP(L)=SP(L)
  1130 CONTINUE
       DO 1140 I=1,N
- 1140 D(I)=SD(I)
+      D(I)=SD(I)
+ 1140 CONTINUE 
       DO 1150 K=1,NQ
- 1150 ITV(K)=IT(K)
+      ITV(K)=IT(K)
+ 1150 CONTINUE 
       IF (XVOL.LT.TOLV) THEN
         IERR=1
         IV=0
@@ -13309,8 +13600,10 @@ C ------
       DO 1320 I=1,N
       S=Y(I)-THETA(NQ)
       DO 1310 J=1,NP
- 1310 S=S-THETA(J)*X(I,J)
- 1320 RS(I)=S
+      S=S-THETA(J)*X(I,J)
+ 1310 CONTINUE
+      RS(I)=S
+ 1320 CONTINUE 
       CALL LMSADJ(N,N2,N2P,1,THETA(NQ),RS,XMIN,SZ)
 C
 C STEP 14 : EXIT. COMPUTE COV AND D.
@@ -13323,7 +13616,8 @@ C
 C Compute R*P**T
 C
       DO 1405 K=1,NP
- 1405 SP(K)=K
+      SP(K)=K
+ 1405 CONTINUE
       DO 1410 K=1,NP
       L=STP(K)
       IF (K.EQ.L) GOTO 1410
@@ -13340,7 +13634,7 @@ C
           IF (K.NE.L) XX(K,L)=0.
  1420   CONTINUE
  1430 CONTINUE
-      IF (.NOT.NOTCHG) CALL PERMC(XX,SP,NP,NP,NQ,2)
+      IF (.NOT.NOTCHG) CALL PERMCZ(XX,SP,NP,NP,NQ,2)
 C
 C Compute COV=(P*R**T)*(R*P**T)
 C
@@ -13349,23 +13643,25 @@ C
       DO 1450 L=1,K
         S=0.
         DO 1440 I=1,NP
- 1440   S=S+XX(I,K)*XX(I,L)
+        S=S+XX(I,K)*XX(I,L)
+ 1440   CONTINUE
         J=J+1
         COV(J)=S
  1450 CONTINUE
  1460 CONTINUE
-      CALL CQUANT(HN,NP,0.5E-5,20,XCHI)
+      CALL CQUANTZ(HN,NP,0.5E-5,20,XCHI)
       FACT=CNP2*EM2/XCHI
       IF (ILMS.EQ.0) THETA(1)=FACT
-      CALL SCAL(COV,FACT,NCOV,1,NCOV)
+      CALL SCALZ(COV,FACT,NCOV,1,NCOV)
       DO 1470 I=1,N
- 1470 D(I)=SQRT(D(I)/FACT)
+      D(I)=SQRT(D(I)/FACT)
+ 1470 CONTINUE
       RETURN
       END
 C
 C-----------------------------------------------------------------------
 C
-      SUBROUTINE MYHBHE(X,Y,N,NP,NCOV,MDX,MDW,MDI,ISEED,IERR,
+      SUBROUTINE MYHBHEZ(X,Y,N,NP,NCOV,MDX,MDW,MDI,ISEED,IERR,
      *           SIGM0,SIGM1,THETA0,THETA1,TBIAS,RS0,RS1,IT1,COV,
      *           WORK,IWORK)
 C.......................................................................
@@ -13428,9 +13724,9 @@ C  Initial coefficient and scale estimates with high breakdown point
 C
       IOPT=2
       INTCH=1
-      CALL NLGM(2*(N+1),GN)
-      CALL NLGM(2*(N-NQ+1),GNMQ)
-      CALL NLGM(2*(NQ+1),GQ)
+      CALL NLGMZ(2*(N+1),GN)
+      CALL NLGMZ(2*(N-NQ+1),GNMQ)
+      CALL NLGMZ(2*(NQ+1),GQ)
       NREP=MAX0(INT(4.6*(2.**NP)),1000)
       AREP=ALOG(4.6*(2.**NP)+1000.)
       IF (AREP.GE.GN-GNMQ-GQ) IOPT=3
@@ -13450,7 +13746,8 @@ C
      +            SIGM0,XTHETA,RS0,IT1,COV,XX,YY,RS1,
      +            SF,SG,SH,SX,SZ,SP,IT)
       DO 100 K=1,NP
- 100  THETA0(K)=XTHETA(K)
+      THETA0(K)=XTHETA(K)
+ 100  CONTINUE
       IF (SIGM0.LT.TL) RETURN
 C
 C  Covariance matrix of the estimated coefficients
@@ -13465,11 +13762,12 @@ C
       SWI=SWI+WI
       WI=SQRT(WI)
   210 DO 220 J=1,NP
-  220 SX(I,J)=WI*X(I,J)
+      SX(I,J)=WI*X(I,J)
+  220 CONTINUE
   230 CONTINUE
       CALL KFFACV(RS0,PSY,PSP,N,NP,SIGM0,FH)
       FACT=FH*SWI
-      CALL KTASKV(SX,N,NP,MDX,NCOV,TAU,FACT,XX,COV)
+      CALL KTASKVZ(SX,N,NP,MDX,NCOV,TAU,FACT,XX,COV)
 C
 C  Final coefficient estimate
 C
@@ -13483,7 +13781,8 @@ C
      + N,NP,MDX,MDX,NCOV,TOLR,GAM,TAU,ITYPE,ISIGMA,ICNV,MAXIT,
      + MAXIS,NITMON,NIT2,SIGM0,RS1,YY,SZ,SF,SG,SH,SP,SZ,SX)
       DO 240 K=1,NP
- 240  THETA1(K)=XTHETA(K)
+      THETA1(K)=XTHETA(K)
+  240 CONTINUE
       CALL QRSSH(RS0,RHO,N,NP,SIGM0,QMM0)
       CALL QRSSH(RS1,RHO,N,NP,SIGM0,QMM1)
       IF (QMM1.GT.QMM0) CALL MESSGE(101,'MHBHE2',0)
@@ -13507,7 +13806,7 @@ C
      +            MAXIS,NIT3,SIGM1,SX(1,1),SX(1,1))
       IF (NIT3.EQ.MAXIS) CALL MESSGE(103,'MHBHE2',0)
       FACT=SIGM0**2/FLOAT(N)
-      CALL SCAL(COV,FACT,NCOV,1,NCOV)
+      CALL SCALZ(COV,FACT,NCOV,1,NCOV)
 C
 C  Test for bias
 C
@@ -13531,7 +13830,7 @@ C
       D2=D2/EN
       IF (D2.LT.TL) GOTO 500
       TBIAS=2.*EN*(SIGM1-SIGM0)/(V0*D2*SIGM0*SIGM0)
-      CALL CQUANT(0.95,NP,0.5E-5,20,XCHI)
+      CALL CQUANTZ(0.95,NP,0.5E-5,20,XCHI)
       IF (TBIAS.GT.XCHI) CALL MESSGE(101,'MHBHE2',0)
       RETURN
   500 CALL MESSGE(401,'MHBHE2',0)
@@ -13629,9 +13928,9 @@ C           UFLOW  IS THE SMALLEST POSITIVE MAGNITUDE.
 C           OFLOW  IS THE LARGEST MAGNITUDE.
 C
 C***FIRST EXECUTABLE STATEMENTS
-      CALL MACHD(7,EPMACH)
-      CALL MACHD(4,UFLOW)
-      CALL MACHD(6,OFLOW)
+      CALL MACHZD(7,EPMACH)
+      CALL MACHZD(4,UFLOW)
+      CALL MACHZD(6,OFLOW)
 C
 C           TEST ON VALIDITY OF PARAMETERS
 C           ------------------------------
@@ -13874,9 +14173,9 @@ C           UFLOW IS THE SMALLEST POSITIVE MAGNITUDE.
 C           OFLOW IS THE LARGEST MAGNITUDE.
 C
 C***FIRST EXECUTABLE STATEMENTS
-      CALL MACHD(7,EPMACH)
-      CALL MACHD(4,UFLOW)
-      CALL MACHD(6,OFLOW)
+      CALL MACHZD(7,EPMACH)
+      CALL MACHZD(4,UFLOW)
+      CALL MACHZD(6,OFLOW)
 C
       CENTR = 5.0D-01*(A+B)
       HLGTH = 5.0D-01*(B-A)
@@ -13967,7 +14266,7 @@ C***JUMP OUT OF DO-LOOP
         IF(ERRMAX.LE.ELIST(ISUCC)) GO TO 30
         IORD(NRMAX) = ISUCC
         NRMAX = NRMAX-1
-   20    CONTINUE
+   20 CONTINUE
 C
 C           COMPUTE THE NUMBER OF ELEMENTS IN THE LIST TO BE
 C           MAINTAINED IN DESCENDING ORDER. THIS NUMBER
@@ -14111,9 +14410,9 @@ C           UFLOW IS THE SMALLEST POSITIVE MAGNITUDE.
 C           OFLOW IS THE LARGEST MAGNITUDE.
 C
 C***FIRST EXECUTABLE STATEMENTS
-      CALL MACH(7,EPMACH)
-      CALL MACH(4,UFLOW)
-      CALL MACH(6,OFLOW)
+      CALL MACHZ(7,EPMACH)
+      CALL MACHZ(4,UFLOW)
+      CALL MACHZ(6,OFLOW)
 C
 C           TEST ON VALIDITY OF PARAMETERS
 C           ------------------------------
@@ -14354,9 +14653,9 @@ C           UFLOW IS THE SMALLEST POSITIVE MAGNITUDE.
 C           OFLOW IS THE LARGEST MAGNITUDE.
 C
 C***FIRST EXECUTABLE STATEMENTS
-      CALL MACH(7,EPMACH)
-      CALL MACH(4,UFLOW)
-      CALL MACH(6,OFLOW)
+      CALL MACHZ(7,EPMACH)
+      CALL MACHZ(4,UFLOW)
+      CALL MACHZ(6,OFLOW)
 C
       CENTR = 5.0E-01*(A+B)
       HLGTH = 5.0E-01*(B-A)
@@ -14538,10 +14837,11 @@ C
 C  STEP 2. COMPUTE RESIDUALS Y-X1*THETA
 C  -------
   100 CALL RES(2,X,Y,THETA,RS,SE,SG,N,NP,K,NP,MDX,MDT)
-      IF (K.NE.NP) CALL SWAP(X,SF,K,MDXP1,1,KK,K)
+      IF (K.NE.NP) CALL SWAPZ(X,SF,K,MDXP1,1,KK,K)
       DO 110 J1=1,LDIAG
       J=LDIAG-J1+1
-  110 CALL H12(2,J,J+1,N,X(1,J),1,SH(J),RS,1,N,1,N)
+      CALL H12Z(2,J,J+1,N,X(1,J),1,SH(J),RS,1,N,1,N)
+  110 CONTINUE
       IF (ITYPE.EQ.2) THEN
         DO 120 I=1,N
         IF (WGT(I).LE.0.) GOTO 120
@@ -14574,8 +14874,9 @@ C  STEP 5. TRANSFORM RESIDUALS
 C  ------
       DO 135 JJ=1,LDIAG
       J=JJ
-  135 CALL H12(2,J,J+1,N,X(1,J),1,SH(J),RS,1,N,1,N)
-      IF (K.NE.NP) CALL SWAP(X,SF,K,MDXP1,1,KK,K)
+      CALL H12Z(2,J,J+1,N,X(1,J),1,SH(J),RS,1,N,1,N)
+  135 CONTINUE
+      IF (K.NE.NP) CALL SWAPZ(X,SF,K,MDXP1,1,KK,K)
 C
 C  SOLVE THE LS-PROBLEM FOR THE INCREMENT VECTOR
 C
@@ -14585,7 +14886,8 @@ C  STEP 6. COMPUTE NEW TRANSFORMED SOLUTION
 C  -------
       DO 140 J=1,K
       DELTA(J)=RS(J)*GAM
-  140 THETA(J)=THETA(J)+DELTA(J)
+      THETA(J)=THETA(J)+DELTA(J)
+  140 CONTINUE
 C
 C  STEP 7. STOP ITERATIONS IF DESIRED PRECISION IS REACHED
 C  -------
@@ -14640,20 +14942,24 @@ C  COMPUTE THE RESIDUALS R(1)...R(K).
 C
       IF (MODE.EQ.2.OR.MODE.EQ.3) GOTO 20
       DO 10 I=1,K
-   10 R(I)=0.
+      R(I)=0.
+   10 CONTINUE
       GOTO 50
    20 CONTINUE
       IF (K.LT.N) GOTO 25
       DO 26 I=1,N
-   26 R(I)=0.
+      R(I)=0.
+   26 CONTINUE
       GOTO 130
    25 CONTINUE
       DO 40 I=1,K
       SM=DZERO
       DO 30 J=I,K
-   30 SM=SM+X(I,J)*DBLE(S(J))
-      SM1=SM
-   40 R(I)=Y(I)-SM1
+      SM=SM+X(I,J)*DBLE(S(J))
+   30 CONTINUE
+      SM1=SNGL(SM)
+      R(I)=Y(I)-SM1
+   40 CONTINUE  
    50 CONTINUE
 C
 C  COMPUTE THE RESIDUALS R(K+1)...R(NP)
@@ -14663,25 +14969,30 @@ C
       KP1=K+1
       IF (MODE.EQ.3) GOTO 55
       DO 52 I=KP1,LDIAG
-   52 R(I)=Y(I)
+      R(I)=Y(I)
+   52 CONTINUE
       GOTO 110
    55 INZ=NCOV-NP
       DO 100 I=KP1,LDIAG
       IM1=I-1
       DO 60 J=1,IM1
       J1=J+INZ
-   60 COV(J1)=0.
+      COV(J1)=0.
+   60 CONTINUE
       DO 70 J=I,NP
       J1=J+INZ
-   70 COV(J1)=X(I,J)
+      COV(J1)=X(I,J)
+   70 CONTINUE
       DO 80 II=1,K
       I1=KP1-II
-   80 CALL R3V(I1,KP1,NP,X(I1,1),MDX,SG(I1),COV,NCOV,INZ)
+      CALL R3V(I1,KP1,NP,X(I1,1),MDX,SG(I1),COV,NCOV,INZ)
+   80 CONTINUE
       SM=DZERO
       DO 90 J=1,K
       J1=J+INZ
-   90 SM=SM+COV(J1)*DBLE(S(J))
-      SM1=SM
+      SM=SM+COV(J1)*DBLE(S(J))
+   90 CONTINUE
+      SM1=SNGL(SM)
       R(I)=Y(I)-SM1
   100 CONTINUE
 C
@@ -14690,7 +15001,8 @@ C
   110 NPP1=NP+1
       IF (NP.GE.N) GOTO 130
       DO 120 I=NPP1,N
-  120 R(I)=Y(I)
+      R(I)=Y(I)
+  120 CONTINUE
   130 RETURN
       END
 C
@@ -14719,14 +15031,13 @@ C
       DZERO=0.D0
       IF (0.GE.LPIVOT.OR.LPIVOT.GE.L1.OR.L1.GT.M) RETURN
       CL=ABS(U(1,LPIVOT))
-      IF (CL) 130,130,70
-   70 CONTINUE
+      IF (CL.LE.0.0) RETURN
       B=DBLE(UP)*U(1,LPIVOT)
 C
 C  B MUST BE NONPOSITIVE HERE. IF B=0., RETURN.
 C
-      IF (B) 80,130,130
-   80 B=ONE/B
+      IF (B.GE.0.D0) RETURN
+      B=ONE/B
       I2=LPIVOT-1+INZ
       INCR=L1-LPIVOT
       I2=I2+1
@@ -14735,15 +15046,17 @@ C
       SM=DZERO
       DO 90 I=L1,M
       SM=SM+C(I3)*DBLE(U(1,I))
-   90 I3=I3+1
-      IF (SM) 100,120,100
-  100 SM=SM*B
-      C(I2)=C(I2)+SM*DBLE(UP)
+      I3=I3+1
+   90 CONTINUE
+      IF (SM.EQ.0.D0) GOTO 120
+      SM=SM*B
+      C(I2)=C(I2)+SNGL(SM*DBLE(UP))
       DO 110 I=L1,M
-      C(I4)=C(I4)+SM*DBLE(U(1,I))
-  110 I4=I4+1
+      C(I4)=C(I4)+SNGL(SM*DBLE(U(1,I)))
+      I4=I4+1
+  110 CONTINUE
   120 CONTINUE
-  130 RETURN
+      RETURN
       END
 C
 C-----------------------------------------------------------------------
@@ -14772,17 +15085,19 @@ C
       DOUBLE PRECISION SM,DZERO
       DZERO=0.D0
       KP1=K+1
-      DO 80 L=1,K
+      DO 90 L=1,K
       SM=DZERO
       I=KP1-L
       IF (I.EQ.K) GOTO 60
       IP1=I+1
       DO 50 J=IP1,K
-   50 SM=SM+X(I,J)*DBLE(THETA(J))
-   60 SM1=SM
-      IF (X(I,I)) 80,70,80
-   70 CALL MESSGE(501,'SOLV  ',1)
+      SM=SM+X(I,J)*DBLE(THETA(J))
+   50 CONTINUE
+   60 SM1=SNGL(SM)
+      IF (X(I,I).NE.0.0) GOTO 80
+      CALL MESSGE(501,'SOLV  ',1)
    80 THETA(I)=(THETA(I)-SM1)/X(I,I)
+   90 CONTINUE 
       RETURN
       END
 C
@@ -14811,16 +15126,18 @@ C
       DIMENSION X(MDX,NP),THETA(MDT)
       DOUBLE PRECISION SM,DZERO
       DZERO=0.D0
-      DO 80 I=1,K
+      DO 90 I=1,K
       SM=DZERO
       IF (I.EQ.1) GOTO 60
       IM1=I-1
       DO 50 J=1,IM1
-   50 SM=SM+X(J,I)*DBLE(THETA(J))
-   60 SM1=SM
-      IF (X(I,I)) 80,70,80
-   70 CALL MESSGE(501,'SOLVT ',1)
+      SM=SM+X(J,I)*DBLE(THETA(J))
+   50 CONTINUE
+   60 SM1=SNGL(SM)
+      IF (X(I,I).NE.0.0) GOTO 80
+      CALL MESSGE(501,'SOLVT ',1)
    80 THETA(I)=(THETA(I)-SM1)/X(I,I)
+   90 CONTINUE 
       RETURN
       END
 C
@@ -14853,7 +15170,8 @@ C
       IF (K.EQ.NP) GOTO 40
       DO 30 J=1,K
       I=KP1-J
-   30 CALL H12(2,I,KP1,NP,X(I,1),MDX,SG(I),S,1,N,1,NP)
+      CALL H12Z(2,I,KP1,NP,X(I,1),MDX,SG(I),S,1,N,1,NP)
+   30 CONTINUE 
    40 CONTINUE
       RETURN
       END
@@ -14925,13 +15243,13 @@ C
       ONE=1.
       K=L1-1
       B=U(1,LPIVOT)*DBLE(UP)
-      IF (B) 15,999,999
-   15 B=ONE/B
+      IF (B.GE.0.D0) GOTO 999
+      B=ONE/B
 C
 C  COMPUTE THE SCALAR PRODUCTS OF U WITH THE H-TH COLUMN OF S FOR H=1..M
 C
       L=0
-      DO 80 H=1,M
+      DO 90 H=1,M
       L=L+H
       L0=L-H
       IF (H.GE.LPIVOT) GOTO 20
@@ -14943,25 +15261,30 @@ C
       L0=L0+K
       DO 40 I=L1,H
       L0=L0+1
-   40 SM=SM+S(L0)*DBLE(U(1,I))
+      SM=SM+S(L0)*DBLE(U(1,I))
+   40 CONTINUE 
       HP1=H+1
       IF (H.EQ.M) GOTO 80
       DO 50 J=HP1,M
       L0=L0+J-1
-   50 SM=SM+DBLE(U(1,J))*S(L0)
+      SM=SM+DBLE(U(1,J))*S(L0)
+   50 CONTINUE 
       GOTO 80
    60 L0=(K-1)*K/2+H
       DO 70 J=L1,M
       L0=L0+J-1
-   70 SM=SM+DBLE(U(1,J))*S(L0)
-   80 SB(H)=SM*B
+      SM=SM+DBLE(U(1,J))*S(L0)
+   70 CONTINUE 
+   80 SB(H)=SNGL(SM*B)
+   90 CONTINUE 
 C
 C  COMPUTE THE QUADRATIC FORM U**T*S*U
 C
       SM=DBLE(UP)*SB(LPIVOT)
-      DO 90 J=L1,M
-   90 SM=SM+SB(J)*DBLE(U(1,J))
-      S1=SM*B
+      DO 95 J=L1,M
+      SM=SM+SB(J)*DBLE(U(1,J))
+   95 CONTINUE 
+      S1=SNGL(SM*B)
 C
 C  SET U(LPIVOT)=UP
 C
@@ -14975,7 +15298,8 @@ C
       IF (LPM1.LT.1) GOTO 105
       DO 100 I=1,LPM1
       L0=L0+1
-  100 S(L0)=S(L0)+SB(I)*U(1,LPIVOT)
+      S(L0)=S(L0)+SB(I)*U(1,LPIVOT)
+  100 CONTINUE 
   105 CONTINUE
 C
 C  COMPUTE S(LPIVOT,LPIVOT)
@@ -14989,7 +15313,8 @@ C
       IF (LPP1.GT.K) GOTO 115
       DO 110 J=LPP1,K
       L0=L0+J-1
-  110 S(L0)=S(L0)+SB(J)*U(1,LPIVOT)
+      S(L0)=S(L0)+SB(J)*U(1,LPIVOT)
+  110 CONTINUE 
   115 CONTINUE
 C
 C  COMPUTE S(I,J),J=L1...N,I=1...K (J.GE.L1,I.LT.L1)
@@ -14999,7 +15324,8 @@ C
       L0=L0+J-1
       DO 130 I=1,K
       L=L0+I
-  130 S(L)=S(L)+SB(I)*U(1,J)
+      S(L)=S(L)+SB(I)*U(1,J)
+  130 CONTINUE 
       I=LPIVOT
       L=L0+I
       S(L)=S(L)+SB(J)*U(1,I)+U(1,I)*S1*U(1,J)
@@ -15008,11 +15334,13 @@ C
 C  COMPUTE S(I,J),I=L1...M,J=I...M
 C
       L0=K*(K+1)/2-K
-      DO 140 J=L1,M
+      DO 150 J=L1,M
       L0=L0+J-1
       DO 140 I=L1,J
       L=L0+I
-  140 S(L)=S(L)+(S1*U(1,I)*U(1,J)+(U(1,I)*SB(J)+U(1,J)*SB(I)))
+      S(L)=S(L)+(S1*U(1,I)*U(1,J)+(U(1,I)*SB(J)+U(1,J)*SB(I)))
+  140 CONTINUE
+  150 CONTINUE
       U(1,LPIVOT)=CSC
   999 RETURN
       END
@@ -15120,12 +15448,15 @@ C
       KP1=K+1
       DO 400 L=1,NZ
         DO 100 J=1,NP
-  100   SC(J)=Z(L,J)
+        SC(J)=Z(L,J)
+  100   CONTINUE 
         DO 200 J=1,K
         I=KP1-J
-  200   CALL H12D(2,I,KP1,NP,X(I,1),MDX,SG(I),SC,1,N,1,NP)
+        CALL H12ZD(2,I,KP1,NP,X(I,1),MDX,SG(I),SC,1,N,1,NP)
+  200   CONTINUE 
         DO 300 J=1,NP
-  300   Z(L,J)=SC(J)
+        Z(L,J)=SC(J)
+  300   CONTINUE 
   400 CONTINUE
       RETURN
       END
@@ -15156,7 +15487,8 @@ C  HUBER-TYPE
 C
       DO 10 I=1,N
       S=RS(I)/SIGMA
-   10 TMP=TMP+EXCHI(S)
+      TMP=TMP+EXCHI(S)
+   10 CONTINUE 
       GOTO 90
 C
 C  MALLOWS-TYPE
@@ -15203,7 +15535,8 @@ C  HUBER-TYPE
 C
       DO 10 I=1,N
       S=RS(I)/SIGMB
-   10 RS(I)=EXPSI(S)*SIGMB
+      RS(I)=EXPSI(S)*SIGMB
+   10 CONTINUE 
       RETURN
 C
 C  MALLOWS-TYPE (WGT2 is the square root of the WEIGHTS)
@@ -15256,13 +15589,15 @@ C
       S=RS(J)/SIGMA
       TMP1=TMP1+PSP(S)
       PS=PSY(S)
-   10 TMP2=TMP2+PS*PS
+      TMP2=TMP2+PS*PS
+   10 CONTINUE 
       XMU=TMP1/FLOAT(N)
       SUM2=TMP2
       VAR=0.
       DO 20 J=1,N
       S=RS(J)/SIGMA
-   20 VAR=VAR+(PSP(S)-XMU)**2
+      VAR=VAR+(PSP(S)-XMU)**2
+   20 CONTINUE 
       VAR=VAR/FLOAT(N)
       XKAPPA=0.
       IF (XMU.LE.TL) RETURN
@@ -15322,7 +15657,10 @@ C
       DIMENSION WGT(N)
       EXTERNAL FCHI,FEXT
       COMMON/INTPAR/ITYPE,INTPAR,NEVAL,LIMIT,KEY
-      CALL XERF(2,S,PHI)
+      DATA NCALL,FX1/0,0.0/
+      IF (NCALL.EQ.1) FX1=FEXT(1.0)
+      CHIPHI=FX1
+      CALL XERFZ(2,S,PHI)
       IF (ITYPE.EQ.3) GOTO 30
 C
 C  HUBER & MALLOWS CASE
@@ -15334,7 +15672,8 @@ C  SCHWEPPE CASE
 C
    30 SM=0.
       DO 40 J=1,N
-   40 IF (WGT(J).GT.0.) SM=SM+WGT(J)*WGT(J)*FCHI(S/WGT(J))
+      IF (WGT(J).GT.0.) SM=SM+WGT(J)*WGT(J)*FCHI(S/WGT(J))
+   40 CONTINUE
       CHIPHI=SM*PHI
       RETURN
       END
@@ -15356,8 +15695,11 @@ C
       DIMENSION WGT(N)
       EXTERNAL FPSI,FEXT
       COMMON/INTPAR/ITYPE,I,NEVAL,LIMIT,KEY
+      DATA NCALL,FX1/0,0.0/
+      IF (NCALL.EQ.1) FX1=FEXT(1.0)
+      PSPPHI=FX1
       R=S
-      CALL XERF(2,R,PHI)
+      CALL XERFZ(2,R,PHI)
       PHI=R*PHI
       IF (ITYPE.EQ.3) R=R/WGT(I)
       PSPPHI=FPSI(R)*PHI
@@ -15381,8 +15723,11 @@ C
       DIMENSION WGT(N)
       EXTERNAL FPSI,FEXT
       COMMON/INTPAR/ITYPE,I,NEVAL,LIMIT,KEY
+      DATA NCALL,FX1/0,0.0/
+      IF (NCALL.EQ.1) FX1=FEXT(1.0)
+      PS2PHI=FX1
       R=S
-      CALL XERF(2,R,PHI)
+      CALL XERFZ(2,R,PHI)
       IF (ITYPE.EQ.3) R=R/WGT(I)
       PS2PHI=FPSI(R)*FPSI(R)*PHI
       RETURN
@@ -15400,7 +15745,7 @@ C.......................................................................
 C
 C  PURPOSE
 C  -------
-C  AUXILIARY ROUTINE FOR RILARS
+C  AUXILIARY ROUTINE FOR RILARSz
 C
       C=A
       A=B
@@ -15420,7 +15765,7 @@ C.......................................................................
 C
 C     PURPOSE
 C     -------
-C     AUXILIARY ROUTINE FOR RILARS
+C     AUXILIARY ROUTINE FOR RILARSz
 C
       REAL V1(M),V2(M),MLT
       DO 220 I=1,M
@@ -15493,9 +15838,9 @@ C
       DO 200 I=1,N
         SUM=0.D0
         DO 100 J=1,NP
-          SUM=SUM+X(I,J)*DBLE(THETA(J))
+          SUM=SUM+DBLE(X(I,J)*THETA(J))
   100   CONTINUE
-        RS(I)=Y(I)-SUM
+        RS(I)=Y(I)-SNGL(SUM)
   200 CONTINUE
       RETURN
       END
@@ -15604,36 +15949,40 @@ C   COMPUTE THE PSEUDO-INVERSE MATRIX SC=(XO**T*D*XO)**-1
 C   D=diag(W) if ITYPE=2 (Mallows case) and D=I otherwise.
 C
       L=0
-      DO 400 I=1,NP
+      DO 320 I=1,NP
         DELTA(I)=0.
         SF(I)=0.
-        DO 400 J=1,I
+        DO 300 J=1,I
         L=L+1
         SC(L)=0.
         IF (J.EQ.I) SC(L)=1.
-  400 CONTINUE
+  300   CONTINUE
+  320 CONTINUE
       KR=0
       IF (K0.EQ.0) GOTO 410
-      CALL RIMTRF(SX,N,NP,MDX,INTCH,TAU,KR,SF,SG,SH,SP)
-      CALL KIASCV(SX,KR,NP,MDX,NCOV,1.,1.,SC)
-      CALL KFASCV(SX,SC,KR,NP,MDX,NCOV,1.,SE,SG,SP)
+      CALL RIMTRFZ(SX,N,NP,MDX,INTCH,TAU,KR,SF,SG,SH,SP)
+      CALL KIASCVZ(SX,KR,NP,MDX,NCOV,1.,1.,SC)
+      CALL KFASCVZ(SX,SC,KR,NP,MDX,NCOV,1.,SE,SG,SP)
 C
 C   COMPUTE SC*X0**T*D*RS AND SC*C*V
 C
-      DO 405 I=1,N
+      DO 350 I=1,N
         WI=0.
         IF (SJ(I).EQ.0.) WI=1.
-        DO 405 J=1,NP
+        DO 330 J=1,NP
         SX(I,J)=WI*XO(I,J)
-  405 CONTINUE
+  330 CONTINUE
+  350 CONTINUE
       IF (ITYPE.EQ.2) THEN
         DO 407 I=1,N
-  407   RS(I)=WGT(I)*RS(I)
+        RS(I)=WGT(I)*RS(I)
+  407   CONTINUE 
       ENDIF
       CALL GRADNT(SX,RS,N,NP,MDX,SE)
-      CALL MSF(SC,SE,DELTA,NP,NCOV,1,NP,NP)
+      CALL MSFZ(SC,SE,DELTA,NP,NCOV,1,NP,NP)
   410 DO 415 I=1,NP
-  415 SE(I)=0.
+      SE(I)=0.
+  415 CONTINUE 
       DO 440 I=1,N
         IF (SJ(I).EQ.0.) GOTO 440
         WI=SJ(I)*C
@@ -15644,7 +15993,7 @@ C
           SE(J)=SE(J)+WI*XO(I,J)
   430   CONTINUE
   440 CONTINUE
-      CALL MSF(SC,SE,RS,NP,NCOV,1,NP,N)
+      CALL MSFZ(SC,SE,RS,NP,NCOV,1,NP,N)
       DO 460 J=1,NP
         DELTA(J)=DELTA(J)+SIGMB*RS(J)
         SE(J)=THETA(J)
@@ -15652,7 +16001,8 @@ C
   460 CONTINUE
       IF (KR.NE.NP) GOTO 480
       DO 470 I=1,NP
-  470 SF(I)=RS(I)
+      SF(I)=RS(I)
+  470 CONTINUE  
   480 CALL RESIDU(XO,Y,THETA,N,NP,MDX,RS)
       RETURN
       END
@@ -15705,7 +16055,7 @@ C  --------
           IF (ITYPE.EQ.3) T=T/WGT(I)
           SUM=SUM-XO(I,J)*WGT(I)*DBLE(PSY(T))
   610   CONTINUE
-  615   WDG=WDG+DELTA(J)*SUM
+  615   WDG=WDG+DELTA(J)*SNGL(SUM)
   620 CONTINUE
       WDG=WDG/FLOAT(N)
       IF (WDG.NE.0.) GOTO 630
@@ -15757,16 +16107,17 @@ C  SOLVE FOR (THETA,SIGMB) IN RYSALG (STEP 9)
 C
       DIMENSION XO(MDX,NP),Y(N),WGT(N),SW(N),SJ(N),THETA(NP),
      1          SX(MDX,NP),SC(NCOV),RS(N),SE(NP),SF(NP)
-      DOUBLE PRECISION SUM,SUMJ,SUM1,SUM2,SUM3
+      DOUBLE PRECISION SUM,SUMJ,SUM1,SUM2,SUM3,WW,YY
       COMMON/CONST/CONST
       IF (ITYPE.NE.2) THEN
         CALL GRADNT(SX,Y,N,NP,MDX,SE)
       ELSE
         DO 810 I=1,N
-  810   RS(I)=WGT(I)*Y(I)
+        RS(I)=WGT(I)*Y(I)
+  810   CONTINUE 
         CALL GRADNT(SX,RS,N,NP,MDX,SE)
       ENDIF
-      CALL MSF(SC,SE,RS,NP,NCOV,1,NP,N)
+      CALL MSFZ(SC,SE,RS,NP,NCOV,1,NP,N)
       SUM1=0.D0
       SUM2=0.D0
       SUM3=0.D0
@@ -15777,18 +16128,20 @@ C
         SUM=0.D0
         SUMJ=0.D0
         DO 820 J=1,NP
-          SUM=SUM+XO(I,J)*DBLE(RS(J))
-          SUMJ=SUMJ+XO(I,J)*DBLE(SF(J))
+          SUM=SUM+DBLE(XO(I,J)*RS(J))
+          SUMJ=SUMJ+DBLE(XO(I,J)*SF(J))
   820   CONTINUE
-        SUM1=SUM1+WI*(Y(I)-SUM)**2
-        SUM2=SUM2+WI*SUMJ**2
+        WW=DBLE(WI)
+        YY=DBLE(Y(I))
+        SUM1=SUM1+WW*(YY-SUM)**2
+        SUM2=SUM2+WW*SUMJ**2
         GOTO 840
   830   S3=WI
         IF (ITYPE.EQ.3) S3=SW(I)
-        SUM3=SUM3+S3
+        SUM3=SUM3+DBLE(S3)
   840 CONTINUE
       SUM2=SUM2+SUM3*C*C-2.D0*CONST
-      S=-SUM1/SUM2
+      S=-SNGL(SUM1/SUM2)
       IF (S.LE.0.) GOTO 870
       SIGMB=SQRT(S)
       DO 850 J=1,NP
@@ -15817,8 +16170,10 @@ C
       DO 20 J=1,NP
       SUM=0.D0
       DO 10 I=1,N
-   10 SUM=SUM+X(I,J)*DBLE(HBRS(I))
-   20 GRAD(J)=SUM
+      SUM=SUM+DBLE(X(I,J)*HBRS(I))
+   10 CONTINUE 
+      GRAD(J)=SNGL(SUM)
+   20 CONTINUE
       RETURN
       END
 C
@@ -15839,19 +16194,20 @@ C   AUTHOR : A. MARAZZI
 C.......................................................................
 C
       IER=0
-      CALL DOTP(DELTA,GRAD,NP,1,1,NP,NP,S0)
+      CALL DOTPZ(DELTA,GRAD,NP,1,1,NP,NP,S0)
       S0=S0/(-SIGMA)
       ETA=1.
       IF (S0.NE.0.) ETA=AMIN1(1.,-2.*QS0/S0)
       IF (ETA.NE.1.) THEN
         DO 10 J=1,NP
-   10   ST(J)=THETA(J)+ETA*DELTA(J)
+        ST(J)=THETA(J)+ETA*DELTA(J)
+   10   CONTINUE 
         CALL RESIDU(X,Y,ST,N,NP,MDX,SR)
         CALL QRSS(SR,WGT,WGT2,EXRHO,N,ITYPE,SIGMA,CONST,QS1)
       ENDIF
       CALL HUB(SR,WGT,WGT,SIGMA,N,ITYPE,EXPSI)
       CALL GRADNT(X,SR,N,NP,MDX,GRAD)
-      CALL DOTP(DELTA,GRAD,NP,1,1,NP,NP,S1)
+      CALL DOTPZ(DELTA,GRAD,NP,1,1,NP,NP,S1)
       S1=S1/(-SIGMA)
       Z=(3./ETA)*(QS0-QS1)+S0+S1
       A=Z*Z-S0*S1
@@ -15919,9 +16275,10 @@ C
       DO 100 J=1,NP
       L=L+J
       TOL2=TOL1*SQRT(S(L))
-  100 IF (TOL2.LT.ABS(DELTA(J))) RETURN
+      IF (TOL2.LT.ABS(DELTA(J))) RETURN
+  100 CONTINUE
       GOTO 500
-  200 CALL XSY(DELTA,DELTA,S,NP,NCOV,TOL2)
+  200 CALL XSYZ(DELTA,DELTA,S,NP,NCOV,TOL2)
       TOL2=SQRT(TOL2)
       IF (TOL1.GE.TOL2) ICTHET=1
       RETURN
@@ -15929,7 +16286,8 @@ C
       DO 350 J=1,NP
       L=L+J
       TOL2=ABS(DELTA(J))*SQRT(S(L))
-  350 IF (TOL1.LT.TOL2) RETURN
+      IF (TOL1.LT.TOL2) RETURN
+  350 CONTINUE
   500 ICTHET=1
       RETURN
       END
@@ -15941,7 +16299,7 @@ C  File RGMAIN.F  Main subroutines of Chapter 2
 C
 C-----------------------------------------------------------------------
 C
-      SUBROUTINE RIBETH(WGT,N,D,ITYPE,BTA)
+      SUBROUTINE RIBETHZ(WGT,N,D,ITYPE,BTA)
 C.......................................................................
 C
 C   COPYRIGHT 1992 Alfio Marazzi
@@ -15965,8 +16323,8 @@ C
 C
 C  HUBER CASE
 C
-      CALL GAUSS(1,D,PC)
-      CALL XERF(2,D,DC)
+      CALL GAUSSZ(1,D,PC)
+      CALL XERFZ(2,D,DC)
       BETA=-D*DC+PC-.5+C2*(1.-PC)
       BTA=BETA
       IF (ITYPE.EQ.1) RETURN
@@ -15974,7 +16332,8 @@ C
 C  MALLOWS CASE
 C
       DO 20 I=1,N
-   20 SM=SM+WGT(I)
+      SM=SM+WGT(I)
+   20 CONTINUE
       BETA=SM*BETA/XN
       BTA=BETA
       RETURN
@@ -15984,10 +16343,11 @@ C
    30 DO 40 I=1,N
       W2=WGT(I)*WGT(I)
       CW=D*WGT(I)
-      CALL GAUSS(1,CW,PC)
-      CALL XERF(2,CW,DC)
+      CALL GAUSSZ(1,CW,PC)
+      CALL XERFZ(2,CW,DC)
       B=C2*(1.-PC)+(-CW*DC+PC-.5)/W2
-   40 SM=SM+B*W2/XN
+      SM=SM+B*W2/XN
+   40 CONTINUE
       BETA=SM
       BTA=BETA
       RETURN
@@ -16035,7 +16395,8 @@ C
 C  MALLOWS CASE
 C
       DO 20 I=1,N
-   20 SM=SM+WGT(I)
+      SM=SM+WGT(I)
+   20 CONTINUE   
       BETA=(SM/XN)*BETA
       BTA=BETA
       RETURN
@@ -16049,7 +16410,7 @@ C
 C
 C-----------------------------------------------------------------------
 C
-      SUBROUTINE RIBET0(WGT,N,ITYPE,ISQW,TOL,BT0)
+      SUBROUTINE RIBET0Z(WGT,N,ITYPE,ISQW,TOL,BT0)
 C.......................................................................
 C
 C   COPYRIGHT 1992 Alfio Marazzi
@@ -16085,8 +16446,8 @@ C
       DO 30 I=1,N
       IF (WGT(I).LE.0.) GOTO 30
       X=BET0/WGT(I)
-      CALL GAUSS(1,X,A)
-      CALL XERF(2,X,B)
+      CALL GAUSSZ(1,X,A)
+      CALL XERFZ(2,X,B)
       SMF=SMF+A
       SMFP=SMFP+B/WGT(I)
    30 CONTINUE
@@ -16108,7 +16469,7 @@ C
 C
 C-----------------------------------------------------------------------
 C
-      SUBROUTINE RILARS(X,Y,N,NP,MDX,MDT,TOL,NIT,K,KODE,
+      SUBROUTINE RILARSZ(X,Y,N,NP,MDX,MDT,TOL,NIT,K,KODE,
      +                  SIGMA,THETA,RS,SC1,SC2,SC3,SC4)
 C.......................................................................
 C
@@ -16134,7 +16495,7 @@ C
 C
 C  INITIALIZATION (BIG MUST BE SET TO ANY VERY LARGE CONSTANT).
 C
-      CALL MACH(6,BIG)
+      CALL MACHZ(6,BIG)
       SUM=0.D0
       DO 10 J=1,NP
         SC4(J)=FLOAT(J)
@@ -16154,13 +16515,13 @@ C
 C
 C  COMPUTE THE MARGINAL COSTS.
 C
-      SUMIN=SUM
+      SUMIN=SNGL(SUM)
       DO 60 J=1,NP
         SUM=0.D0
         DO 50 I=1,N
-          SUM=SUM+X(I,J)
+          SUM=SUM+DBLE(X(I,J))
    50   CONTINUE
-        SC3(J)=SUM
+        SC3(J)=SNGL(SUM)
    60 CONTINUE
 C
 C  STAGE I.
@@ -16204,7 +16565,7 @@ C
         IF (Y(I).GE.VMIN) GOTO 140
         J=I
         VMIN=Y(I)
-        OUT=RS(I)
+        OUT=INT(RS(I))
   140 CONTINUE
       Y(J)=Y(K)
       RS(J)=RS(K)
@@ -16317,7 +16678,7 @@ C
   340 CONTINUE
       KODE=1
   350 DO 380 I=1,N
-        K=SC1(I)
+        K=INT(SC1(I))
         D=THETA(I)
         IF (K.GT.0) GOTO 360
         K=-K
@@ -16331,24 +16692,25 @@ C
       K=NP+1-KR
       SUM=0.D0
       DO 390 I=KL,N
-        SUM=SUM+THETA(I)
+        SUM=SUM+DBLE(THETA(I))
   390 CONTINUE
-      SUMIN=SUM
+      SUMIN=SNGL(SUM)
       NIT=KOUNT
       DO 400 J=1,NP
         THETA(J)=SC2(J)
   400 CONTINUE
       DO 500 I=1,N
-  500 Y(I)=ABS(RS(I))
+      Y(I)=ABS(RS(I))
+  500 CONTINUE
       N2=N/2+1
-      CALL FSTORD(Y,N,N2,SIGMA)
+      CALL FSTORDZ(Y,N,N2,SIGMA)
       SIGMA=SIGMA/BET0
       RETURN
       END
 C
 C-----------------------------------------------------------------------
 C
-      SUBROUTINE RIMTRF(X,N,NP,MDX,INTCH,TAU,K,SF,SG,SH,IP)
+      SUBROUTINE RIMTRFZ(X,N,NP,MDX,INTCH,TAU,K,SF,SG,SH,IP)
 C.......................................................................
 C
 C   COPYRIGHT 1992 Alfio Marazzi
@@ -16381,7 +16743,7 @@ C
       SH(L)=SH(L)-X(J-1,L)**2
       IF(SH(L).GT.SH(LMAX)) LMAX=L
    10 CONTINUE
-      IF (DIFF(HMAX+FACTOR*SH(LMAX),HMAX)) 20,20,50
+      IF (DIFF(HMAX+FACTOR*SH(LMAX),HMAX).GT.0.0) GOTO 50      
 C
 C  COMPUTE SQUARED COLUMN LENGTHS AND FIND LMAX
 C
@@ -16389,7 +16751,8 @@ C
       DO 40 L=J,NP
       SH(L)=0.
       DO 30 I=J,N
-   30 SH(L)=SH(L)+X(I,L)**2
+      SH(L)=SH(L)+X(I,L)**2
+   30 CONTINUE
       IF (SH(L).GT.SH(LMAX)) LMAX=L
    40 CONTINUE
       HMAX=SH(LMAX)
@@ -16402,16 +16765,17 @@ C
       DO 60 I=1,N
       TMP=X(I,J)
       X(I,J)=X(I,LMAX)
-   60 X(I,LMAX)=TMP
+      X(I,LMAX)=TMP
+   60 CONTINUE
       SH(LMAX)=SH(J)
 C
 C  COMPUTE THE HOUSEHOLDER TRANSF. Q AND APPLY IT TO X
 C
    70 MDC=NP-J
       IF (MDC.GT.0)
-     1CALL H12(1,J,J+1,N,X(1,J),1,SH(J),X(1,J+1),1,MDX,MDC,MDX*MDC)
+     1CALL H12Z(1,J,J+1,N,X(1,J),1,SH(J),X(1,J+1),1,MDX,MDC,MDX*MDC)
       IF (MDC.EQ.0)
-     1CALL H12(1,J,J+1,N,X(1,J),1,SH(J),SF,1,1,0,1)
+     1CALL H12Z(1,J,J+1,N,X(1,J),1,SH(J),SF,1,1,0,1)
    80 CONTINUE
 C
 C  X CONTAINS NOW THE TRANSFORMED DESIGN MATRIX Q*X.
@@ -16430,7 +16794,8 @@ C  DIAG.ELEMENTS OF X FOR FURTHER APPLICATIONS OF Q
 C
       IF (K.EQ.NP) GOTO 130
       DO 125 I=1,K
-  125 SF(I)=X(I,I)
+      SF(I)=X(I,I)
+  125 CONTINUE
   130 CONTINUE
 C
 C  SPECIAL FOR PSEUDORANK=0
@@ -16445,14 +16810,15 @@ C
       MDC=MDX*(NP-1)
       DO 150 II=1,K
       I=KP1-II
-  150 CALL H12(1,I,KP1,NP,X(I,1),MDX,SG(I),X,MDX,1,I-1,MDC+I-1)
+      CALL H12Z(1,I,KP1,NP,X(I,1),MDX,SG(I),X,MDX,1,I-1,MDC+I-1)
+  150 CONTINUE
   160 CONTINUE
       RETURN
       END
 C
 C-----------------------------------------------------------------------
 C
-      SUBROUTINE RIMTRD(X,N,NP,MDX,INTCH,TAU,K,SF,SG,SH,IP)
+      SUBROUTINE RIMTRDZ(X,N,NP,MDX,INTCH,TAU,K,SF,SG,SH,IP)
 C.......................................................................
 C
 C   COPYRIGHT 1992 Alfio Marazzi
@@ -16487,7 +16853,7 @@ C
       SH(L)=SH(L)-X(J-1,L)**2
       IF(SH(L).GT.SH(LMAX)) LMAX=L
    10 CONTINUE
-      IF (DIFFD(HMAX+FACTOR*SH(LMAX),HMAX)) 20,20,50
+      IF (DIFFD(HMAX+FACTOR*SH(LMAX),HMAX).GT.0.D0) GOTO 50
 C
 C  COMPUTE SQUARED COLUMN LENGTHS AND FIND LMAX
 C
@@ -16495,7 +16861,8 @@ C
       DO 40 L=J,NP
       SH(L)=0.D0
       DO 30 I=J,N
-   30 SH(L)=SH(L)+X(I,L)**2
+      SH(L)=SH(L)+X(I,L)**2
+   30 CONTINUE
       IF (SH(L).GT.SH(LMAX)) LMAX=L
    40 CONTINUE
       HMAX=SH(LMAX)
@@ -16508,16 +16875,17 @@ C
       DO 60 I=1,N
       TMP=X(I,J)
       X(I,J)=X(I,LMAX)
-   60 X(I,LMAX)=TMP
+      X(I,LMAX)=TMP
+   60 CONTINUE
       SH(LMAX)=SH(J)
 C
 C  COMPUTE THE HOUSEHOLDER TRANSF. Q AND APPLY IT TO X
 C
    70 MDC=NP-J
       IF (MDC.GT.0)
-     1CALL H12D(1,J,J+1,N,X(1,J),1,SH(J),X(1,J+1),1,MDX,MDC,MDX*MDC)
+     1CALL H12ZD(1,J,J+1,N,X(1,J),1,SH(J),X(1,J+1),1,MDX,MDC,MDX*MDC)
       IF (MDC.EQ.0)
-     1CALL H12D(1,J,J+1,N,X(1,J),1,SH(J),SF,1,1,0,1)
+     1CALL H12ZD(1,J,J+1,N,X(1,J),1,SH(J),SF,1,1,0,1)
    80 CONTINUE
 C
 C  X CONTAINS NOW THE TRANSFORMED DESIGN MATRIX Q*X.
@@ -16536,7 +16904,8 @@ C  DIAG.ELEMENTS OF X FOR FURTHER APPLICATIONS OF Q
 C
       IF (K.EQ.NP) GOTO 130
       DO 125 I=1,K
-  125 SF(I)=X(I,I)
+      SF(I)=X(I,I)
+  125 CONTINUE
   130 CONTINUE
 C
 C  SPECIAL FOR PSEUDORANK=0
@@ -16551,15 +16920,16 @@ C
       MDC=MDX*(NP-1)
       DO 150 II=1,K
       I=KP1-II
-  150 CALL H12D(1,I,KP1,NP,X(I,1),MDX,SG(I),X,MDX,1,I-1,MDC+I-1)
+      CALL H12ZD(1,I,KP1,NP,X(I,1),MDX,SG(I),X,MDX,1,I-1,MDC+I-1)
+  150 CONTINUE
   160 CONTINUE
       RETURN
       END
 C
 C----------------------------------------------------------------------
 C
-      SUBROUTINE RICLLS(XT,Y,N,NP,MDX,MDT,K,IX,IY,SIGMA,THETA,RS1,RS2,
-     1                SE,SF,SG,SH,IP)
+      SUBROUTINE RICLLSZ(XT,Y,N,NP,MDX,MDT,K,IX,IY,SIGMA,THETA,RS1,RS2,
+     1                   SE,SF,SG,SH,IP)
 C.......................................................................
 C
 C   COPYRIGHT 1992 Alfio Marazzi
@@ -16583,25 +16953,28 @@ C
      1       .AND.((IX.EQ.0.AND.K.GT.0.AND.K.LE.LDIAG).OR.
      2       IX.EQ.1).AND.(IY.EQ.0.OR.IY.EQ.1)
       IF (.NOT.NPRCHK) CALL MESSGE(500,'RICLLS',1)
-      IF (IX.EQ.1) CALL RIMTRF(XT,N,NP,MDX,0,1.E-6,K,SF,SG,SH,IP)
+      IF (IX.EQ.1) CALL RIMTRFZ(XT,N,NP,MDX,0,1.E-6,K,SF,SG,SH,IP)
 C
 C  HOUSEHOLDER TRANSFORMATIONS OF THE OBSERVATION VECTOR
 C
       IF (IY.EQ.0) GOTO 25
-      IF (K.NE.NP) CALL SWAP(XT,SF,K,MDXP1,1,KK,K)
+      IF (K.NE.NP) CALL SWAPZ(XT,SF,K,MDXP1,1,KK,K)
       DO 20 JJ=1,LDIAG
       J=JJ
-   20 CALL H12(2,J,J+1,N,XT(1,J),1,SH(J),Y,1,N,1,N)
-      IF (K.NE.NP) CALL SWAP(XT,SF,K,MDXP1,1,KK,K)
+      CALL H12Z(2,J,J+1,N,XT(1,J),1,SH(J),Y,1,N,1,N)
+   20 CONTINUE
+      IF (K.NE.NP) CALL SWAPZ(XT,SF,K,MDXP1,1,KK,K)
 C
 C  SOLVE THE TRANSFORMED LS-PROBLEM
 C
    25 DO 30 I=1,N
-   30 THETA(I)=Y(I)
+      THETA(I)=Y(I)
+   30 CONTINUE 
       CALL SOLV(XT,THETA,NP,K,MDX,MDT)
       IF (K.EQ.NP) GOTO 50
       DO 40 J=KP1,NP
-   40 THETA(J)=0.0
+      THETA(J)=0.0
+   40 CONTINUE
    50 CONTINUE
 C
 C  COMPUTE THE TRANSFORMED RESIDUAL VECTORS Q*(Y-X1*THETA) (RS1)
@@ -16615,7 +16988,7 @@ C  COMPUTE SIGMA
 C
       SIGMA=0.
       IF (K.EQ.N) GOTO 80
-      CALL NRM2(RS1,N,1,N,SIGMA)
+      CALL NRM2Z(RS1,N,1,N,SIGMA)
       SIGMA=SIGMA/SQRT(FLOAT(N-K))
    80 IF (SIGMA.GT.0.) GOTO 90
       CALL MESSGE(101,'RICLLS',0)
@@ -16623,20 +16996,22 @@ C
 C
 C  TRANSFORM RESIDUAL VECTORS FOR OUTPUT
 C
-      IF (K.NE.NP) CALL SWAP(XT,SF,K,MDXP1,1,KK,K)
-      DO 100 J1=1,LDIAG
+      IF (K.NE.NP) CALL SWAPZ(XT,SF,K,MDXP1,1,KK,K)
+      DO 105 J1=1,LDIAG
       J=LDIAG-J1+1
       IF (K.EQ.NP) GOTO 100
-      CALL H12(2,J,J+1,N,XT(1,J),1,SH(J),RS2,1,N,1,N)
-  100 CALL H12(2,J,J+1,N,XT(1,J),1,SH(J),RS1,1,N,1,N)
-      IF (K.NE.NP) CALL SWAP(XT,SF,K,MDXP1,1,KK,K)
+      CALL H12Z(2,J,J+1,N,XT(1,J),1,SH(J),RS2,1,N,1,N)
+  100 CALL H12Z(2,J,J+1,N,XT(1,J),1,SH(J),RS1,1,N,1,N)
+  105 CONTINUE
+      IF (K.NE.NP) CALL SWAPZ(XT,SF,K,MDXP1,1,KK,K)
 C
 C  TRANSFORM SOLUTION VECTOR FOR OUTPUT
 C
       IF (K.EQ.NP) GOTO 120
       DO 110 J=1,K
       I=J
-  110 CALL H12(2,I,KP1,NP,XT(I,1),MDX,SG(I),THETA,1,N,1,NP)
+      CALL H12Z(2,I,KP1,NP,XT(I,1),MDX,SG(I),THETA,1,N,1,NP)
+  110 CONTINUE
   120 CALL PERM(THETA,IP,LDIAG,NP)
       RETURN
       END
@@ -16685,7 +17060,8 @@ C
       IF (.NOT.NPRCHK) CALL MESSGE(500,'RYHALG',1)
       ITYP=ITYPE
       DO 5 J=1,NP
-    5 DELTA(J)=0.0
+      DELTA(J)=0.0
+    5 CONTINUE
       IF (ITYP.EQ.1) GOTO 20
       E=2.0
       IF (ITYP.EQ.2) E=0.5
@@ -16703,16 +17079,17 @@ C
       IF (ISIGMA.EQ.0) C0NST=0.
       IF (IASG.EQ.1) CONST=BETA*FLOAT(N-K)
       IF (IASG.EQ.2) CONST=BET0*FLOAT(N-K)
-      IF (IX.EQ.1) CALL RIMTRF(X,N,NP,MDX,1,TAU,K,SF,SG,SH,IP)
+      IF (IX.EQ.1) CALL RIMTRFZ(X,N,NP,MDX,1,TAU,K,SF,SG,SH,IP)
 C
 C  HOUSEHOLDER TRANSFORMATIONS OF THE Y-VECTOR (WHEN IY.EQ.1)
 C
       IF (IY.EQ.0) GOTO 35
-      IF (K.NE.NP) CALL SWAP(X,SF,K,MDXP1,1,KK,K)
+      IF (K.NE.NP) CALL SWAPZ(X,SF,K,MDXP1,1,KK,K)
       DO 30 JJ=1,LDIAG
       J=JJ
-   30 CALL H12(2,J,J+1,N,X(1,J),1,SH(J),Y,1,N,1,N)
-      IF (K.NE.NP) CALL SWAP(X,SF,K,MDXP1,1,KK,K)
+      CALL H12Z(2,J,J+1,N,X(1,J),1,SH(J),Y,1,N,1,N)
+   30 CONTINUE
+      IF (K.NE.NP) CALL SWAPZ(X,SF,K,MDXP1,1,KK,K)
    35 CONTINUE
 C
 C  COMPUTE (V**T)*(P**T)*COV*P*V (WHEN IC.EQ.1)
@@ -16722,12 +17099,13 @@ C
       J=JJ
       IF (IP(J).EQ.J) GOTO 40
       L=IP(J)
-      CALL EXCH(COV,NP,NCOV,J,L)
+      CALL EXCHZ(COV,NP,NCOV,J,L)
    40 CONTINUE
       IF (K.EQ.NP) GOTO 50
       DO 45 II=1,K
       I=K-II+1
-   45 CALL VSV(I,KP1,NP,X(I,1),MDX,SG(I),COV,NCOV,DELTA)
+      CALL VSV(I,KP1,NP,X(I,1),MDX,SG(I),COV,NCOV,DELTA)
+   45 CONTINUE
 C
 C  TRANSFORM THE GIVEN SOLUTION OF THE PROBLEM X1*THETA=Y
 C
@@ -16752,13 +17130,14 @@ C
   235 IF (K.EQ.NP) GOTO 240
       CALL RES(3,X,Y,THETA,RS2,SE,SG,N,NP,K,NP,MDX,MDT)
   240 CALL RES(2,X,Y,THETA,RS1,SE,SG,N,NP,K,NP,MDX,MDT)
-      IF (K.NE.NP) CALL SWAP(X,SF,K,MDXP1,1,KK,K)
-      DO 250 J1=1,LDIAG
+      IF (K.NE.NP) CALL SWAPZ(X,SF,K,MDXP1,1,KK,K)
+      DO 255 J1=1,LDIAG
       J=LDIAG-J1+1
       IF (K.EQ.NP) GOTO 250
-      CALL H12(2,J,J+1,N,X(1,J),1,SH(J),RS2,1,N,1,N)
-  250 CALL H12(2,J,J+1,N,X(1,J),1,SH(J),RS1,1,N,1,N)
-      IF (K.NE.NP) CALL SWAP(X,SF,K,MDXP1,1,KK,K)
+      CALL H12Z(2,J,J+1,N,X(1,J),1,SH(J),RS2,1,N,1,N)
+  250 CALL H12Z(2,J,J+1,N,X(1,J),1,SH(J),RS1,1,N,1,N)
+  255 CONTINUE
+      IF (K.NE.NP) CALL SWAPZ(X,SF,K,MDXP1,1,KK,K)
       IF (ITYP.EQ.2) THEN
         DO 260 I=1,N
         IF (WGT(I).LE.0.) GOTO 260
@@ -16773,8 +17152,9 @@ C
       IF (K.EQ.NP) GOTO 280
       DO 270 J=1,K
       I=J
-      CALL H12(2,I,KP1,NP,X(I,1),MDX,SG(I),THETA,1,N,1,NP)
-  270 CALL H12(2,I,KP1,NP,X(I,1),MDX,SG(I),DELTA,1,N,1,NP)
+      CALL H12Z(2,I,KP1,NP,X(I,1),MDX,SG(I),THETA,1,N,1,NP)
+      CALL H12Z(2,I,KP1,NP,X(I,1),MDX,SG(I),DELTA,1,N,1,NP)
+  270 CONTINUE
   280 CALL PERM(THETA,IP,LDIAG,NP)
       CALL PERM(DELTA,IP,LDIAG,NP)
       SIGMAF=SIGMA
@@ -16892,19 +17272,19 @@ C   -------
 C
 C   TRIANGULARIZATION OF SX
 C
-      CALL RIMTRF(SX,N,NP,MDX,INTCH,TAU,K,SF,SG,SH,IP)
+      CALL RIMTRFZ(SX,N,NP,MDX,INTCH,TAU,K,SF,SG,SH,IP)
       IF (K.EQ.0) CALL MESSGE(461,'RYWALG',0)
       IF (K.EQ.0) RETURN 
 C
 C   HOUSEHOLDER TRANSFORMATIONS OF THE RIGHT HAND SIDE
 C
       KK=MDX*(K-1)+K
-      IF (K.NE.NP) CALL SWAP(SX,SF,K,MDXP1,1,KK,K)
+      IF (K.NE.NP) CALL SWAPZ(SX,SF,K,MDXP1,1,KK,K)
       DO 500 JJ=1,LDIAG
         J=JJ
-        CALL H12(2,J,J+1,N,SX(1,J),1,SH(J),RS,1,N,1,N)
+        CALL H12Z(2,J,J+1,N,SX(1,J),1,SH(J),RS,1,N,1,N)
   500 CONTINUE
-      IF (K.NE.NP) CALL SWAP(SX,SF,K,MDXP1,1,KK,K)
+      IF (K.NE.NP) CALL SWAPZ(SX,SF,K,MDXP1,1,KK,K)
 C
 C   SOLVE FOR DELTA
 C
@@ -16916,7 +17296,7 @@ C
   510 CONTINUE
       DO 520 J=1,K
         I=J
-        CALL H12(2,I,KP1,NP,SX(I,1),MDX,SG(I),RS,1,N,1,NP)
+        CALL H12Z(2,I,KP1,NP,SX(I,1),MDX,SG(I),RS,1,N,1,NP)
   520 CONTINUE
   530 DO 540 J=1,NP
         DELTA(J)=GAM*RS(J)
@@ -16944,7 +17324,7 @@ C   -------
 C
 C-----------------------------------------------------------------------
 C
-      SUBROUTINE RYSALG(X,Y,THETA,WGT,COV,SIGMAI,N,NP,MDX,MDT,
+      SUBROUTINE RYSALGZ(X,Y,THETA,WGT,COV,SIGMAI,N,NP,MDX,MDT,
      1                  NCOV,TOL,TAU,ITYPE,ISIGMA,ICNV,MAXIT,
      1                  MAXIS,NITMON,NIT,KODE,SIGMAF,QR0,RS,
      1                  DELTA,SC,SJ,SE,SF,SG,SH,IP,SW,SX)
@@ -17188,7 +17568,8 @@ C
 C  STEP 4. COMPUTE THE (UNSCALED) NEGATIVE GRADIENT
 C  -------
   400 DO 410 I=1,N
-  410 SD(I)=RS(I)
+      SD(I)=RS(I)
+  410 CONTINUE
       CALL HUB(SD,WGT,WGT,SIGMB,N,ITYP,EXPSI)
       CALL GRADNT(X,SD,N,NP,MDX,GRAD)
 C
@@ -17204,22 +17585,23 @@ C  -------
   520 SQD=SQRT(SDI)
       IF (ITYP.EQ.2) SQD=SQD*SW(I)
       DO 530 J=1,NP
-  530 SX(I,J)=X(I,J)*SQD
+      SX(I,J)=X(I,J)*SQD
+  530 CONTINUE
   550 CONTINUE
       FIRST=.TRUE.
 C
 C  STEP 6. COMPUTE GENERALIZED INVERSE OF UNSCALED HESSIAN MATRIX
 C  ------
-  600 CALL RIMTRF(SX,N,NP,MDX,INTCH,TAU,K,SF,SG,SH,IP)
+  600 CALL RIMTRFZ(SX,N,NP,MDX,INTCH,TAU,K,SF,SG,SH,IP)
          IF (K.NE.NP) CALL MESSGE(111,'RYNALG',0)
          IF (K.EQ.0) CALL MESSGE(112,'RYNALG',0)
          IF (K.EQ.0) RETURN 
-      CALL KIASCV(SX,K,NP,MDX,NN,1.,1.,HESSNV)
-      CALL KFASCV(SX,HESSNV,K,NP,MDX,NN,1.,DELTA,SG,IP)
+      CALL KIASCVZ(SX,K,NP,MDX,NN,1.,1.,HESSNV)
+      CALL KFASCVZ(SX,HESSNV,K,NP,MDX,NN,1.,DELTA,SG,IP)
 C
 C  STEP 7. COMPUTE THE INCREMENT VECTOR
 C  -------
-      CALL MSF(HESSNV,GRAD,DELTA,NP,NN,1,NP,NP)
+      CALL MSFZ(HESSNV,GRAD,DELTA,NP,NN,1,NP,NP)
       DO 710 J=1,NP
       DELTA(J)=GAM*DELTA(J)
       IF (FIRST) THEN
@@ -17245,15 +17627,17 @@ C
 C  H-ALGORITHM OPTION
 C
   800 IF (ITYP.EQ.2) THEN
-        DO 810 J=1,NP
+        DO 815 J=1,NP
         DO 810 I=1,N
         SX(I,J)=X(I,J)*SW(I)
   810   CONTINUE
+  815   CONTINUE
       ELSE
-        DO 820 J=1,NP
+        DO 825 J=1,NP
         DO 820 I=1,N
         SX(I,J)=X(I,J)
   820   CONTINUE
+  825   CONTINUE
       ENDIF
       GOTO 600
 C
@@ -17278,7 +17662,8 @@ C
       GOTO 600
   880 IF (QSF.LT.QS1) THEN
         DO 890 J=1,NP
-  890   THETA(J)=SF(J)
+        THETA(J)=SF(J)
+  890   CONTINUE
       ENDIF
 C
 C  STEP 9. STOP ITERATIONS IF DESIRED PRECISION HAS BEEN REACHED
@@ -17394,284 +17779,268 @@ C
         SC(N0)=ABS(RS(I))
   800 CONTINUE
   900 MED=(N0/2)+1
-      CALL FSTORD(SC,N0,MED,SIGMAF)
+      CALL FSTORDZ(SC,N0,MED,SIGMAF)
       SIGMAF=SIGMAF/BET0
       RETURN
       END
 C
 C-----------------------------------------------------------------------
 C
-c      SUBROUTINE RYBIFR(X,Y,N,NP,NTHET,NCOV,ITYPE,ICOLL,ISIGMA,
-c     *           CH,CK,BM,TOL,TAU,MAXITT,MAXITW,SIGMAF,THETA,
-c     *           RS,WGT,COV,MDD,MDR,MDI,DWRK,RWRK,IWRK)
-cC.......................................................................
-cC
-cC   COPYRIGHT 1992 Alfio MARAZZI
-cC
-cC   AUTHOR :  A. RANDRIAMIHARISOA
-cC.......................................................................
-cC
-c      DIMENSION X(N,NTHET),Y(N),THETA(NTHET),RS(N),WGT(N)
-c      DIMENSION COV(NCOV),RWRK(MDR),IWRK(MDI)
-c      DOUBLE PRECISION DWRK(MDD)
-cC
-cC   Main subroutine for the computation of M-estimates
-cC
-c      MP=NTHET
-c      SQRP=SQRT(FLOAT(NTHET))
-c      NN=MP*(MP+1)/2
-c      MIND=MP*(MP+N+4)
-c      MINI=MP
-c      MINR=2*(MP+N)*(MP+1)   
-c      IF (N.LE.1 .OR. NP.LE.0 .OR. NCOV.NE.NN .OR. (MP.NE.NP+1 .AND.
-c     * MP.NE.NP) .OR. MDR.LT.MINR .OR. MDI.LT.MINI .OR. MDD.LT.MIND
-c     * .OR.(ICOLL.NE.0.AND.ICOLL.NE.1.AND.ITYPE.NE.1) .OR. ITYPE.LE.0 
-c     * .OR. ITYPE.GT.3 .OR. (CH.LE.0. .AND. ITYPE.NE.3) .OR. (CK.LE.
-c     * SQRP .AND. ITYPE.EQ.3 ) .OR. (BM.LE.SQRP .AND. ITYPE.EQ.2)
-c     * .OR. (ISIGMA.LT.-2 .AND. ISIGMA.GT.2) .OR. TOL.LE.0. .OR.
-c     * TAU.LT.0. .OR. MAXITT.LE.0 .OR. MAXITW.LE.0) 
-c     * CALL MESSGE(500,'RYBIFR',1)
-c      NXD=1
-c      NAD=NXD+N*MP
-c      NSZD=NAD+MP*MP
-c      NAA=NAD
-c      NSA=NAA+NN
-c      NSFD=NSA+NN
-c      NSGD=NSFD+MP
-c      NSHD=NSGD+MP
-c      NA=1
-c      NS1=NA+NCOV
-c      NS2=NS1+NCOV
-c      NAINV=NS2+NCOV
-c      NSB=NA 
-c      NSB0=NS2 
-c      NXTETA=NAINV+NCOV
-c      NSC=NXTETA+N
-c      NSU=NXTETA
-c      NSWD=NSC+N
-c      NSX=NSWD
-c      NSZ=NSX+N*MP
-c      NSE=NSZD
-c      NSF=NSFD
-c      NSG=NSGD
-c      NSH=NSHD
-c      ITCP=NTHET-NP
-c      CALL RYBIF2(X,Y,N,MP,ITCP,NCOV,ITYPE,ICOLL,ISIGMA,CH,CK,BM,
-c     *           TOL,TAU,MAXITT,MAXITW,SIGMAF,THETA,RS,WGT,COV,
-c     *           DWRK(1),DWRK(NAD),DWRK(NSZD),DWRK(NAA),DWRK(NSA),
-c     *           RWRK(NSB),RWRK(NSB0),DWRK(NSFD),DWRK(NSGD),DWRK(NSHD),
-c     *           RWRK(NSWD),RWRK(NSU),RWRK(NA),RWRK(NS1),RWRK(NS2),
-c     *           RWRK(NAINV),RWRK(NXTETA),RWRK(NSC),DWRK(NSE),DWRK(NSF),
-c     *           DWRK(NSG),DWRK(NSH),RWRK(NSX),RWRK(NSZ),IWRK)
-c      RETURN
-c      END
-cC
-cC-----------------------------------------------------------------------
-cC
-c      SUBROUTINE RYBIF2(X,Y,N,NP,ITCP,NCOV,ITYPE,ICOLL,ISIGMA,CH,CK,BM,
-c     *           TOL,TAU,MAXITT,MAXITW,SIGMAF,THETA,RS,WGT,COV,
-c     *           XD,AD,SZD,AA,SA,SB,SB0,SFD,SGD,SHD,SWD,SU,
-c     *           A,S1INV,S2,AINV,XTHETA,SC,SE,SF,SG,SH,SX,SZ,SP)
-cC.......................................................................
-cC
-cC   COPYRIGHT 1992 Alfio MARAZZI
-cC
-cC   AUTHOR : A. RANDRIAMIHARISOA
-cC.......................................................................
-cC
-cC  LET DP, SP AND S.M.A. ABBREVIATIONS FOR DOUBLE PRECISION, SINGLE 
-cC  PRECISION AND SAME MEMORY ALLOCATION.
-cC  IN ORDER TO MINIMIZE MEMORY ALLOCATION, THE INPUT PARAMETERS FOR
-cC  THIS SUBROUTINE ARE SUCH THAT :
-cC  "AD(NP,NP)+SZD(NP)" (DP) HAVE THE S.M.A. AS "AA(NCOV)+SA(NCOV)" (DP)
-cC  "SB(NCOV)+SB0(NCOV)" (DP) HAVE THE S.M.A. AS "A(NCOV)+S1INV(NCOV)+
-cC                                             S2(NCOV)+AINV(NCOV)" (SP)
-cC  "SU(N)" (DP) HAS THE S.M.A. AS "XTHETA(N)+SC(N)" (SP)
-cC  "SW(N,NP)" (DP) HAS THE S.M.A. AS "SX(N,NP)+SZ(N)+..." (SP)
-cC  "SFD(1), SGD(1), SHD(1) AND SZD(1)" (DP) HAVE THE S.M.A. AS "SF(1),
-cC                                               SG(1), SH(1) AND SE(1)"
-cC.......................................................................
-cC
-c      DOUBLE PRECISION XD(N,NP),AD(NP,NP),SU(N),AA(NCOV),SB(NCOV),
-c     +       SA(NCOV),SB0(NCOV),SFD(NP),SGD(NP),SHD(NP),SWD(N,NP),
-c     +       SZD(NP),UCV,UPCV,WWW
-cC
-c      REAL X(N,NP),Y(N),THETA(NP),RS(N),COV(NCOV),XTHETA(N),WGT(N),
-c     +     SC(N),SE(NP),SF(NP),SG(NP),SH(NP),SX(N,NP),SZ(N),
-c     +     A(NCOV),S1INV(NCOV),S2(NCOV),AINV(NCOV)
-c      INTEGER SP(NP)
-c      EXTERNAL PSY,PSP,CHI,RHO,UCV,UPCV,WWW
-c      COMMON/BETA/BETA,BET0,/CONST/CONST,/WWWPR/IWWW
-c      COMMON/UCVPR/IUCV,A2,B2,CHK,CKW,BB,BT,CW
-c      COMMON/PSIPR/IPSI,CPSI,H1,H2,H3,XK,DCHI
-c      NN=NP*(NP+1)/2
-c      ISG=IABS(ISIGMA)
-c      SQRP=SQRT(FLOAT(NP))
-c      IF (N.LE.1 .OR. NP.LE.0 .OR. NCOV.NE.NN .OR. (ITCP.NE.0 
-c     * .AND. ITCP.NE.1) .OR. ITYPE.LT.1 .OR. ITYPE.GT.3 
-c     * .OR. ISG.GT.2 .OR. TOL.LE.0. .OR. TAU.LT.0. .OR.
-c     * MAXITT.LE.0 .OR. MAXITW.LE.0 .OR. (ICOLL.NE.0 .AND. 
-c     * ICOLL.NE.1 .AND.ITYPE.NE.1) .OR. (CH.LE.0. .AND. 
-c     * ITYPE.NE.3) .OR. (CK.LE.SQRP .AND. ITYPE.EQ.3 ) .OR.
-c     * (BM.LE.SQRP .AND. ITYPE.EQ.2)) CALL MESSGE(500,'RYBIF2',1)
-cC
-cC STEP 0: INITIALIZATIONS
-cC ------
-cC     ADD COLUMN IF (ITCP=1)
-c      DO 10 J=1,NP
-c   10 THETA(J)=0. 
-c      IF (ITCP.EQ.0) GOTO 50
-c      DO 30 J=1,NP-1
-c      CALL LMDD(X(1,J),SC,N,1,XME,XMD,XSD)
-c      THETA(J)=XME
-c      DO 20 I=1,N
-c   20 X(I,J)=X(I,J)-XME
-c   30 CONTINUE
-c      DO 40 I=1,N
-c      X(I,NP)=1.
-c   40 CONTINUE
-c   50 IFLAG=0
-c      GAM=1.5
-c      MAXIS=1
-c      IA=1
-c      IAINV=0
-c      INTCH=1
-c      IPSI=1
-c      ITYPW=1
-c      IF (ITYPE.EQ.1) THEN
-c        CPSI=CH
-c      ELSEIF (ITYPE.EQ.2) THEN
-c        IWWW=3
-c        IUCV=1
-c        A2=0.
-c        B2=BM*BM
-c        CPSI=CH
-c      ELSE
-c        IWWW=1
-c        IUCV=3
-c        CKW=CK
-c        CPSI=CKW
-c      ENDIF
-c      IF (ISG.EQ.1) DCHI=CPSI
-c      PSP0=PSP(0.)
-c      NITMON=0
-c      XFUD=2.0
-c      ICNV=2
-cC
-cC STEP 1: COMPUTE WEIGHTS
-cC ------
-c      IF (ITYPE.EQ.1) GOTO 200      
-c      IF (ICOLL.EQ.1) GOTO 120
-c      CALL WIMEDV(X,N,NP,NCOV,N,ITYPW,2,N,AA,RS)
-c      CALL WYNALG(X,AA,UCV,UPCV,N,NP,NCOV,N,MAXITW,NITMON,ICNV,
-c     +            TOL,XFUD,NIT,WGT,SA,SB,SU,XD(1,1),SB0,SFD)
-c      IF (NIT.LT.MAXITW) GOTO 150
-c      IFLAG=1
-c      DO 110 IJ=1,NCOV
-c  110 AA(IJ)=SA(IJ)
-c      CALL WYFALG(X,AA,WGT,UCV,N,NP,0,NCOV,N,TAU,MAXITW,NITMON,
-c     +            ICNV,ITYPW,0,TOL,NIT,WGT,SU,SA,SB,SFD,SGD)
-c      IF (NIT.LT.MAXITW) GOTO 150
-c      IFLAG=2
-c      GOTO 150
-c  120 DO 130 J=1,NP
-c      DO 130 I=1,N
-c       XD(I,J)=DBLE(X(I,J))
-c  130 CONTINUE
-c      IWGT=1
-c      APAR=CK*CK/FLOAT(NP)
-c      IF (ITYPE.EQ.2) THEN
-c        APAR=BM*BM/FLOAT(NP)
-c        IWGT=2
-c      ENDIF
-c      MAXTWY=2*MAXITW
-c      CALL WYFCOL(XD,UCV,N,NP,NCOV,N,NP,N,IWGT,APAR,TAU,TOL,
-c     +            MAXTWY,NITMON,ICNV,K,NIT,WGT,AD,SU,SB,SB0,
-c     +            SFD,SGD,SHD,SP,SWD,SZD)
-c      IF (NIT.LT.MAXTWY) GOTO 150
-c      IFLAG=3
-c  150 DO 170 I=1,N
-c       S=WGT(I)
-c       WGT(I)=SNGL(WWW(S))
-c  170 CONTINUE
-cC
-cC STEP 2: COMPUTE INITIAL VALUES (THETA,SIGMA,COV)
-cC -------
-c  200 IF (ITYPE.EQ.1) THEN
-c        DO 220 I=1,N
-c         DO 210 J=1,NP
-c          SX(I,J)=X(I,J)
-c  210    CONTINUE
-c         SC(I)=Y(I) 
-c  220   CONTINUE
-c        CALL RIMTRF(X,N,NP,N,INTCH,TAU,K,SF,SG,SH,SP)
-c        CALL LIEPSH(CPSI,EPSI2,EPSIP)
-c        FH=EPSI2/EPSIP**2
-c        FB=0.
-c        CALL KIASCV(X,K,NP,N,NCOV,FH,FB,COV)
-c      ELSE
-c        F1=1./FLOAT(N)
-c        CALL KIEDCH(WGT,N,CPSI,ITYPE,SC,SZ)
-c        CALL KTASKW(X,SC,SZ,N,NP,N,N,NCOV,TAU,IA,F1,0.,IAINV,
-c     +  A,S1INV,S2,AINV,COV,SX)
-c        DO 240 I=1,N
-c          WI=WGT(I)
-c          DO 230 J=1,NP
-c           SX(I,J)=WI*X(I,J)
-c  230     CONTINUE
-c          SC(I)=WI*Y(I) 
-c  240   CONTINUE
-c      ENDIF   
-c      CALL RIBET0(WGT,N,ITYPE,0,TOL,BT0)
-c      CALL RILARS(SX,SC,N,NP,N,N,TOL,NIT,KR,KODE,
-c     1            SIGMA,XTHETA,RS,SZ,S1INV,S2,AINV)
-c      IF (ISG.EQ.1) CALL RIBETH(WGT,N,CPSI,ITYPE,BTA)
-cC
-cC STEP 3: ITERATIONS
-cC -------
-c      ICNV=1
-c      IF (ITYPE.EQ.1) THEN
-c        IX=0
-c        IY=1
-c        IC=0
-c        CALL RYHALG(X,Y,XTHETA,WGT,COV,PSY,CHI,RHO,SIGMA,N,NP,N,N,
-c     1     NCOV,K,TOL,GAM,TAU,ITYPE,IX,IY,IC,ISIGMA,ICNV,MAXITT,MAXIS,
-c     2     NITMON,NIT,SIGMAF,RS,SC,AINV,SZ,SE,SF,SG,SH,SP)
-c        IF (NIT.EQ.MAXITT) IFLAG=4
-c      ELSE
-c        CALL RYWALG(X,Y,XTHETA,WGT,COV,PSP0,PSY,CHI,RHO,SIGMA,N,NP,N,
-c     1  N,NCOV,TOL,GAM,TAU,ITYPE,ISIGMA,ICNV,MAXITT,MAXIS,NITMON,NIT,
-c     2  SIGMAF,RS,SE,SC,SF,SG,SH,SP,SZ,SX)
-c        IF (NIT.EQ.MAXITT) IFLAG=10*IFLAG+5
-c      ENDIF
-cC
-cC ADJUST THETA(NP) IF ITCP=1
-cC
-c      ADJ=0.
-c      IF (ITCP.EQ.1) THEN
-c        DO 310 J=1,NP
-c          ADJ=ADJ+THETA(J)*XTHETA(J)
-c  310   CONTINUE
-c      ENDIF
-c      DO 320 J=1,NP
-c        THETA(J)=XTHETA(J)
-c  320 CONTINUE
-c      THETA(NP)=THETA(NP)-ADJ
-cC
-cC STEP 4: COMPUTE COV. MATRIX OF PAR. ESTIMATES (AVERAGE)
-cC -------
-c      IF (ITYPE.EQ.1) THEN
-c        CALL KFFACV(RS,PSY,PSP,N,NP,SIGMAF,F1)
-c        CALL KFASCV(X,COV,K,NP,N,NCOV,F1,SE,SG,SP)
-c      ELSE
-c        F1=(SIGMAF**2)/FLOAT(N)
-c        CALL KFEDCB(WGT,RS,PSY,PSP,N,SIGMAF,ITYPE,SC,SZ)
-c        CALL KTASKW(X,SC,SZ,N,NP,N,N,NCOV,TAU,IA,F1,0.,IAINV,
-c     1              A,S1INV,S2,AINV,COV,SX)
-c      ENDIF
-c      IF (IFLAG.NE.0) CALL MESSGE(100+IFLAG,'RYBIFR',0)
-c      RETURN
-c      END
+      SUBROUTINE RYBIFRZ(X,Y,N,NP,NTHET,ITCP,NCOV,ITYPE,ICOLL,ISIGMA,
+     *           CH,CK,BM,TOL,TAU,MAXITT,MAXITW,SIGMAF,THETA,
+     *           RS,WGT,COV)
+C.......................................................................
+C
+C   COPYRIGHT 1992 Alfio MARAZZI
+C
+C   AUTHOR :  A. RANDRIAMIHARISOA
+C.......................................................................
+C
+      DIMENSION X(N,NTHET),Y(N),THETA(NTHET),RS(N),WGT(N),COV(NCOV)
+C
+C   Main subroutine for the computation of M-estimates
+C
+      COMMON/BETA/BETA,BET0,/CONST/CONST,/WWWPR/IWWW
+      COMMON/UCVPR/IUCV,A2,B2,CHK,CKW,BB,BT,CW
+      COMMON/PSIPR/IPSI,CPSI,H1,H2,H3,XK,DCHI
+C
+      MP=NTHET
+      SQRP=SQRT(FLOAT(NTHET))
+      NN=MP*(MP+1)/2  
+      IF (N.LE.1 .OR. NP.LE.0 .OR. NCOV.NE.NN .OR. (MP.NE.NP+1 .AND.
+     * MP.NE.NP) .OR.(ICOLL.NE.0.AND.ICOLL.NE.1.AND.ITYPE.NE.1) .OR. 
+     * ITYPE.LE.0 .OR. ITYPE.GT.3 .OR. (CH.LE.0. .AND. ITYPE.NE.3) .OR. 
+     * (CK.LE.SQRP .AND. ITYPE.EQ.3 ).OR.(BM.LE.SQRP .AND. ITYPE.EQ.2)
+     * .OR. (ISIGMA.LT.-2 .AND. ISIGMA.GT.2) .OR. TOL.LE.0. .OR.
+     * TAU.LT.0. .OR. MAXITT.LE.0 .OR. MAXITW.LE.0) 
+     * CALL MESSGE(500,'RYBIFR',1)
+C
+C STEP 0: INITIALIZATIONS
+C ------
+C 
+C   ADD COLUMN IF (ITCP=1)
+	  ITCP=NTHET-NP
+      NP=MP
+      DO 10 J=1,NP
+      THETA(J)=0. 
+   10 CONTINUE
+      IF (ITCP.EQ.0) GOTO 50
+      DO 30 J=1,NP-1
+      CALL LMDDZ(X(1,J),RS,N,1,XME,XMD,XSD)
+      THETA(J)=XME
+      DO 20 I=1,N
+      X(I,J)=X(I,J)-XME
+   20 CONTINUE
+   30 CONTINUE
+      DO 40 I=1,N
+      X(I,NP)=1.
+   40 CONTINUE
+   50 IFLAG=0
+      ISG=IABS(ISIGMA)
+      IPSI=1
+      IF (ITYPE.EQ.1) THEN
+        CPSI=CH
+      ELSEIF (ITYPE.EQ.2) THEN
+        IWWW=3
+        IUCV=1
+        A2=0.
+        B2=BM*BM
+        CPSI=CH
+      ELSE
+        IWWW=1
+        IUCV=3
+        CKW=CK
+        CPSI=CKW
+      ENDIF
+      IF (ISG.EQ.1) DCHI=CPSI
+      PSP0=PSP(0.)
+      NITMON=0
+      XFUD=2.0
+      ICNV=2
+C
+C COMPUTE WEIGHTS
+C 
+      IF (ITYPE.NE.1) CALL RYBIF2(X,N,NP,NCOV,ITYPE,ITYPW,
+     *   ICOLL,CK,BM,TOL,TAU,MAXITW,RS,WGT,IFLAG)
+C
+C ITERATIONS
+C
+      CALL RYBIF3(X,Y,N,NP,ITCP,NCOV,ITYPE,ISIGMA,TOL,
+     *     TAU,MAXITT,SIGMAF,THETA,RS,WGT,COV,IFLAG)
+      RETURN
+      END
+C
+C-----------------------------------------------------------------------
+C
+      SUBROUTINE RYBIF2(X,N,NP,NCOV,ITYPE,ITYPW,ICOLL,CK,BM,
+     *           TOL,TAU,MAXITW,RS,WGT,IFLAG)
+C.......................................................................
+C
+C   COPYRIGHT 1992 Alfio MARAZZI
+C
+C   AUTHOR : A. RANDRIAMIHARISOA
+C.......................................................................
+C
+      DOUBLE PRECISION AA(NCOV),XD(N,NP),AD(NP,NP),SU(N),SB(NCOV),
+     +       SA(NCOV),SB0(NCOV),SFD(NP),SGD(NP),SHD(NP),SWD(N,NP),
+     +       SZD(NP),UCV,UPCV,WWW
+C
+      REAL X(N,NP),RS(N),WGT(N)
+C
+      INTEGER SP(NP)
+      EXTERNAL UCV,UPCV,WWW
+      COMMON/WWWPR/IWWW
+      COMMON/UCVPR/IUCV,A2,B2,CHK,CKW,BB,BT,CW
+C
+C STEP 1: COMPUTE WEIGHTS
+C ------  
+      IF (ICOLL.EQ.1) GOTO 120
+      ITYPW=1
+      NITMON=0
+      XFUD=2.0
+      ICNV=2
+      CALL WIMEDVZ(X,N,NP,NCOV,N,ITYPW,2,N,AA,RS)
+      CALL WYNALG(X,AA,UCV,UPCV,N,NP,NCOV,N,MAXITW,NITMON,ICNV,
+     +            TOL,XFUD,NIT,WGT,SA,SB,SU,XD(1,1),SB0,SFD)
+      IF (NIT.LT.MAXITW) GOTO 150
+      IFLAG=1
+      DO 110 IJ=1,NCOV
+      AA(IJ)=SA(IJ)
+  110 CONTINUE
+      CALL WYFALG(X,AA,WGT,UCV,N,NP,0,NCOV,N,TAU,MAXITW,NITMON,
+     +            ICNV,ITYPW,0,TOL,NIT,WGT,SU,SA,SB,SFD,SGD)
+      IF (NIT.LT.MAXITW) GOTO 150
+      IFLAG=2
+      GOTO 150
+  120 DO 130 J=1,NP
+      DO 125 I=1,N
+       XD(I,J)=DBLE(X(I,J))
+  125 CONTINUE
+  130 CONTINUE
+      IWGT=1
+      APAR=CK*CK/FLOAT(NP)
+      IF (ITYPE.EQ.2) THEN
+        APAR=BM*BM/FLOAT(NP)
+        IWGT=2
+      ENDIF
+      MAXTWY=2*MAXITW
+      CALL WYFCOL(XD,UCV,N,NP,NCOV,N,NP,N,IWGT,APAR,TAU,TOL,
+     +            MAXTWY,NITMON,ICNV,K,NIT,WGT,AD,SU,SB,SB0,
+     +            SFD,SGD,SHD,SP,SWD,SZD)
+      IF (NIT.LT.MAXTWY) GOTO 150
+      IFLAG=3
+  150 DO 170 I=1,N
+       S=WGT(I)
+       WGT(I)=SNGL(WWW(S))
+  170 CONTINUE
+      RETURN
+      END
+C
+C-----------------------------------------------------------------------
+C
+      SUBROUTINE RYBIF3(X,Y,N,NP,ITCP,NCOV,ITYPE,ISIGMA,TOL,
+     *           TAU,MAXITT,SIGMAF,THETA,RS,WGT,COV,IFLAG)
+C.......................................................................
+C
+C   COPYRIGHT 1992 Alfio MARAZZI
+C
+C   AUTHOR : A. RANDRIAMIHARISOA
+C.......................................................................
+C
+      REAL X(N,NP),Y(N),THETA(NP),RS(N),COV(NCOV),XTHETA(N),WGT(N),
+     +     SC(N),SE(NP),SF(NP),SG(NP),SH(NP),SX(N,NP),SZ(N),
+     +     A(NCOV),S1INV(NCOV),S2(NCOV),AINV(NCOV)
+      INTEGER SP(NP)
+      EXTERNAL PSY,PSP,CHI,RHO,UCV,UPCV,WWW
+      COMMON/BETA/BETA,BET0,/CONST/CONST,/WWWPR/IWWW
+      COMMON/PSIPR/IPSI,CPSI,H1,H2,H3,XK,DCHI
+C
+      ISG=IABS(ISIGMA)
+      GAM=1.5
+      MAXIS=1
+      NITMON=0
+      IA=1
+      IAINV=0
+      INTCH=1
+C
+C STEP 2: COMPUTE INITIAL VALUES (THETA,SIGMA,COV)
+C -------
+      IF (ITYPE.EQ.1) THEN
+        DO 220 I=1,N
+         DO 210 J=1,NP
+          SX(I,J)=X(I,J)
+  210    CONTINUE
+         SC(I)=Y(I) 
+  220   CONTINUE
+        CALL RIMTRFZ(X,N,NP,N,INTCH,TAU,K,SF,SG,SH,SP)
+        CALL LIEPSHZ(CPSI,EPSI2,EPSIP)
+        FH=EPSI2/EPSIP**2
+        FB=0.
+        CALL KIASCVZ(X,K,NP,N,NCOV,FH,FB,COV)
+      ELSE
+        F1=1./FLOAT(N)
+        CALL KIEDCHZ(WGT,N,CPSI,ITYPE,SC,SZ)
+        CALL KTASKWZ(X,SC,SZ,N,NP,N,N,NCOV,TAU,IA,F1,0.,IAINV,
+     +  A,S1INV,S2,AINV,COV,SX)
+        DO 240 I=1,N
+          WI=WGT(I)
+          DO 230 J=1,NP
+           SX(I,J)=WI*X(I,J)
+  230     CONTINUE
+          SC(I)=WI*Y(I) 
+  240   CONTINUE
+      ENDIF   
+      CALL RIBET0Z(WGT,N,ITYPE,0,TOL,BT0)
+      CALL RILARSZ(SX,SC,N,NP,N,N,TOL,NIT,KR,KODE,
+     1            SIGMA,XTHETA,RS,SZ,S1INV,S2,AINV)
+      IF (ISG.EQ.1) CALL RIBETHZ(WGT,N,CPSI,ITYPE,BTA)
+C
+C STEP 3: ITERATIONS
+C -------
+      ICNV=1
+      IF (ITYPE.EQ.1) THEN
+        IX=0
+        IY=1
+        IC=0
+        CALL RYHALG(X,Y,XTHETA,WGT,COV,PSY,CHI,RHO,SIGMA,N,NP,N,N,
+     1     NCOV,K,TOL,GAM,TAU,ITYPE,IX,IY,IC,ISIGMA,ICNV,MAXITT,MAXIS,
+     2     NITMON,NIT,SIGMAF,RS,SC,AINV,SZ,SE,SF,SG,SH,SP)
+        IF (NIT.EQ.MAXITT) IFLAG=4
+      ELSE
+        CALL RYWALG(X,Y,XTHETA,WGT,COV,PSP0,PSY,CHI,RHO,SIGMA,N,NP,N,
+     1  N,NCOV,TOL,GAM,TAU,ITYPE,ISIGMA,ICNV,MAXITT,MAXIS,NITMON,NIT,
+     2  SIGMAF,RS,SE,SC,SF,SG,SH,SP,SZ,SX)
+        IF (NIT.EQ.MAXITT) IFLAG=10*IFLAG+5
+      ENDIF
+C
+C ADJUST THETA(NP) IF ITCP=1
+C
+      ADJ=0.
+      IF (ITCP.EQ.1) THEN
+        DO 310 J=1,NP
+          ADJ=ADJ+THETA(J)*XTHETA(J)
+  310   CONTINUE
+      ENDIF
+      DO 320 J=1,NP
+        THETA(J)=XTHETA(J)
+  320 CONTINUE
+      THETA(NP)=THETA(NP)-ADJ
+C
+C STEP 4: COMPUTE COV. MATRIX OF PAR. ESTIMATES (AVERAGE)
+C -------
+      IF (ITYPE.EQ.1) THEN
+        CALL KFFACV(RS,PSY,PSP,N,NP,SIGMAF,F1)
+        CALL KFASCVZ(X,COV,K,NP,N,NCOV,F1,SE,SG,SP)
+      ELSE
+        F1=(SIGMAF**2)/FLOAT(N)
+        CALL KFEDCB(WGT,RS,PSY,PSP,N,SIGMAF,ITYPE,SC,SZ)
+        CALL KTASKWZ(X,SC,SZ,N,NP,N,N,NCOV,TAU,IA,F1,0.,IAINV,
+     1              A,S1INV,S2,AINV,COV,SX)
+      ENDIF
+      IF (IFLAG.NE.0) CALL MESSGE(100+IFLAG,'RYBIFR',0)
+      RETURN
+      END
+C
 C-----------------------------------------------------------------------
 C
 C                 R O B E T H  FORTRAN Source
@@ -17702,7 +18071,7 @@ C
    30 J=J-1
       IF (IV(J).EQ.IV2) GOTO 30
       IF (I.GE.J) GOTO 40
-      CALL SWAP(XO(1,I),XO(1,J),N,1,1,MDX,MDX)
+      CALL SWAPZ(XO(1,I),XO(1,J),N,1,1,MDX,MDX)
       L=IP(I)
       IP(I)=IP(J)
       IP(J)=L
@@ -17729,10 +18098,12 @@ C
       DOUBLE PRECISION EXU,DS
       EXTERNAL EXU,PSY
       COMMON/BCPAR/BPAR,CPAR,BETA,XLCNST,IPMQ,T,SIGM
-      PSISG=0.D0*WGT(1)
+      DATA NCALL,FX1/0,0.0/
+      IF (NCALL.EQ.1) FX1=EXU(1.0)*PSY(1.0)
+      PSISG=FX1*WGT(1)
       S=SNGL(DS)
       SSCA=S/SIGM
-      CALL XERP(IPMQ,XLCNST,SSCA,ANS)
+      CALL XERPZ(IPMQ,XLCNST,SSCA,ANS)
       ANS=ANS/SIGM
       Z=S/(BETA*T)
       TMP=AMIN1(BPAR,ABS(Z))
@@ -17757,9 +18128,11 @@ C
       DOUBLE PRECISION EXU,DS
       EXTERNAL EXU,PSY
       COMMON/BCPAR/BPAR,CPAR,BETA,XLCNST,IPMQ,T,SIGM
-      PSI2G=0.D0*WGT(1)
+      DATA NCALL,FX1/0,0.0/
+      IF (NCALL.EQ.1) FX1=EXU(1.0)*PSY(1.0)
+      PSI2G=FX1*WGT(1)
       S=SNGL(DS)
-      CALL XERP(IPMQ,XLCNST,S,ANS)
+      CALL XERPZ(IPMQ,XLCNST,S,ANS)
       Z=(BETA/T)*S
       TMP=AMIN1(BPAR,ABS(Z))
       IF (Z.LT.0.) TMP=-TMP
@@ -17783,13 +18156,15 @@ C
       DOUBLE PRECISION EXU,DS,Z,PZ
       EXTERNAL EXU,PSY
       COMMON/BCPAR/BPAR,CPAR,BETA,XLCNST,IPMQ,T,SIGM
-      PHIS2G=0.D0*WGT(1)
+      DATA NCALL,FX1/0,0.0/
+      IF (NCALL.EQ.1) FX1=EXU(1.0)*PSY(1.0)
+      PHIS2G=FX1*WGT(1)
       S=SNGL(DS)
       SSCA=S/SIGM
-      CALL XERP(IPMQ,XLCNST,SSCA,ANS)
+      CALL XERPZ(IPMQ,XLCNST,SSCA,ANS)
       ANS=ANS/SIGM
       Z=DBLE(CPAR*T*BETA)/DS
-      CALL GAUSSD(1,Z,PZ)
+      CALL GAUSSZD(1,Z,PZ)
       PHIS2G=(2.D0*PZ-1.D0)*DS*DS*DBLE(ANS)
       RETURN
       END
@@ -17811,12 +18186,14 @@ C
       DOUBLE PRECISION EXU,DS,A,PA,TMP
       EXTERNAL EXU,PSY
       COMMON/BCPAR/BPAR,CPAR,BETA,XLCNST,IPMQ,T,SIGM
-      EPSI2G=0.D0*WGT(1)
+      DATA NCALL,FX1/0,0.0/
+      IF (NCALL.EQ.1) FX1=EXU(1.0)*PSY(1.0)
+      EPSI2G=FX1*WGT(1)
       S=SNGL(DS)
-      CALL XERP(IPMQ,XLCNST,S,ANS)
+      CALL XERPZ(IPMQ,XLCNST,S,ANS)
       A=DBLE(CPAR*T/BETA)/DS
-      CALL GAUSSD(1,A,PA)
-      CALL XERF(2,SNGL(A),PX)
+      CALL GAUSSZD(1,A,PA)
+      CALL XERFZ(2,SNGL(A),PX)
       TMP=A*A+(1.D0-A*A)*(2.D0*PA-1.D0)-2.D0*A*DBLE(PX)
       EPSI2G=TMP*DS*DS*DBLE(ANS)
       RETURN
@@ -17860,7 +18237,7 @@ C
 C  RADIX IS A MACHINE DEPENDENT PARAMETER SPECIFYING
 C  THE BASE OF THE MACHINE FLOATING POINT REPRESENTATION
 C
-      CALL MACH(1,RADIX)
+      CALL MACHZ(1,RADIX)
       B2=RADIX*RADIX
       K=1
       L=N
@@ -17880,12 +18257,12 @@ C
       A(J,I)=A(MM,I)
       A(MM,I)=F
    40 CONTINUE
-   50 GOTO (80,130),IEXC
+   50 IF (IEXC.EQ.2) GOTO 130
 C
 C  SEARCH FOR ROWS ISOLATING AN EIGENVALUE
 C  AND PUSH THEM DOWN
 C
-   80 IF (L.EQ.1) GOTO 280
+      IF (L.EQ.1) GOTO 280
       L=L-1
 C
 C  FOR J=L STEP-1 UNTIL 1 DO ...
@@ -17919,7 +18296,8 @@ C
 C  NOW BALANCE THE SUBMATRIX IN ROWS K TO L
 C
       DO 180 I=K,L
-  180 SCALE(I)=1.0
+      SCALE(I)=1.0
+  180 CONTINUE
 C
 C  ITERATIVE LOOP FOR NORM REDUCTION
 C
@@ -17952,9 +18330,11 @@ C
       SCALE(I)=SCALE(I)*F
       NOCONV=.TRUE.
       DO 250 J=K,N
-  250 A(I,J)=A(I,J)*G
+      A(I,J)=A(I,J)*G
+  250 CONTINUE
       DO 260 J=1,L
-  260 A(J,I)=A(J,I)*F
+      A(J,I)=A(J,I)*F
+  260 CONTINUE
   270 CONTINUE
       IF (NOCONV) GOTO 190
   280 LW=K
@@ -18016,9 +18396,11 @@ C
       Y=Y/X
       A(I,MM1)=Y
       DO 140 J=MM,N
-  140 A(I,J)=A(I,J)-Y*A(MM,J)
+      A(I,J)=A(I,J)-Y*A(MM,J)
+  140 CONTINUE
       DO 150 J=1,IG
-  150 A(J,MM)=A(J,MM)+Y*A(J,I)
+      A(J,MM)=A(J,MM)+Y*A(J,I)
+  150 CONTINUE
   160 CONTINUE
   180 CONTINUE
   200 RETURN
@@ -18044,7 +18426,7 @@ C
 C  PREC IS A MACHINE DEPENDENT PARAMETER SPECIFYING
 C  THE SMALLEST POSITIVE REAL NUMBER SUCH THAT (1.0+PREC).GT.1.0
 C
-      CALL MACH(2,PREC)
+      CALL MACHZ(2,PREC)
       IERR=0
 C
 C  STORE ROOTS ISOLATED BY BALANX
@@ -18088,7 +18470,8 @@ C  FORM EXCEPTIONAL SHIFT
 C
       T=T+X
       DO 120 I=LW,EN
-  120 H(I,I)=H(I,I)-X
+      H(I,I)=H(I,I)-X
+  120 CONTINUE
       S=ABS(H(EN,NA))+ABS(H(NA,ENM2))
       X=0.75*S
       Y=X
@@ -18221,7 +18604,7 @@ C  File TSMAIN.F  Main subroutines of Chapter 6
 C
 C-----------------------------------------------------------------------
 C
-      SUBROUTINE TISRTC(X,IV,N,NVAR,MDX,NP,NQ,IP)
+      SUBROUTINE TISRTCZ(X,IV,N,NVAR,MDX,NP,NQ,IP)
 C.......................................................................
 C
 C   COPYRIGHT 1992 Alfio Marazzi
@@ -18260,7 +18643,7 @@ C
 C
 C-----------------------------------------------------------------------
 C
-      SUBROUTINE TTASKT(COV,AINV,NP,NQ,MDC,NCOV,FACT,COVTAU,SC1,SC2)
+      SUBROUTINE TTASKTZ(COV,AINV,NP,NQ,MDC,NCOV,FACT,COVTAU,SC1,SC2)
 C.......................................................................
 C
 C   COPYRIGHT 1992 Alfio Marazzi
@@ -18290,12 +18673,14 @@ C
       SC2(IJ)=AINV(K)
    20 CONTINUE
    30 CONTINUE
-      CALL MTT2(SC2,SC2,NPMNQ,IJ)
-      CALL MSS(SC1,SC2,COVTAU,NPMNQ,IJ,MDC)
+      CALL MTT2Z(SC2,SC2,NPMNQ,IJ)
+      CALL MSSZ(SC1,SC2,COVTAU,NPMNQ,IJ,MDC)
       IF (FACT.LE.0) RETURN
-      DO 40 I=1,NPMNQ
+      DO 50 I=1,NPMNQ
       DO 40 J=1,NPMNQ
-   40 COVTAU(I,J)=COVTAU(I,J)*FACT
+      COVTAU(I,J)=COVTAU(I,J)*FACT
+   40 CONTINUE
+   50 CONTINUE 
       RETURN
       END
 C
@@ -18332,8 +18717,8 @@ C
 C
 C  CLASSICAL CASE
 C
-      CALL NRM2(RS1,N,1,N,SUM1)
-      CALL NRM2(RS2,N,1,N,SUM2)
+      CALL NRM2Z(RS1,N,1,N,SUM1)
+      CALL NRM2Z(RS2,N,1,N,SUM2)
       SUM1=SUM1*SUM1
       SUM2=SUM2*SUM2
       FTAU=FLOAT(N-NP)/FLOAT(NP-NQ)*(SUM2-SUM1)/SUM1
@@ -18345,7 +18730,8 @@ C
       S1=RS1(I)/SIGMA
       S2=RS2(I)/SIGMA
       SUM1=SUM1+EXRHO(S1)
-   20 SUM2=SUM2+EXRHO(S2)
+      SUM2=SUM2+EXRHO(S2)
+   20 CONTINUE
       GOTO 90
 C
 C  MALLOWS CASE
@@ -18378,7 +18764,7 @@ C
 C
 C-----------------------------------------------------------------------
 C
-      SUBROUTINE TTEIGN(COVTAU,NP,NQ,MDC,XLMBDA,IV,SV)
+      SUBROUTINE TTEIGNZ(COVTAU,NP,NQ,MDC,XLMBDA,IV,SV)
 C.......................................................................
 C
 C   COPYRIGHT 1992 Alfio Marazzi
@@ -18404,7 +18790,7 @@ C
 C
 C-----------------------------------------------------------------------
 C
-      SUBROUTINE TFRN2T(COV,THETA,N,NP,NQ,NCOV,TAU,RN2T,SA)
+      SUBROUTINE TFRN2TZ(COV,THETA,N,NP,NQ,NCOV,TAU,RN2T,SA)
 C.......................................................................
 C
 C   COPYRIGHT 1992 Alfio Marazzi
@@ -18416,7 +18802,7 @@ C  PURPOSE
 C  -------
 C  LET A THE MATRIX WITH ELEMENTS COV(I,J), I=NQ+1,NP AND J=NQ+1,NP
 C  AND LET Y THE VECTOR WITH ELEMENTS THETA(NQ+1), ..., THETA(NP)
-C  TFRN2T COMPUTES THE QUADRATIC FORM RN2T=Y**T*(A**-1)*Y*N.
+C  TFRN2TZ COMPUTES THE QUADRATIC FORM RN2T=Y**T*(A**-1)*Y*N.
 C
       LOGICAL NPRCHK
       DIMENSION COV(NCOV),THETA(NP),SA(NCOV)
@@ -18441,23 +18827,23 @@ C
           SA(K)=COV(L+J)
   100   CONTINUE
   200 CONTINUE
-      CALL MCHL(SA,II,NN,INFO)
+      CALL MCHLZ(SA,II,NN,INFO)
       IF (INFO.EQ.0) GOTO 300
       CALL MESSGE(400+INFO,'TFRN2T',0)
       RETURN
-  300 CALL MINV(SA,II,NN,TAU,ISING)
+  300 CALL MINVZ(SA,II,NN,TAU,ISING)
       IF (ISING.EQ.0) GOTO 400
       CALL MESSGE(450,'TFRN2T',0)
       RETURN
-  400 CALL MTT1(SA,SA,II,NN)
-      CALL XSY(THETA(NQ+1),THETA(NQ+1),SA,II,NN,RN2T)
+  400 CALL MTT1Z(SA,SA,II,NN)
+      CALL XSYZ(THETA(NQ+1),THETA(NQ+1),SA,II,NN,RN2T)
       RN2T=FLOAT(N)*RN2T
       RETURN
       END
 C
 C----------------------------------------------------------------------
 C
-      SUBROUTINE TAUARE(ITYPE,MU,MAXIT,CPSI,BB,SIGMAX,UPPER,TIL,TOL,
+      SUBROUTINE TAUAREZ(ITYPE,MU,MAXIT,CPSI,BB,SIGMAX,UPPER,TIL,TOL,
      1                  NIT,BETA,ARE)
 C.......................................................................
 C
@@ -18505,7 +18891,7 @@ C
        XLCNST=-1.
        NIT=1
        IF (ITYPE.EQ.3) GOTO 310
-       CALL LIEPSH(CPSI,EPSI2,EPSIP)
+       CALL LIEPSHZ(CPSI,EPSI2,EPSIP)
        DEN=EPSI2
        IF (ITYPE.EQ.1) GOTO 230
 C
@@ -18632,7 +19018,8 @@ C
 C  PSI(S)=S
 C
   100 DO 150 I=1,N
-  150 FVALS(I)=SVALS(I)
+      FVALS(I)=SVALS(I)
+  150 CONTINUE
       RETURN
 C
 C  PSI(S,C)=MAX(-C,MIN(C,S))
@@ -18642,7 +19029,8 @@ C
       ABST=ABS(S)
       TMP=AMIN1(C,ABST)
       IF (S.LT.0.) TMP=-TMP
-  250 FVALS(I)=TMP
+      FVALS(I)=TMP
+  250 CONTINUE
       RETURN
 C
 C  PSI(S,H1,H2,H3)=-PSI(-S,H1,H2,H3)
@@ -18651,7 +19039,7 @@ C                 =H1 FOR H1 .LE. S .LE. H2
 C                 =H1*(H3-S)/(H3-H2) FOR H2 .LE. S .LE. H3
 C                 =0 FOR S .GT. H3
 C
-  300 DO 350 I=1,N
+  300 DO 355 I=1,N
       S=SVALS(I)
       ABST=ABS(S)
       TMP=0
@@ -18660,22 +19048,24 @@ C
       IF (ABST.GT.H2) TMP=H1*(H3-ABST)/(H3-H2)
       IF (S.LT.0.) TMP=-TMP
   350 FVALS(I)=TMP
+  355 CONTINUE
       RETURN
 C
 C  PSI(S)=S*[MAX(1-S**2,0)]**2
 C
-  400 DO 450 I=1,N
+  400 DO 455 I=1,N
       S=SVALS(I)
       ABST=ABS(S)
       TMP=0.
       IF (ABST.GE.1.) GOTO 450
       TMP=S*(1.-S*S)*(1.-S*S)
   450 FVALS(I)=TMP
+  455 CONTINUE
       RETURN
 C
 C  PSI(S)=(6/K)*(S/K)*[MAX(1-(S/K)**2,0)]**2
 C
-  500 DO 550 I=1,N
+  500 DO 555 I=1,N
       S=SVALS(I)
       ABST=ABS(S)
       TMP=0.
@@ -18683,6 +19073,7 @@ C
       SK=S/XK
       TMP=(6.*SK/XK)*(1.-SK*SK)*(1.-SK*SK)
   550 FVALS(I)=TMP
+  555 CONTINUE
       RETURN
 C
 C  PSI(S,C)=MAX(-C,MIN(C,S))
@@ -18692,7 +19083,8 @@ C
       S=SVALS(I)
       TMP=AMIN1(H2,S)
       IF (TMP.LE.H1) TMP=H1
-  750 FVALS(I)=TMP
+      FVALS(I)=TMP
+  750 CONTINUE
       RETURN
       END
 C
@@ -18727,14 +19119,16 @@ C   50 FVALS(I)=TMP
 C      RETURN
   100 DO 150 I=1,N
       S=SVALS(I)
-  150 FVALS(I)=S*S/2.
+      FVALS(I)=S*S/2.
+  150 CONTINUE
       RETURN
   200 DO 250 I=1,N
       S=SVALS(I)
       ABST=ABS(S)
       TMP=S*S/2.
       IF (ABST.GT.C) TMP=C*(ABST-C/2.)
-  250 FVALS(I)=TMP
+      FVALS(I)=TMP
+  250 CONTINUE
       RETURN
   300 DO 350 I=1,N
       S=SVALS(I)
@@ -18744,9 +19138,10 @@ C      RETURN
       IF (ABST.GT.H1) TMP=H1*(ABST-H1/2.)
   325 TMP=0.5*H1*(H3+H2-H1)
       IF (ABST.LT.H3) TMP=TMP-.5*H1*(H3-ABST)**2/(H3-H2)
-  350 FVALS(I)=TMP
+      FVALS(I)=TMP
+  350 CONTINUE
       RETURN
-  400 DO 450 I=1,N
+  400 DO 455 I=1,N
       S=SVALS(I)
       ABST=ABS(S)
       TMP=1./6.
@@ -18754,8 +19149,9 @@ C      RETURN
       S2=S*S
       TMP=(S2*(S2-3)+3)*S2/6.
   450 FVALS(I)=TMP
+  455 CONTINUE
       RETURN
-  500 DO 550 I=1,N
+  500 DO 555 I=1,N
       S=SVALS(I)
       ABST=ABS(S)
       TMP=1.
@@ -18763,13 +19159,15 @@ C      RETURN
       S2=(S/XK)**2
       TMP=(S2*(S2-3)+3)*S2
   550 FVALS(I)=TMP
+  555 CONTINUE
       RETURN
   700 DO 750 I=1,N
       S=SVALS(I)
       TMP=S*S/2.
       IF (S.LT.H1) TMP=H1*(S-H1/2.)
       IF (S.GT.H2) TMP=H2*(S-H2/2.)
-  750 FVALS(I)=TMP
+      FVALS(I)=TMP
+  750 CONTINUE
       RETURN
       END
 C
@@ -18803,16 +19201,18 @@ C      S=SVALS(I)
 C   50 FVALS(I)=UPSP(S)
 C      RETURN
   100 DO 150 I=1,N
-  150 FVALS(I)=1.
+      FVALS(I)=1.
+  150 CONTINUE
       RETURN
   200 DO 250 I=1,N
       S=SVALS(I)
       ABST=ABS(S)
       TMP=0.
       IF (ABST.LE.C) TMP=1.
-  250 FVALS(I)=TMP
+      FVALS(I)=TMP
+  250 CONTINUE
       RETURN
-  300 DO 350 I=1,N
+  300 DO 355 I=1,N
       S=SVALS(I)
       ABST=ABS(S)
       TMP=1.
@@ -18821,8 +19221,9 @@ C      RETURN
       IF ((ABST.LE.H2).OR.(ABST.GE.H3)) GOTO 350
       TMP=H1/(H2-H3)
   350 FVALS(I)=TMP
+  355 CONTINUE
       RETURN
-  400 DO 450 I=1,N
+  400 DO 455 I=1,N
       S=SVALS(I)
       ABST=ABS(S)
       TMP=0.
@@ -18830,8 +19231,9 @@ C      RETURN
       S2=S*S
       TMP=(1.-S2)*(1.-5.*S2)
   450 FVALS(I)=TMP
+  455 CONTINUE
       RETURN
-  500 DO 550 I=1,N
+  500 DO 555 I=1,N
       S=SVALS(I)
       ABST=ABS(S)
       TMP=0.
@@ -18839,12 +19241,14 @@ C      RETURN
       S2=(S/XK)**2
       TMP=(6./XK)*(1.-S2)*(1.-5.*S2)/XK
   550 FVALS(I)=TMP
+  555 CONTINUE
       RETURN
   700 DO 750 I=1,N
       S=SVALS(I)
       TMP=0.
       IF (S.GE.H1.AND.S.LE.H2) TMP=1.
-  750 FVALS(I)=TMP
+      FVALS(I)=TMP
+  750 CONTINUE
       RETURN
       END
 C
@@ -18879,15 +19283,17 @@ C   50 FVALS(I)=UCHI(S)
 C      RETURN
   100 DO 150 I=1,N
       S=SVALS(I)
-  150 FVALS(I)=S*S/2.
+      FVALS(I)=S*S/2.
+  150 CONTINUE
       RETURN
   200 DO 250 I=1,N
       S=SVALS(I)
       ABST=ABS(S)
       PS=AMIN1(D,ABST)
-  250 FVALS(I)=PS*PS/2.
+      FVALS(I)=PS*PS/2.
+  250 CONTINUE
       RETURN
-  300 DO 350 I=1,N
+  300 DO 355 I=1,N
       S=SVALS(I)
       ABST=ABS(S)
       TMP=1.
@@ -18895,12 +19301,14 @@ C      RETURN
       S2=(S/XK)**2
       TMP=(S2*(S2-3)+3)*S2
   350 FVALS(I)=TMP
+  355 CONTINUE
       RETURN
   400 DO 450 I=1,N
       S=SVALS(I)
       PS=AMIN1(H2,S)
       IF (PS.LT.H1) PS=H1
-  450 FVALS(I)=PS*PS/2.
+      FVALS(I)=PS*PS/2.
+  450 CONTINUE
       RETURN
       END
 C
@@ -18927,7 +19335,8 @@ C
       COMMON/UCV56/EM,CR,VK,NP,ENU,V7
       DATA GAM,DSPI/1.E-6,2.506628274631001/
       DO 10 I=1,N
-   10 FVALS(I)=1.D0
+      FVALS(I)=1.D0
+   10 CONTINUE
       IF (IUCV.EQ.0) RETURN
       IF (IUCV.EQ.1) GOTO 100
       IF (IUCV.EQ.2) GOTO 200
@@ -18956,7 +19365,7 @@ C      RETURN
       IF (S.LE.0.) GOTO 250
       IF (S.LE.GAM) S=GAM
       Q=CHK/DBLE(S)
-      CALL GAUSSD(1,Q,PC)
+      CALL GAUSSZD(1,Q,PC)
       FVALS(I)=2.D0*PC-1.D0
   250 CONTINUE
       RETURN
@@ -18966,7 +19375,7 @@ C      RETURN
       IF (S.LE.GAM) S=GAM
       Q=CKW/DBLE(S)
       Q2=Q*Q
-      CALL GAUSSD(1,Q,PC)
+      CALL GAUSSZD(1,Q,PC)
       PD=XEXPD(-Q2/2.D0)/DSPI
       FVALS(I)=Q2+(1.D0-Q2)*(2.D0*PC-1.D0)-2.D0*Q*PD
   350 CONTINUE
@@ -19020,7 +19429,8 @@ C
       COMMON/UCV56/EM,CR,VK,NP,ENU,V7
       DATA GAM,DSPI/1.E-6,2.506628274631001/
       DO 10 I=1,N
-   10 FVALS(I)=0.D0
+      FVALS(I)=0.D0
+   10 CONTINUE
       IF (IUCV.EQ.0) RETURN
       IF (IUCV.EQ.1) GOTO 100
       IF (IUCV.EQ.2) GOTO 200
@@ -19039,7 +19449,7 @@ C      RETURN
       IF (S.GT.GAM) GOTO 110
       CALL MESSGE(200,'UPCVA ',0)
       S=GAM
-  110 Z2=DBLE(S)*S
+  110 Z2=DBLE(S*S)
       IF (Z2.GT.B2) FVALS(I)=-2.D0*B2/Z2/S
       IF (Z2.LT.A2) FVALS(I)=-2.D0*A2/Z2/S
   150 CONTINUE
@@ -19060,7 +19470,7 @@ C      RETURN
       IF (S.LE.0.) GOTO 350
       IF (S.LE.GAM) S=GAM
       Q=CKW/DBLE(S)
-      CALL GAUSSD(1,Q,PC)
+      CALL GAUSSZD(1,Q,PC)
       FVALS(I)=-4.D0*(Q*Q)*(1.D0-PC)/DBLE(S)
   350 CONTINUE
       RETURN
@@ -19200,7 +19610,8 @@ C
       COMMON/UCV56/EM,CR,VK,NP,ENU,V7
       DATA GAM/1.E-6/
       DO 50 I=1,N
-   50 FVALS(I)=1.D0
+      FVALS(I)=1.D0
+   50 CONTINUE
       IF (IUCV.EQ.7) GOTO 700
       IF (IUCV.GE.5) GOTO 500
       IF (IUCV.NE.1) RETURN
@@ -19250,12 +19661,13 @@ C  OF THE FIRST DERIVATIVE OF THE W-FUNCTION
 C  This subroutine is mainly used by the S-interface
 C
       REAL SVALS(N)
-      DOUBLE PRECISION FVALS(N)
+      DOUBLE PRECISION FVALS(N),Q,Z2
       COMMON/UCVPR/IUCV,A2,B2,CHK,CKW,BB,DV,CW
       COMMON/UCV56/EM,CR,VK,NP,ENU,V7
       DATA GAM/1.E-6/
       DO 50 I=1,N
-   50 FVALS(I)=0.D0
+      FVALS(I)=0.D0
+   50 CONTINUE
       IF (IUCV.EQ.7) GOTO 700
       IF (IUCV.GE.5) GOTO 500
       IF (IUCV.NE.1) RETURN
@@ -19265,7 +19677,7 @@ C
       IF (S.GT.GAM) GOTO 110
       CALL MESSGE(200,'WPCVA ',0)
       Z=GAM
-  110 FVALS(I)=-CW/(DBLE(S)*S)
+  110 FVALS(I)=-DBLE(CW/(S*S))
   150 CONTINUE
       RETURN
   500 Z2=DBLE(CR**2)
@@ -19309,7 +19721,8 @@ C
       COMMON/WWWPR/IWWW
       DATA GAM/1.D-6/
       DO 50 I=1,N
-   50 FVALS(I)=1.D0
+      FVALS(I)=1.D0
+   50 CONTINUE
       IF (IWWW.EQ.0) RETURN
       IF (IWWW.EQ.1) GOTO 100
       IF (IWWW.EQ.2) GOTO 200
@@ -19345,7 +19758,7 @@ C
 C   AUTHOR : A. RANDRIAMIHARISOA
 C.......................................................................
 C
-      CHARACTER *64 ITEXT
+      CHARACTER ITEXT*64 
       J=LEN(ITEXT)
       CALL REALPR(ITEXT,J,VAR,1)
       RETURN
@@ -19359,7 +19772,7 @@ C
 C   AUTHOR : A. RANDRIAMIHARISOA
 C.......................................................................
 C
-      CHARACTER *64 ITEXT
+      CHARACTER ITEXT*64 
       DIMENSION DIM(N)
       J=LEN(ITEXT)
       CALL REALPR(ITEXT,J,DIM,N)
@@ -19374,7 +19787,7 @@ C
 C   AUTHOR : A. RANDRIAMIHARISOA
 C.......................................................................
 C
-      CHARACTER *64 ITEXT,C*1
+      CHARACTER ITEXT*64 ,C*1
       DIMENSION DIM(MDX,N)
       J=LEN(ITEXT)
       CALL INTPR(ITEXT,J,M,1)
@@ -19396,7 +19809,7 @@ C
 C   AUTHOR : A. RANDRIAMIHARISOA
 C.......................................................................
 C
-      CHARACTER *64 ITEXT
+      CHARACTER ITEXT*64 
       DIMENSION COV(NCOV)
       J=LEN(ITEXT) + 0*N
       CALL REALPR(ITEXT,J,COV,NCOV)
@@ -19411,7 +19824,7 @@ C
 C   AUTHOR : A. RANDRIAMIHARISOA
 C.......................................................................
 C
-      CHARACTER *64 ITEXT
+      CHARACTER ITEXT*64 
       DOUBLE PRECISION DIM(N)
       J=LEN(ITEXT)
       CALL DBLEPR(ITEXT,J,DIM,N)
@@ -19426,7 +19839,7 @@ C
 C   AUTHOR : A. RANDRIAMIHARISOA
 C.......................................................................
 C
-      CHARACTER *64 ITEXT,C*1
+      CHARACTER ITEXT*64 ,C*1
       DOUBLE PRECISION DIM(MDX,N)
       J=LEN(ITEXT)
       CALL INTPR(ITEXT,J,M,1)
@@ -19448,7 +19861,7 @@ C
 C   AUTHOR : A. RANDRIAMIHARISOA
 C.......................................................................
 C
-      CHARACTER *64 ITEXT
+      CHARACTER ITEXT*64 
       DOUBLE PRECISION COV(NCOV)
       J=LEN(ITEXT)+ 0*N
       CALL DBLEPR(ITEXT,J,COV,NCOV)
@@ -19463,7 +19876,7 @@ C
 C   AUTHOR : A. RANDRIAMIHARISOA
 C.......................................................................
 C
-      CHARACTER *64 ITEXT
+      CHARACTER ITEXT*64 
       J=LEN(ITEXT)
       CALL INTPR(ITEXT,J,I,1)
       RETURN
@@ -19477,7 +19890,7 @@ C
 C   AUTHOR : A. RANDRIAMIHARISOA
 C.......................................................................
 C
-      CHARACTER *64 ITEXT
+      CHARACTER ITEXT*64 
       INTEGER IDIM(N)
       J=LEN(ITEXT)
       CALL INTPR(ITEXT,J,IDIM,N)
@@ -19492,7 +19905,7 @@ C
 C   AUTHOR : A. RANDRIAMIHARISOA
 C.......................................................................
 C
-      CHARACTER *6 ITEXT, CC*34
+      CHARACTER ITEXT*6 , CC*34
       IF (ISTOP.EQ.1) THEN
 C
 C Error exit from R
@@ -19647,15 +20060,17 @@ C
       EXTERNAL UCV
       DO 200 I=1,NOBS
       DO 100 J=1,NVAR
-  100 A(J)=X(I,J)
-      CALL NRM2D(A,NVAR,1,NVAR,XNR)
+      A(J)=X(I,J)
+  100 CONTINUE
+      CALL NRM2ZD(A,NVAR,1,NVAR,XNR)
       SC(I)=SNGL(XNR)
   200 CONTINUE
       SIG0=1.0
   300 SUM=0.D0
       DO 400 I=1,NOBS
       S0Z=SIG0*SC(I)
-  400 SUM=SUM+(DBLE(S0Z))**2*UCV(S0Z)
+      SUM=SUM+(DBLE(S0Z))**2*UCV(S0Z)
+  400 CONTINUE
       IF (SUM.GT.DFLOAT(NOBS)) THEN
         IF (SIG0.GT.0.01) THEN
           SIG0=SIG0-0.01
@@ -19670,10 +20085,12 @@ C         Value for 'SIG0' not found, 0.5 assumed.
         GOTO 300
       ENDIF
       DO 500 I=1,NCOV
-  500 A(I)=0.D0
+      A(I)=0.D0
+  500 CONTINUE
       DO 600 I=1,NVAR
       II=I*(I+1)/2
-  600 A(II)=DBLE(SIG0)
+      A(II)=DBLE(SIG0)
+  600 CONTINUE
       RETURN
       END
 C
@@ -19704,12 +20121,14 @@ C
       NQP1=NQ+1
    10 ZMAX=0.0
       DO 20 IJ=1,NCOV
-   20 ST(IJ)=0.D0
+      ST(IJ)=0.D0
+   20 CONTINUE
       DO 100 L=1,N
       DO  50 J=1,NP
-   50 SD(J)=DBLE(X(L,J))
-      CALL MLYD(SA,SD,NP,NCOV,NP,1)
-      CALL NRM2D(SD(NQP1),NP-NQ,1,NP-NQ,ZNR)
+      SD(J)=DBLE(X(L,J))
+   50 CONTINUE
+      CALL MLYZD(SA,SD,NP,NCOV,NP,1)
+      CALL NRM2ZD(SD(NQP1),NP-NQ,1,NP-NQ,ZNR)
       DISTL=SNGL(ZNR)
       IF (NQ.NE.0) DISTL=DISTL/SQPMQ
       IF (ICNV.EQ.2) ZMAX=AMAX1(ZMAX,ABS(DISTL-DIST(L)))
@@ -19723,15 +20142,19 @@ C
       SUP(L)=UP
       IF (IALG.EQ.2) GOTO 80
       DO 70 I=1,NP
-   70 SZ(L,I)=SNGL(SD(I))
+      SZ(L,I)=SNGL(SD(I))
+   70 CONTINUE
    80 IJ=0
-      DO 90 I=1,NP
+      DO 95 I=1,NP
       DO 90 J=1,I
       IJ=IJ+1
-   90 ST(IJ)=ST(IJ)+(SD(I)*U)*SD(J)
+      ST(IJ)=ST(IJ)+(SD(I)*U)*SD(J)
+   90 CONTINUE
+   95 CONTINUE 
   100 CONTINUE
       DO 110 IJ=1,NCOV
-  110 ST(IJ)=ST(IJ)/XN
+      ST(IJ)=ST(IJ)/XN
+  110 CONTINUE
       RETURN
       END
 C-----------------------------------------------------------------------
@@ -19742,7 +20165,7 @@ C  File WGMAIN.F  Main subroutines of Chapter 3
 C
 C-----------------------------------------------------------------------
 C
-      SUBROUTINE WFSHAT(XT,N,NP,MDX,WGT,SH,SC)
+      SUBROUTINE WFSHATZ(XT,N,NP,MDX,WGT,SH,SC)
 C.......................................................................
 C
 C   COPYRIGHT 1992 Alfio Marazzi
@@ -19760,15 +20183,16 @@ C
       NPRCHK=N.GT.0.AND.NP.GT.0.AND.MDX.GE.N
       IF (.NOT.NPRCHK) CALL MESSGE(500,'WFSHAT',1)
 C
-      CALL MHAT(XT,N,NP,NP,MDX,WGT,SH,SC)
+      CALL MHATZ(XT,N,NP,NP,MDX,WGT,SH,SC)
       DO 20 I=1,N
-   20 WGT(I)=SQRT(1.-WGT(I))
+      WGT(I)=SQRT(1.-WGT(I))
+   20 CONTINUE
       RETURN
       END
 C
 C-----------------------------------------------------------------------
 C
-      SUBROUTINE WIMEDV(X,NOBS,NVAR,NCOV,MDX,ITYPW,INIT,NFIRST,A,SC)
+      SUBROUTINE WIMEDVZ(X,NOBS,NVAR,NCOV,MDX,ITYPW,INIT,NFIRST,A,SC)
 C.......................................................................
 C
 C   COPYRIGHT 1992 Alfio Marazzi
@@ -19795,7 +20219,8 @@ C
 C  COMPUTE INITIAL VALUE FOR A
 C
       DO 10 J=1,NCOV
-   10 A(J)=0.D0
+      A(J)=0.D0
+   10 CONTINUE
       DO 15 J=1,NVAR
         JJ=J*(J+1)/2
         A(JJ)=1.D0
@@ -19803,7 +20228,7 @@ C
       IF (INIT.EQ.1) RETURN
       IF (ITYPW.EQ.2) GOTO 100
       DO 50 J=1,NVAR
-      CALL LMDD(X(1,J),SC,NFIRST,1,XME,XMD,XSD)
+      CALL LMDDZ(X(1,J),SC,NFIRST,1,XME,XMD,XSD)
       SQDEV2=SQRT(XSD**2+XME**2)
       JJ=(J*J+J)/2
       IF (SQDEV2.GT.TL) GOTO 40
@@ -19815,7 +20240,7 @@ C
       RETURN
   100 DO 150 J=1,NVAR
       JJ=J*(J+1)/2
-      CALL LMDD(X(1,J),SC,NFIRST,1,XME,XMD,XSD)
+      CALL LMDDZ(X(1,J),SC,NFIRST,1,XME,XMD,XSD)
       DEV2=XSD**2+XME**2
       IF (DEV2.GT.TL) GOTO 145
       CALL MESSGE(302,'WIMEDV',0)
@@ -19869,11 +20294,12 @@ C  ------
         L=L+1
         SA(L)=0.D0
         IF (I.EQ.J) SA(L)=-1.D0
-  10    CONTINUE
-  20    CONTINUE
+   10   CONTINUE
+   20   CONTINUE
       ENDIF
       DO 30 L=1,NOBS
-  30  DIST(L)=-1.0
+      DIST(L)=-1.0
+   30 CONTINUE
 C
 C  STEP 1: COMPUTE WEIGHTED COVARIANCE (ST) AND AUXILIARY VALUES
 C  ------
@@ -19892,7 +20318,8 @@ C
 C  STEP 4: COMPUTE GAM0 AND SET A:=(I-GAM0*SS)*SA
 C  -------
       DO 410 IJ=1,NCOV
-  410 SA(IJ)=A(IJ)
+      SA(IJ)=A(IJ)
+  410 CONTINUE
       CALL FUDGE(SS,NVAR,NCOV,XFUD,GAM0)
       CALL UPDATA(SS,SA,A,GAM0,NVAR,NCOV)
       NIT=NIT+1
@@ -19957,7 +20384,8 @@ C  ------
    20   CONTINUE
       ENDIF
       DO 30 L=1,NOBS
-   30 DIST(L)=-1.0
+      DIST(L)=-1.0
+   30 CONTINUE
 C
 C  STEP 1: COMPUTE WEIGHTED COVARIANCE (ST) AND AUXILIARY VALUES
 C  ------
@@ -19977,7 +20405,8 @@ C
 C  STEP 4: COMPUTE GAM0 AND SET A:=(I-GAM0*SS)*SA
 C  -------
       DO 410 IJ=1,NCOV
-  410 SA(IJ)=A(IJ)
+      SA(IJ)=A(IJ)
+  410 CONTINUE
       CALL FUDGE(SS,NVAR,NCOV,XFUD,GAM0)
       CALL UPDATA(SS,SA,A,GAM0,NVAR,NCOV)
       NIT=NIT+1
@@ -20038,11 +20467,12 @@ C  ------
         L=L+1
         SA(L)=0.D0
         IF (I.EQ.J) SA(L)=-1.D0
-  10    CONTINUE
-  20    CONTINUE
+   10   CONTINUE
+   20   CONTINUE
       ENDIF
       DO 30 L=1,NOBS
-  30  DIST(L)=-1.0
+      DIST(L)=-1.0
+   30 CONTINUE
 C
 C  STEP 1: COMPUTE WEIGHTED COVARIANCE (ST) AND AUXILIARY VALUES
 C  ------
@@ -20051,13 +20481,15 @@ C  ------
      1       NU,IALG,ICNV,IGWT,NIT,GWT,DELTA,DIST,SU,WUP,X,SD)
       ELSE
         DO 130 I=1,NCOV
-  130   ST(I)=0.D0
+        ST(I)=0.D0
+  130   CONTINUE
         DELTA=0.
         DO 180 L=1,NOBS
         DO 150 J=1,NVAR
-  150   SD(J)=DBLE(X(L,J))
-        CALL MSFD(A,SD,SZ,NVAR,NCOV,1,NVAR,NVAR)
-        CALL NRM2D(SZ,NVAR,1,NVAR,ZNR)
+        SD(J)=DBLE(X(L,J))
+  150   CONTINUE
+        CALL MSFZD(A,SD,SZ,NVAR,NCOV,1,NVAR,NVAR)
+        CALL NRM2ZD(SZ,NVAR,1,NVAR,ZNR)
         DISTL=SNGL(ZNR)
         IF (ICNV.NE.1) DELTA=AMAX1(DELTA,ABS(DISTL-DIST(L)))
         DIST(L)=DISTL
@@ -20065,13 +20497,16 @@ C  ------
         SU(L)=U
         IF (IGWT.EQ.1) U=U*DBLE(GWT(L))
         IJ=0
-        DO 170 I=1,NVAR
+        DO 175 I=1,NVAR
         DO 170 J=1,I
         IJ=IJ+1
-  170   ST(IJ)=ST(IJ)+(SD(I)*U)*SD(J)
+        ST(IJ)=ST(IJ)+(SD(I)*U)*SD(J)
+  170   CONTINUE 
+  175   CONTINUE 
   180   CONTINUE
         DO 190 IJ=1,NCOV
-  190   ST(IJ)=ST(IJ)/XN
+        ST(IJ)=ST(IJ)/XN
+  190   CONTINUE
       ENDIF
 C
 C  STEP 2: CHECK CONVERGENCE
@@ -20088,11 +20523,12 @@ C
 C  STEP 4: SET SA:=A AND A:=(ST)*SA IF ITYPW.EQ.1 ELSE A:=(ST**T)*ST
 C  -------
       DO 410 IJ=1,NCOV
-  410 SA(IJ)=A(IJ)
+      SA(IJ)=A(IJ)
+  410 CONTINUE
       IF (ITYPW.EQ.1) THEN
-        CALL MTT3D(SA,ST,A,NVAR,NCOV)
+        CALL MTT3ZD(SA,ST,A,NVAR,NCOV)
       ELSE
-        CALL MTT1D(ST,A,NVAR,NCOV)
+        CALL MTT1ZD(ST,A,NVAR,NCOV)
       ENDIF
       NIT=NIT+1
 C
@@ -20148,8 +20584,10 @@ C --------   A <=> T until step 5
       K0=NVAR
       DO 20 J=1,NVAR
       DO 10 I=1,NVAR
-   10 A(I,J)=0.D0
-   20 A(J,J)=1.D0
+      A(I,J)=0.D0
+   10 CONTINUE
+      A(J,J)=1.D0
+   20 CONTINUE
       IF (IWGT.EQ.1) CKW=SQRT(APAR*K0)
       IF (IWGT.NE.2) GOTO 30
       A2=0.
@@ -20169,16 +20607,18 @@ C --------
    50   CONTINUE
       ENDIF
       DO 60 I=1,NOBS
-   60 DIST(I)=-1.0
+      DIST(I)=-1.0
+   60 CONTINUE
 C
 C STEP 1: Set D:= diag(u|Bz|) and W:=D^0.5*X
 C -----
   100 DELTA=0.
       DO 130 I=1,NOBS
       DO 110 J=1,NVAR
-  110 SZ(J)=X(I,J)
-      CALL MLYD(SB,SZ,K0,KCOV,K0,1)
-      CALL NRM2D(SZ,K0,1,K0,ZNR)
+      SZ(J)=X(I,J)
+  110 CONTINUE
+      CALL MLYZD(SB,SZ,K0,KCOV,K0,1)
+      CALL NRM2ZD(SZ,K0,1,K0,ZNR)
       DISTI=SNGL(ZNR)
       IF (ICNV.EQ.2) DELTA=AMAX1(DELTA,ABS(DISTI-DIST(I)))
       DIST(I)=DISTI
@@ -20186,7 +20626,8 @@ C -----
       SU(I)=U
       U=DSQRT(U)
       DO 120 J=1,NVAR
-  120 SW(I,J)=U*X(I,J)
+      SW(I,J)=U*X(I,J)
+  120 CONTINUE
   130 CONTINUE
 C
 C STEP 2: Check convergence
@@ -20196,7 +20637,7 @@ C ------
 C
 C STEP 3.1: Compute the pseudorank K and the Q, R, P and V matrices
 C --------
-      CALL RIMTRD(SW,NOBS,NVAR,MDW,INTCH,TAU,K,SF,SG,SH,IP)
+      CALL RIMTRDZ(SW,NOBS,NVAR,MDW,INTCH,TAU,K,SF,SG,SH,IP)
       IF (K.EQ.K0) GOTO 400
 C
 C STEP 3.2:  Update APAR and set K0:=K, T:=T*P*V, X:=X*P*V*Jk0
@@ -20210,7 +20651,8 @@ C --------
       CALL MZPVD(SW,IP,SG,X,NOBS,NOBS,NVAR,K,MDW,MDX,SZ)
       DO 320 J=KP1,NVAR
       DO 310 I=1,NOBS
-  310 X(I,J)=0.D0
+      X(I,J)=0.D0
+  310 CONTINUE
   320 CONTINUE
       GOTO 30
 C
@@ -20222,22 +20664,26 @@ C
 C Store R1 in SB
 C
       DO 410 IJ=1,NCOV
-  410 SB0(IJ)=SB(IJ)
+      SB0(IJ)=SB(IJ)
+  410 CONTINUE
       DO 420 L=1,NCOV
-  420 SB(L)=0.D0
+      SB(L)=0.D0
+  420 CONTINUE
       L=0
       DO 430 J=1,K
       DO 425 I=1,J
       L=L+1
-  425 SB(L)=SW(I,J)
+      SB(L)=SW(I,J)
+  425 CONTINUE
   430 CONTINUE
 C
 C Invert SB upon itself and multiply it by sqrt(N)
 C
-      CALL MINVD(SB,K,L,TAU,INFO)
+      CALL MINVZD(SB,K,L,TAU,INFO)
       IF (INFO.NE.0) CALL MESSGE(400+INFO,'WFDEGD',0)
       DO 470 IJ=1,NCOV
-  470 SB(IJ)=SQN*SB(IJ)
+      SB(IJ)=SQN*SB(IJ)
+  470 CONTINUE
       NIT=NIT+1
 C
 C STEP 4A: Iteration monitoring
@@ -20248,18 +20694,21 @@ C ------
 C
 C STEP 5: Put A in SW and set A:=B*T**T and exit
 C ------
-  500 DO 510 I=1,NVAR
+  500 DO 515 I=1,NVAR
       DO 510 J=1,NVAR
         SW(I,J)=A(I,J)
         A(I,J)=0.D0
   510 CONTINUE
+  515 CONTINUE 
       L=0
       DO 540 I=1,NVAR
         DO 530 J=1,NVAR
         SUM=0.D0
         DO 520 JJ=1,I
-  520   SUM=SUM+SB(L+JJ)*SW(J,JJ)
-  530   A(I,J)=SUM
+        SUM=SUM+SB(L+JJ)*SW(J,JJ)
+  520   CONTINUE
+        A(I,J)=SUM
+  530   CONTINUE
         L=L+I
   540 CONTINUE
       RETURN
@@ -20534,21 +20983,22 @@ C      RETURN
       IF (S.GT.GAM) GOTO 110
       CALL MESSGE(200,'UCV   ',0)
       ZED=GAM
-  110 Z2=DBLE(ZED)*ZED
-      IF (Z2.GT.B2) UCV=B2/Z2
-      IF (Z2.LT.A2) UCV=A2/Z2
+  110 ZZ=ZED*ZED
+      Z2=DBLE(ZZ)
+      IF (ZZ.GT.B2) UCV=DBLE(B2)/Z2
+      IF (ZZ.LT.A2) UCV=DBLE(A2)/Z2
       RETURN
   200 IF (S.LE.0.) RETURN
       IF (S.LE.GAM) ZED=GAM
-      Q=CHK/DBLE(ZED)
-      CALL GAUSSD(1,Q,PC)
+      Q=DBLE(CHK/ZED)
+      CALL GAUSSZD(1,Q,PC)
       UCV=2.D0*PC-1.D0
       RETURN
   300 IF (S.LE.0.) RETURN
       IF (S.LE.GAM) ZED=GAM
       Q=CKW/DBLE(ZED)
       Q2=Q*Q
-      CALL GAUSSD(1,Q,PC)
+      CALL GAUSSZD(1,Q,PC)
       PD=XEXPD(-Q2/2.D0)/DSPI
       UCV=Q2+(1.D0-Q2)*(2.D0*PC-1.D0)-2.D0*Q*PD
       RETURN
@@ -20556,7 +21006,7 @@ C      RETURN
       IF (S.GT.GAM) GOTO 410
       CALL MESSGE(200,'UCV   ',0)
       ZED=GAM
-  410 UCV=BB/DBLE(ZED)
+  410 UCV=DBLE(BB/ZED)
       RETURN
   500 CONTINUE
   600 IF (S.LE.EM) RETURN
@@ -20606,29 +21056,30 @@ C      RETURN
       IF (S.GT.GAM) GOTO 110
       CALL MESSGE(200,'UPCV  ',0)
       ZED=GAM
-  110 Z2=DBLE(ZED)*ZED
-      IF (Z2.GT.B2) UPCV=-2.D0*B2/Z2/ZED
-      IF (Z2.LT.A2) UPCV=-2.D0*A2/Z2/ZED
+  110 ZZ=ZED*ZED
+      Z2=DBLE(ZZ)
+      IF (ZZ.GT.B2) UPCV=-2.D0*DBLE(B2/ZED)/Z2
+      IF (ZZ.LT.A2) UPCV=-2.D0*DBLE(A2/ZED)/Z2
       RETURN
   200 IF (S.LE.0.) RETURN
       IF (S.LE.GAM) ZED=GAM
-      Z2=DBLE(ZED)*ZED
-      Q=CHK/DBLE(ZED)
+      Z2=DBLE(ZED*ZED)
+      Q=DBLE(CHK/ZED)
       Q2=Q*Q
       PD=XEXPD(-Q2/2.D0)/DSPI
-      UPCV=2.D0*PD*(-CHK/Z2)
+      UPCV=2.D0*PD*(-DBLE(CHK)/Z2)
       RETURN
   300 IF (S.LE.0.) RETURN
       IF (S.LE.GAM) ZED=GAM
-      Q=CKW/DBLE(ZED)
-      CALL GAUSSD(1,Q,PC)
+      Q=DBLE(CKW/ZED)
+      CALL GAUSSZD(1,Q,PC)
       UPCV=-4.D0*(Q*Q)*(1.D0-PC)/DBLE(ZED)
       RETURN
   400 IF (S.LT.BB) RETURN
       IF (S.GT.GAM) GOTO 410
       CALL MESSGE(200,'UPCV  ',0)
       ZED=GAM
-  410 IF (S.GT.BB) UPCV=-BB/(DBLE(ZED)*ZED)
+  410 IF (S.GT.BB) UPCV=-DBLE(BB/(ZED*ZED))
       RETURN
   500 CONTINUE
   600 IF (S.LE.EM.OR.S.GE.EM+CR) RETURN
@@ -20739,7 +21190,7 @@ C      WCV=UWCV(S)
       IF (S.GT.GAM) GOTO 110
       CALL MESSGE(200,'WCV   ',0)
       ZED=GAM
-  110 WCV=CW/DBLE(ZED)
+  110 WCV=DBLE(CW/ZED)
       RETURN
   500 IF (S.LE.EM) RETURN
       WCV=0.D0
@@ -20767,6 +21218,7 @@ C  -------
 C  GIVES THE VALUE AT THE POINT S OF THE FIRST DERIVATIVE
 C  OF THE W-FUNCTION FOR AFFINE INVARIANT COVARIANCES
 C
+      DOUBLE PRECISION Z2,Q
       COMMON/UCVPR/IUCV,A2,B2,CHK,CKW,BB,DV,CW
       COMMON/UCV56/EM,CR,VK,NP,ENU,V7
       DATA GAM/1.E-6/
@@ -20782,7 +21234,7 @@ C      WPCV=UWPCV(S)
       IF (S.GT.GAM) GOTO 110
       CALL MESSGE(200,'WPCV  ',0)
       ZED=GAM
-  110 WPCV=-CW/(DBLE(ZED)*ZED)
+  110 WPCV=-DBLE(CW/(ZED*ZED))
       RETURN
   500 IF (S.LE.EM.OR.S.GE.EM+CR) RETURN
       Z2=DBLE(CR**2)
@@ -20850,7 +21302,7 @@ C
       DATA STOL,PREC,XP30/1.E-3,0.D0,0.D0/
 C
       IF (PREC.EQ.0.D0) THEN
-c       CALL MACH(2,PRCS)
+c       CALL MACHZ(2,PRCS)
 c       PREC=100.D0*DBLE(PRCS)
         PREC=6.02007D-7
         XP30=DEXP(-30.D0)
@@ -20884,7 +21336,7 @@ C==>      LOGISTIC BERNOULLI
 C==>      LOGISTIC BINOMIAL
           T2=0.D0
           DO 200 J=0,NI
-            CALL PROBIN(J,NI,PI,0,PJ)
+            CALL PROBINZ(J,NI,PI,0,PJ)
             TEMP=DABS(DFLOAT(J)-(DNI*PP)-CC)
             T1=AA**2
             IF (TEMP.LT.AA) T1=TEMP**2
@@ -20900,7 +21352,7 @@ C==>      LOGISTIC POISSON
           IF (PI.GT.1.D6) PI=1.D6
           T2=0.D0
           DO 300 J=0,MI
-            CALL PRPOIS(PI,J,0,PJ)
+            CALL PRPOISZ(PI,J,0,PJ)
 c           FJME=DFLOAT(J)-PI
             TEMP=DABS(DFLOAT(J)-PI-CC)
             T1=AA**2
@@ -21074,7 +21526,8 @@ C
 C   STEP 2. COMPUTE RESIDUALS R=Y-X*THETA
 C   -------
   200 DO 210 I=1,N
-  210 RS(I)=Y(I)-THETA
+      RS(I)=Y(I)-THETA
+  210 CONTINUE 
 C
 C   STEP 3. COMPUTE A NEW VALUE SIGMB FOR SIGMA.
 C   -------

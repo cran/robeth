@@ -4,7 +4,7 @@ if (missing(lambda)) messagena("lambda")
 if (missing(k)) messagena("k")
 ps <- single(1)
 pk <- single(1)
-f.res <- .Fortran("poissn",
+f.res <- .Fortran("poissnz",
 lambda=to.single(lambda),
 k=to.integer(k),
 ps=to.single(ps),

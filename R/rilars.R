@@ -16,7 +16,7 @@ sc1 <- single(n)
 sc2 <- single(np)
 sc3 <- single(np)
 sc4 <- single(np)
-f.res <- .Fortran("rilars",
+f.res <- .Fortran("rilarsz",
 x=to.single(x),
 y=to.single(y),
 n=to.integer(n),

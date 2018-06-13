@@ -2,7 +2,7 @@
 function(x) {
 if (missing(x)) messagena("x")
 gl <- single(1)
-f.res <- .Fortran("lgama",
+f.res <- .Fortran("lgamaz",
 x=to.single(x),
 gl=to.single(gl))
 list(gl=f.res$gl)

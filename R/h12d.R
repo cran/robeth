@@ -12,7 +12,7 @@ mdc <- length(c)
 if (missing(u)) u <- matrix(double(1),iue,m)
 if (missing(up)) up <- double(1)
 if (missing(c)) c <- double(mdc)
-f.res <- .Fortran("h12d",
+f.res <- .Fortran("h12zd",
 mode=to.integer(mode),
 lpivot=to.integer(lpivot),
 l1=to.integer(l1),

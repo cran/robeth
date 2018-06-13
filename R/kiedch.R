@@ -4,7 +4,7 @@ if (missing(wgt)) messagena("wgt")
 n <- length(wgt)
 d <- single(n)
 e <- single(n)
-f.res <- .Fortran("kiedch",
+f.res <- .Fortran("kiedchz",
 wgt=to.single(wgt),
 n=to.integer(n),
 c=to.single(c),

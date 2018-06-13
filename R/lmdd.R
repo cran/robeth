@@ -6,7 +6,7 @@ y <- single(n)
 xme <- single(1)
 xmd <- single(1)
 xsd <- single(1)
-f.res <- .Fortran("lmdd",
+f.res <- .Fortran("lmddz",
 x=to.single(x),
 y=to.single(y),
 n=to.integer(n),

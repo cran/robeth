@@ -5,7 +5,7 @@ if (missing(y)) messagena("y")
 nx <- length(x)
 ny <- length(y)
 result <- double(1)
-f.res <- .Fortran("dotpd",
+f.res <- .Fortran("dotpzd",
 x=as.double(x),
 y=as.double(y),
 n=to.integer(n),

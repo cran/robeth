@@ -22,7 +22,7 @@ sf <- single(np)
 sg <- single(np)
 sh <- single(np)
 ip <- integer(np)
-f.res <- .Fortran("mirtsr",
+f.res <- .Fortran("mirtsrz",
 x=to.single(x),
 y=to.single(y),
 n=to.integer(n),

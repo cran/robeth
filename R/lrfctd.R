@@ -2,7 +2,7 @@ lrfctd <- function(icase,y,ci,vtheta,offset,wa,ni,i0,i1,i2)
 {
    n <- length(y)
    if (length(offset)==1) offset <- rep(0,n) 
-   f.res <- .Fortran("lrfctd",
+   f.res <- .Fortran("lrfctdz",
              icase = to.integer(icase),
              y = to.single(y),
              ci = to.single(ci),

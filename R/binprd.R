@@ -5,7 +5,7 @@ if (missing(n)) messagena("n")
 if (missing(p)) messagena("p")
 ps <- single(1)
 pk <- single(1)
-f.res <- .Fortran("binprd",
+f.res <- .Fortran("binprdz",
 k=to.integer(k),
 n=to.integer(n),
 p=to.single(p),

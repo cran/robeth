@@ -4,7 +4,7 @@ if (missing(n)) messagena("n")
 nn <- length(r)
 if (missing(r)) r <- double(nn)
 ising <- integer(1)
-f.res <- .Fortran("minvd",
+f.res <- .Fortran("minvzd",
 r=as.double(r),
 n=to.integer(n),
 nn=to.integer(nn),

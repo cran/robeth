@@ -15,7 +15,7 @@ if (missing(sf)) sf <- single(np)
 if (missing(sg)) sg <- single(np)
 if (missing(sh)) sh <- single(np)
 if (missing(ip)) ip <- integer(np)
-f.res <- .Fortran("riclls",
+f.res <- .Fortran("ricllsz",
 xt=to.single(xt),
 y=to.single(y),
 n=to.integer(n),

@@ -3,7 +3,7 @@ function(wgt,itype=.dFvGet()$ite,isqw=.dFvGet()$isq,tol=.dFvGet()$tlo) {
 if (missing(wgt)) messagena("wgt")
 n <- length(wgt)
 bt0 <- single(1)
-f.res <- .Fortran("ribet0",
+f.res <- .Fortran("ribet0z",
 wgt=to.single(wgt),
 n=to.integer(n),
 itype=to.integer(itype),

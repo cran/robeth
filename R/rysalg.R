@@ -29,7 +29,7 @@ sh <- single(np)
 ip <- integer(np)
 sw <- single(n)
 sx <- matrix(single(1),mdx,np)
-f.res <- .Fortran("rysalg",
+f.res <- .Fortran("rysalgz",
 x=to.single(x),
 y=to.single(y),
 theta=to.single(theta),

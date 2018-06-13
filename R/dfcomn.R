@@ -6,7 +6,7 @@ function(ipsi=-9,c=-1.345,h1=-1.7,h2=-3.4,h3=-8.5,xk=-1.548,d=-1.345,
                    nu=-1, v7=-1, iwww=-1)
 {
 #Set the common values in robeth.dll
-        f.res <- .Fortran("dfcomn",
+        f.res <- .Fortran("dfcomnz",
         ipsi = to.integer(ipsi),
         c = to.single(c),
         h1 = to.single(h1),

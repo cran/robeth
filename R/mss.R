@@ -6,7 +6,7 @@ if (missing(n)) messagena("n")
 nn <- length(a)
 mdc <- n
 c <- matrix(single(1),mdc,n)
-f.res <- .Fortran("mss",
+f.res <- .Fortran("mssz",
 a=to.single(a),
 b=to.single(b),
 c=to.single(c),

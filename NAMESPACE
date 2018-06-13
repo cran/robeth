@@ -1,4 +1,5 @@
-useDynLib(robeth)
+useDynLib(robeth, .registration=TRUE)
+importFrom("stats", "lsfit", "median", "ppoints", "qgamma", "qnorm","var")
 
 export(Dbinom, dpoiss, Random, addc, airef0, airefq, binprd, cerf, cerfd, cfrcov, chi, Chi)
 export(chisq, cia2b2, cibeat, cicloc, cifact, cimedv, cirock, comval, cquant)
@@ -11,12 +12,11 @@ export(lilars, littst, lmdd, lrfctd, lyhalg, lywalg, lyhdle, lymnwt, lytau2, mch
 export(messagena, mff, mffd, mfragr, mfy, mfyd, mhat, minv, minvd, mirtsr, mly, mlyd)
 export(msf,msf1, msf1d, msfd, mss, mssd, mtt1, mtt1d, mtt2, mtt2d, mtt3, mtt3d, mty, mtyd)
 export(myhbhe, mymvlm, nlgm, nrm2, nrm2d, permc, permv, poissn, precd, precs, probst)
-export(psi, Psi, psp, Psp, quant, rho, Rho, ribet0, ribeth, ribetu, riclls)
-export(rilars, rimtrd, rimtrf, rmvc, ruben, rybifr, ryhalg, rynalg, rysalg, rysigm)
-export(rywalg, scal, scald, srt1, srt2, swap, swapd, tauare, tfrn2t, tftaut, tisrtc)
+export(psi, Psi, psp, Psp, quant, rho, Rho, ribet0, ribeth, ribetu, riclls, rilars)
+export(rimtrd, rimtrf, rmvc, ruben, rybifr, ryhalg, rynalg, rysalg, rysigm, rywalg)
+export(scal, scald, srt1, srt2, swap, swapd, tauare, tfrn2t, tftaut, tisrtc)
 export(to.character, to.double, to.integer, to.single, tquant, ttaskt, tteign, ucv)
 export(Ucv, ugl, userfs, userfd, upcv, Upcv, vcv, vpcv, wcv, Wcv, wfshat, wimedv)
 export(wpcv, Wpcv, www, Www, wyfalg, wyfcol, wygalg, wynalg, xerf, xerp, xsy, xsyd)
 export(Regtau.f,Fn.Exp.f,Qn.Exp.f,QD2funC.f,QD2coef.f,RegtauW.f,zemll)
-importFrom("stats", "lsfit", "median", "ppoints", "qgamma", "qnorm","var")
 

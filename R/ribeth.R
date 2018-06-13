@@ -3,7 +3,7 @@ function(wgt,d=.dFvGet()$ddd,itype=.dFvGet()$ite) {
 if (missing(wgt)) messagena("wgt")
 n <- length(wgt)
 bta <- single(1)
-f.res <- .Fortran("ribeth",
+f.res <- .Fortran("ribethz",
 wgt=to.single(wgt),
 n=to.integer(n),
 d=to.single(d),

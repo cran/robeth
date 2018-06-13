@@ -5,7 +5,7 @@ if (missing(k)) messagena("k")
 n <- length(y)
 nit <- integer(1)
 hdle <- single(1)
-f.res <- .Fortran("lyhdle",
+f.res <- .Fortran("lyhdlez",
 y=to.single(y),
 n=to.integer(n),
 isort=to.integer(isort),

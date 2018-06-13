@@ -6,7 +6,7 @@ np <- ncol(xt)
 mdx <- nrow(xt)
 wgt <- single(n)
 sc <- single(n)
-f.res <- .Fortran("wfshat",
+f.res <- .Fortran("wfshatz",
 xt=to.single(xt),
 n=to.integer(n),
 np=to.integer(np),

@@ -7,7 +7,7 @@ sigma <- single(1)
 xmad <- single(1)
 var <- single(1)
 rs <- single(n)
-f.res <- .Fortran("lilars",
+f.res <- .Fortran("lilarsz",
 y=to.single(y),
 n=to.integer(n),
 isort=to.integer(isort),

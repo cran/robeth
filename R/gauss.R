@@ -2,7 +2,7 @@
 function(kode=1,x) {
 if (missing(x)) messagena("x")
 p <- single(1)
-f.res <- .Fortran("gauss",
+f.res <- .Fortran("gaussz",
 kode=to.integer(kode),
 x=to.single(x),
 p=to.single(p))

@@ -7,50 +7,69 @@ Within the top level of the package source:
 tools::package_native_routine_registration_skeleton('c:/data/R/R-3.4.3/library/robeth',,,FALSE)
 Copy all text results to file init.c
 
-Then add to NAMESPACE file: useDynLib(robeth, .registration=TRUE)
+When the command : Rcmd check --as-cran robeth is executed,
+the line : useDynLib(robeth, .registration=TRUE)
+in the NAMESPACE file, displays a warning for each exported R function such as:
+
+ libeth <- function(d) {
+    f.res <- .Fortran("libeth", d = to.single(d), bta = single(1))
+    list(bta = f.res$bta)
+ }
+
+The warning is : libeth symbol is already in use in the table.
+The only solution is to rename  the Fortran subroutine libeth. The R team proposal 
+is to add a prefix but we apply a suffix "z" and the libeth function becomes: 
+
+ libeth <- function(d) {
+    f.res <- .Fortran("libethz", d = to.single(d), bta = single(1))
+    list(bta = f.res$bta)
+ }
+   
 */
 
 /* .Fortran calls */
 extern void F77_NAME(addcol)(float*, int*, int*, int*, int*, int*, float*, int*, float*);
-extern void F77_NAME(binprd)(int*, int*, float*, float*, float*);
-extern void F77_NAME(cerf)(float*, float*);
-extern void F77_NAME(cerfd)(double*, double*);
-extern void F77_NAME(cfrcov)(double*, int*, int*, float*, float*, float*, float*);
 extern void F77_NAME(chia)(int*, float*, float*);
-extern void F77_NAME(chisq)(int*, int*, float*, float*);
-extern void F77_NAME(cia2b2)(float*, int*, float*, int*, float*, float*);
-extern void F77_NAME(cibeat)(float*, float*, int*, float*);
-extern void F77_NAME(cicloc)(float*, float*, float*);
-extern void F77_NAME(cifact)(float*, float*, int*, float*, int*, float*);
-extern void F77_NAME(cimedv)(float*, int*, int*, int*, int*, int*, int*, float*, float*, float*);
-extern void F77_NAME(cirock)(float*, float*, int*, int*, float*);
-extern void F77_NAME(comval)(int*, float*, float*, float*, float*, float*, float*, float*, float*, int*, float*, float*, float*, float*, float*, float*, float*, float*, float*, float*, float*, float*, float*, int*);
-extern void F77_NAME(cquant)(float*, int*, float*, int*, float*);
 extern void F77_NAME(dbinom)(float*, float*, float*, float*, int*, float*, float*, int*, float*, float*);
-extern void F77_NAME(dfcomn)(int*, float*, float*, float*, float*, float*, float*, float*, float*, int*, float*, float*, float*, float*, float*, float*, float*, float*, float*, float*, float*, float*, float*, int*);
-extern void F77_NAME(dotp)(float*, float*, int*, int*, int*, int*, int*, float*);
-extern void F77_NAME(dotpd)(double*, double*, int*, int*, int*, int*, int*, double*);
-extern void F77_NAME(dpoiss)(float*, float*, float*, float*, float*, float*, int*, float*, float*);
-extern void F77_NAME(exch)(float*, int*, int*, int*, int*);
-extern void F77_NAME(exchd)(double*, int*, int*, int*, int*);
-extern void F77_NAME(fcum)(int*, int*, float*, float*, int*);
 extern void F77_NAME(fnexp)(double*, double*, float*, int*, double*, double*, double*, double*, double*);
-extern void F77_NAME(fstord)(float*, int*, int*, float*);
-extern void F77_NAME(gauss)(int*, float*, float*);
-extern void F77_NAME(gaussd)(int*, double*, double*);
-extern void F77_NAME(gfedca)(float*, float*, float*, int*, float*, int*, int*, float*, float*);
-extern void F77_NAME(gicstp)(int*, int*, int*, float*, float*, float*, int*, float*, int*, float*);
-extern void F77_NAME(gintac)(float*, float*, int*, float*, int*, int*, int*, int*, int*, int*, int*, int*, float*, float*, float*, float*, int*, int*, float*, double*, float*, float*, float*, float*, float*, int*, double*);
-extern void F77_NAME(glmdev)(float*, int*, float*, float*, float*, float*, int*, int*, double*, double*, double*, double*);
-extern void F77_NAME(gyastp)(float*, float*, int*, float*, float*, double*, float*, float*, int*, int*, int*, int*, int*, int*, float*, int*, int*, int*, float*, int*, float*, double*, double*, double*, double*);
-extern void F77_NAME(gycstp)(int*, int*, int*, float*, float*, float*, int*, float*);
-extern void F77_NAME(gymain)(float*, float*, int*, float*, double*, float*, float*, int*, int*, int*, int*, float*, float*, float*, int*, int*, int*, int*, int*, int*, int*, int*, int*, int*, int*, int*, float*, float*, float*, float*, int*, float*, float*, float*, float*, float*, float*, float*, float*, int*, double*);
-extern void F77_NAME(gytstp)(float*, float*, float*, float*, float*, float*, int*, float*, int*, int*, int*, int*, float*, float*, float*, int*, int*, int*, int*, int*, int*, float*, float*, float*, float*, float*, float*, float*, float*, float*, float*, int*);
-extern void F77_NAME(h12)(int*, int*, int*, int*, float*, int*,float*, float*, int*, int*, int*, int*);
-extern void F77_NAME(h12d)(int*, int*, int*, int*, double*, int*, double*, double*, int*, int*, int*, int*);
-extern void F77_NAME(hylmse)(float*, float*, int*, int*, int*, int*, int*, int*, int*, int*, int*, int*, float*, float*, int*, int*, float*, float*, float*, int*, float*, int*);
-extern void F77_NAME(hyltse)(float*, float*, int*, int*, int*, int*, int*, int*, int*, int*, int*, int*, float*, float*, int*, int*, float*, float*, float*, int*, float*, int*);
-extern void F77_NAME(ingama)(float*, float*, float*);
+
+extern void F77_NAME(binprdz)(int*, int*, float*, float*, float*);
+extern void F77_NAME(cerfz)(float*, float*);
+extern void F77_NAME(cerfzd)(double*, double*);
+extern void F77_NAME(cfrcovz)(double*, int*, int*, float*, float*, float*, float*); 
+extern void F77_NAME(chisqz)(int*, int*, float*, float*);
+extern void F77_NAME(cia2b2z)(float*, int*, float*, int*, float*, float*);
+extern void F77_NAME(cibeatz)(float*, float*, int*, float*);
+extern void F77_NAME(ciclocz)(float*, float*, float*);
+extern void F77_NAME(cifactz)(float*, float*, int*, float*, int*, float*);
+extern void F77_NAME(cimedvz)(float*, int*, int*, int*, int*, int*, int*, float*, float*, float*);
+extern void F77_NAME(cirockz)(float*, float*, int*, int*, float*);
+extern void F77_NAME(comvalz)(int*, float*, float*, float*, float*, float*, float*, float*, float*, int*, float*, float*, float*, float*, float*, float*, float*, float*, float*, float*, float*, float*, float*, int*);
+extern void F77_NAME(cquantz)(float*, int*, float*, int*, float*);
+extern void F77_NAME(dfcomnz)(int*, float*, float*, float*, float*, float*, float*, float*, float*, int*, float*, float*, float*, float*, float*, float*, float*, float*, float*, float*, float*, float*, float*, int*);
+extern void F77_NAME(dotpz)(float*, float*, int*, int*, int*, int*, int*, float*);
+extern void F77_NAME(dotpzd)(double*, double*, int*, int*, int*, int*, int*, double*);
+extern void F77_NAME(dpoissz)(float*, float*, float*, float*, float*, float*, int*, float*, float*);
+extern void F77_NAME(exchz)(float*, int*, int*, int*, int*);
+extern void F77_NAME(exchzd)(double*, int*, int*, int*, int*);
+extern void F77_NAME(fcumz)(int*, int*, float*, float*, int*);
+extern void F77_NAME(fstordz)(float*, int*, int*, float*);
+extern void F77_NAME(gaussz)(int*, float*, float*);
+extern void F77_NAME(gausszd)(int*, double*, double*);
+extern void F77_NAME(gfedcaz)(float*, float*, float*, int*, float*, int*, int*, float*, float*);
+extern void F77_NAME(gicstpz)(int*, int*, int*, float*, float*, float*, int*, float*, int*, float*);
+extern void F77_NAME(gintacz)(float*, float*, int*, float*, int*, int*, int*, int*, int*, int*, int*, int*, float*, float*, float*, float*, int*, int*, float*, double*, float*, float*, float*, float*, float*, int*, double*);
+extern void F77_NAME(glmdevz)(float*, int*, float*, float*, float*, float*, int*, int*, double*, double*, double*, double*);
+extern void F77_NAME(gyastpz)(float*, float*, int*, float*, float*, double*, float*, float*, int*, int*, int*, int*, int*, int*, float*, int*, int*, int*, float*, int*, float*, double*, double*, double*, double*);
+extern void F77_NAME(gycstpz)(int*, int*, int*, float*, float*, float*, int*, float*);
+extern void F77_NAME(gymainz)(float*, float*, int*, float*, double*, float*, float*, int*, int*, int*, int*, float*, float*, float*, int*, int*, int*, int*, int*, int*, int*, int*, int*, int*, int*, int*, float*, float*, float*, float*, int*, float*, float*, float*, float*, float*, float*, float*, float*, int*, double*);
+extern void F77_NAME(gytstpz)(float*, float*, float*, float*, float*, float*, int*, float*, int*, int*, int*, int*, float*, float*, float*, int*, int*, int*, int*, int*, int*, float*, float*, float*, float*, float*, float*, float*, float*, float*, float*, int*);
+extern void F77_NAME(h12z)(int*, int*, int*, int*, float*, int*,float*, float*, int*, int*, int*, int*);
+extern void F77_NAME(h12zd)(int*, int*, int*, int*, double*, int*, double*, double*, int*, int*, int*, int*);
+extern void F77_NAME(hylmsez)(float*, float*, int*, int*, int*, int*, int*, int*, int*, int*, int*, int*, float*, float*, int*, int*, float*, float*, float*, int*, float*, int*);
+extern void F77_NAME(hyltsez)(float*, float*, int*, int*, int*, int*, int*, int*, int*, int*, int*, int*, float*, float*, int*, int*, float*, float*, float*, int*, float*, int*);
+extern void F77_NAME(ingamaz)(float*, float*, float*);
+
 extern void F77_NAME(int0)(int*, int*, int*, int*, int*, int*, float*, float*, float*, int*, float*, int*, float*, float*, float*);
 extern void F77_NAME(int10)(float*, double*, float*, int*, int*, int*, int*, int*, int*, int*, int*, int*, int*, int*, int*, int*, int*, float*, float*, int*, float*, double*, double*, double*, double*, double*, double*);
 extern void F77_NAME(int16)(float*, double*, float*, int*, int*, int*, int*, int*, int*, int*, int*, int*, int*, int*, int*, int*, int*, float*, float*, int*, float*, double*, double*, double*, double*, double*, double*, double*, double*, double*, double*);
@@ -91,69 +110,101 @@ extern void F77_NAME(int7)(float*, double*, float*, int*, int*, int*, int*, int*
 extern void F77_NAME(int70)(float*, float*, float*, double*);
 extern void F77_NAME(int9)(float*, double*, float*, int*, int*, int*, int*, int*, int*, int*, float*, int*, int*, int*, int*, float*, int*, float*, double*, double*, double*, double*);
 extern void F77_NAME(int92)(int*, int*, int*, int*, int*, int*, int*, int*, int*, int*, int*, int*, int*, int*, int*, int*, int*, int*);
-extern void F77_NAME(kfascv)(float*, float*, int*, int*, int*, int*, float*, float*, float*, int*);
-extern void F77_NAME(kiascv)(float*, int*, int*, int*, int*, float*, float*, float*);
-extern void F77_NAME(kiedch)(float*, int*, float*, int*, float*, float*);
-extern void F77_NAME(ktaskv)(float*, int*, int*, int*, int*, float*, float*, float*, float*);
-extern void F77_NAME(ktaskw)(float*, float*, float*, int*, int*, int*, int*, int*, float*, int*, float*, float*, int*, float*, float*, float*, float*, float*, float*);
-extern void F77_NAME(lgama)(float*, float*);
-extern void F77_NAME(libet0)(float*);
-extern void F77_NAME(libeth)(float*, float*);
-extern void F77_NAME(liclls)(float*, int*, float*, float*, float*, float*);
-extern void F77_NAME(liepsh)(float*, float*, float*);
-extern void F77_NAME(liindh)(float*, int*, int*, float*);
-extern void F77_NAME(liinds)(float*, int*, int*, float*);
-extern void F77_NAME(liindw)(float*, int*, int*, int*, float*);
-extern void F77_NAME(lilars)(float*, int*, int*, float*, float*, float*, float*, float*);
-extern void F77_NAME(littst)(float*, float*, int*, int*, float*, float*, float*, float*, float*, float*, float*, float*);
-extern void F77_NAME(lmdd)(float*, float*, int*, int*, float*, float*, float*);
-extern void F77_NAME(lrfctd)(int*, float*, float*, float*, float*, float*, int*, int*, int*, int*, int*, double*, double*, double*, double*);
-extern void F77_NAME(lrfnct)(int*, float*, float*, float*, float*, float*, int*, int*, int*, int*, int*, float*, float*, float*, float*);
-extern void F77_NAME(lyhdle)(float*, int*, int*, int*, float*, int*, int*, float*);
-extern void F77_NAME(lymnwt)(float*, float*, int*, int*, int*, int*, float*, int*, int*, float*);
-extern void F77_NAME(mach)(int*, float*);
-extern void F77_NAME(machd)(int*, double*);
-extern void F77_NAME(mchl)(float*, int*, int*, int*);
-extern void F77_NAME(mchld)(double*, int*, int*, int*);
-extern void F77_NAME(mff)(float*, float*, float*, int*, int*, int*, int*, int*, int*);
-extern void F77_NAME(mffd)(double*, double*, double*, int*, int*, int*, int*, int*, int*);
-extern void F77_NAME(mfragr)(float*, float*, float*, int*, int*, int*, int*, int*, int*, float*, float*, float*, int*, float*, float*, float*, float*, int*, int*, float*, float*, float*, float*, float*, float*, float*, int*, int*, int*);
-extern void F77_NAME(mfy)(float*, float*, float*, int*, int*, int*, int*, int*, int*, int*);
-extern void F77_NAME(mfyd)(double*, double*, double*, int*, int*, int*, int*, int*, int*, int*);
-extern void F77_NAME(mhat)(float*, int*, int*, int*, int*, float*, float*, float*);
-extern void F77_NAME(minv)(float*, int*, int*, float*, int*);
-extern void F77_NAME(minvd)(double*, int*, int*, float*, int*);
-extern void F77_NAME(mirtsr)(float*, float*, int*, int*, int*, int*, int*, int*, float*, float*, float*, float*, int*, int*, float*, int*, int*, float*, float*, float*, float*, float*, float*, float*, float*, float*, float*, float *, int*);
-extern void F77_NAME(mly)(float*, float*, int*, int*, int*, int*);
-extern void F77_NAME(mlyd)(double*, double*, int*, int*, int*, int*);
-extern void F77_NAME(msf)(float*, float*, float*, int*, int*, int*, int*, int*);
-extern void F77_NAME(msf1)(float*, float*, float*, int*, int*, int*);
-extern void F77_NAME(msf1d)(double*, double*, double*, int*, int*, int*);
-extern void F77_NAME(msfd)(double*, double*, double*, int*, int*, int*, int*, int*);
-extern void F77_NAME(mss)(float*, float*, float*, int*, int*, int*);
-extern void F77_NAME(mssd)(double*, double*, double*, int*, int*, int*);
-extern void F77_NAME(mtt1)(float*, float*, int*, int*);
-extern void F77_NAME(mtt1d)(double*, double*, int*, int*);
-extern void F77_NAME(mtt2)(float*, float*, int*, int*);
-extern void F77_NAME(mtt2d)(double*, double*, int*, int*);
-extern void F77_NAME(mtt3)(float*, float*, float*, int*, int*);
-extern void F77_NAME(mtt3d)(double*, double*, double*, int*, int*);
-extern void F77_NAME(mty)(float*, float*, int*, int*, int*, int*);
-extern void F77_NAME(mtyd)(double*, double*, int*, int*, int*, int*);
-extern void F77_NAME(myhbhe)(float*, float*, int*, int*, int*, int*, int*, int*, int*, int*, float*, float*, float*, float*, float*, float*, float*, int*, float*, float*, int*);
-extern void F77_NAME(mymvlm)(float*, float*, int*, int*, int*, int*, int*, int*, int*, int*, int*, int*, int*, float*, float*, float*, int*, int*, float*, float*, float*, float*, float*, float*, float*, int*, int*, float*, int*);
-extern void F77_NAME(nlgm)(int*, float*);
+
+extern void F77_NAME(kfascvz)(float*, float*, int*, int*, int*, int*, float*, float*, float*, int*);
+extern void F77_NAME(kiascvz)(float*, int*, int*, int*, int*, float*, float*, float*);
+extern void F77_NAME(kiedchz)(float*, int*, float*, int*, float*, float*);
+extern void F77_NAME(ktaskvz)(float*, int*, int*, int*, int*, float*, float*, float*, float*);
+extern void F77_NAME(ktaskwz)(float*, float*, float*, int*, int*, int*, int*, int*, float*, int*, float*, float*, int*, float*, float*, float*, float*, float*, float*);
+extern void F77_NAME(lgamaz)(float*, float*);
+extern void F77_NAME(libet0z)(float*);
+extern void F77_NAME(libethz)(float*, float*);
+extern void F77_NAME(licllsz)(float*, int*, float*, float*, float*, float*);
+extern void F77_NAME(liepshz)(float*, float*, float*);
+extern void F77_NAME(liindhz)(float*, int*, int*, float*);
+extern void F77_NAME(liindsz)(float*, int*, int*, float*);
+extern void F77_NAME(liindwz)(float*, int*, int*, int*, float*);
+extern void F77_NAME(lilarsz)(float*, int*, int*, float*, float*, float*, float*, float*);
+extern void F77_NAME(littstz)(float*, float*, int*, int*, float*, float*, float*, float*, float*, float*, float*, float*);
+extern void F77_NAME(lmddz)(float*, float*, int*, int*, float*, float*, float*);
+extern void F77_NAME(lrfctdz)(int*, float*, float*, float*, float*, float*, int*, int*, int*, int*, int*, double*, double*, double*, double*);
+extern void F77_NAME(lrfnctz)(int*, float*, float*, float*, float*, float*, int*, int*, int*, int*, int*, float*, float*, float*, float*);
+extern void F77_NAME(lyhdlez)(float*, int*, int*, int*, float*, int*, int*, float*);
+extern void F77_NAME(lymnwtz)(float*, float*, int*, int*, int*, int*, float*, int*, int*, float*);
+extern void F77_NAME(machz)(int*, float*);
+extern void F77_NAME(machzd)(int*, double*);
+extern void F77_NAME(mchlz)(float*, int*, int*, int*);
+extern void F77_NAME(mchlzd)(double*, int*, int*, int*);
+extern void F77_NAME(mffz)(float*, float*, float*, int*, int*, int*, int*, int*, int*);
+extern void F77_NAME(mffzd)(double*, double*, double*, int*, int*, int*, int*, int*, int*);
+extern void F77_NAME(mfragrz)(float*, float*, float*, int*, int*, int*, int*, int*, int*, float*, float*, float*, int*, float*, float*, float*, float*, int*, int*, float*, float*, float*, float*, float*, float*, float*, int*, int*, int*);
+extern void F77_NAME(mfyz)(float*, float*, float*, int*, int*, int*, int*, int*, int*, int*);
+extern void F77_NAME(mfyzd)(double*, double*, double*, int*, int*, int*, int*, int*, int*, int*);
+extern void F77_NAME(mhatz)(float*, int*, int*, int*, int*, float*, float*, float*);
+extern void F77_NAME(minvz)(float*, int*, int*, float*, int*);
+extern void F77_NAME(minvzd)(double*, int*, int*, float*, int*);
+extern void F77_NAME(mirtsrz)(float*, float*, int*, int*, int*, int*, int*, int*, float*, float*, float*, float*, int*, int*, float*, int*, int*, float*, float*, float*, float*, float*, float*, float*, float*, float*, float*, float *, int*);
+extern void F77_NAME(mlyz)(float*, float*, int*, int*, int*, int*);
+extern void F77_NAME(mlyzd)(double*, double*, int*, int*, int*, int*);
+extern void F77_NAME(msfz)(float*, float*, float*, int*, int*, int*, int*, int*);
+extern void F77_NAME(msf1z)(float*, float*, float*, int*, int*, int*);
+extern void F77_NAME(msf1zd)(double*, double*, double*, int*, int*, int*);
+extern void F77_NAME(msfzd)(double*, double*, double*, int*, int*, int*, int*, int*);
+extern void F77_NAME(mssz)(float*, float*, float*, int*, int*, int*);
+extern void F77_NAME(msszd)(double*, double*, double*, int*, int*, int*);
+extern void F77_NAME(mtt1z)(float*, float*, int*, int*);
+extern void F77_NAME(mtt1zd)(double*, double*, int*, int*);
+extern void F77_NAME(mtt2z)(float*, float*, int*, int*);
+extern void F77_NAME(mtt2zd)(double*, double*, int*, int*);
+extern void F77_NAME(mtt3z)(float*, float*, float*, int*, int*);
+extern void F77_NAME(mtt3zd)(double*, double*, double*, int*, int*);
+extern void F77_NAME(mtyz)(float*, float*, int*, int*, int*, int*);
+extern void F77_NAME(mtyzd)(double*, double*, int*, int*, int*, int*);
+extern void F77_NAME(myhbhez)(float*, float*, int*, int*, int*, int*, int*, int*, int*, int*, float*, float*, float*, float*, float*, float*, float*, int*, float*, float*, int*);
+extern void F77_NAME(mymvlmz)(float*, float*, int*, int*, int*, int*, int*, int*, int*, int*, int*, int*, int*, float*, float*, float*, int*, int*, float*, float*, float*, float*, float*, float*, float*, int*, int*, float*, int*);
+extern void F77_NAME(nlgmz)(int*, float*);
+extern void F77_NAME(nrm2z)(float*, int*, int*, int*, float*);
+extern void F77_NAME(nrm2zd)(double*, int*, int*, int*, double*);
+extern void F77_NAME(permcz)(float*, int*, int*, int*, int*, int*);
+extern void F77_NAME(permvz)(float*, int*, int*, int*);
+extern void F77_NAME(poissnz)(float*, int*, float*, float*);
+extern void F77_NAME(precdz)(double*);
+extern void F77_NAME(precsz)(float*);
+extern void F77_NAME(probinz)(int*, int*, double*, void*, double*);
+extern void F77_NAME(probstz)(float*, int*, float*);
+extern void F77_NAME(prpoisz)(double*, int*, int*, double*);
+extern void F77_NAME(ribet0z)(float*, int*, int*, int*, float*, float*);
+extern void F77_NAME(ribethz)(float*, int*, float*, int*, float*);
+extern void F77_NAME(ricllsz)(float*, float*, int*, int*, int*, int*, int*, int*, int*, float*, float*, float*, float*, float*, float*, float*, float*, int*);
+extern void F77_NAME(rilarsz)(float*, float*, int*, int*, int*, int*, float*, int*, int*, int*, float*, float*, float*, float*, float*, float*, float*);
+extern void F77_NAME(rimtrdz)(double*, int*, int*, int*, int*, double*, float*, double*, double*, double*, int*);
+extern void F77_NAME(rimtrfz)(float*, int*, int*, int*, int*, float*, int*, float*, float*, float*, int*);
+extern void F77_NAME(rmvcz)(float*, int*, int*, int*, int*, int*, float*, int*, float*);
+extern void F77_NAME(rubenz)(float*, float*, int*, int*, float*, float*, int*, float*, float*, float*, int*, float*, float*, float*, float*);
+extern void F77_NAME(rybifrz)(float*, float*, int*, int*, int*, int*, int*, int*, int*, float*, float*, float*, float*, float*, int*, int*, float*, float*, float*, float*, float*);
+extern void F77_NAME(rysalgz)(float*, float*, float*, float*, float*, float*, int*, int*, int*, int*, int*, float*, float*, int*, int*, int*, int*, int*, int*, int*, int*, float*, float*, float*, float*, float*, float*, float*, float*, float*, float*, int*, float*, float*);
+extern void F77_NAME(scalz)(float*, float*, int*, int*, int*);
+extern void F77_NAME(scalzd)(double*, double*, int*, int*, int*);
+extern void F77_NAME(srt1z)(float*, int*, int*, int*);
+extern void F77_NAME(srt2z)(float*, float*, int*, int*, int*);
+extern void F77_NAME(stplrgz)(int*, float*, float*, float*, float*, float*, int*, float*, float*, float*, int*, float*, int*, int*, int*, float*, float*, float*, float*, float*, float*);
+extern void F77_NAME(swapz)(float*, float*, int*, int*, int*, int*, int*);
+extern void F77_NAME(swapzd)(double*, double*, int*, int*, int*, int*, int*);
+extern void F77_NAME(tauarez)(int*, int*, int*, float*, float*, float*, float*, float*, float*, int*, float*, int*);
+extern void F77_NAME(tfrn2tz)(float*, float*, int*, int*, int*, int*, float*, float*, float*);
+extern void F77_NAME(tisrtcz)(float*, int*, int*, int*, int*, int*, int*, int*);
+extern void F77_NAME(tquantz)(float*, int*, float*);
+extern void F77_NAME(ttasktz)(float*, float*, int*, int*, int*, int*, float*, float*, float*, float*);
+extern void F77_NAME(tteignz)(float*, int*, int*, int*, float*, int*, float*);
+extern void F77_NAME(wfshatz)(float*, int*, int*, int*, float*, float*, float*);
+extern void F77_NAME(wimedvz)(int*, int*, int*, int*, int*, int*, int*, int*, int*, int*);
+extern void F77_NAME(xerfz)(int*, float*, float*);
+extern void F77_NAME(xerpz)(int*, float*, float*, float*);
+extern void F77_NAME(xsyz)(float*, float*, float*, int*, int*, float*);
+extern void F77_NAME(xsyzd)(double*, double*, double*, int*, int*, double*);
+extern void F77_NAME(zemllz)(float*, float*, float*, int*, int*, int*, float*, float*);
+
 extern void F77_NAME(nquant)(float*, float*);
-extern void F77_NAME(nrm2)(float*, int*, int*, int*, float*);
-extern void F77_NAME(nrm2d)(double*, int*, int*, int*, double*);
-extern void F77_NAME(permc)(float*, int*, int*, int*, int*, int*);
-extern void F77_NAME(permv)(float*, int*, int*, int*);
-extern void F77_NAME(poissn)(float*, int*, float*, float*);
-extern void F77_NAME(precd)(double*);
-extern void F77_NAME(precs)(float*);
-extern void F77_NAME(probin)(int*, int*, double*, void*, double*);
-extern void F77_NAME(probst)(float*, int*, float*);
-extern void F77_NAME(prpois)(double*, int*, int*, double*);
 extern void F77_NAME(psia)(int*, float*, float*);
 extern void F77_NAME(pspa)(int*, float*, float*);
 extern void F77_NAME(qd2func)(double*, double*, float*, int*, double*, double*, double*, double*, int*, double*, double*);
@@ -162,84 +213,57 @@ extern void F77_NAME(randow)(int*, float*);
 extern void F77_NAME(regtau)(double*, double*, int*, int*, float*, float*, float*, float*, float*, int*, double*, double*, double*, double*, double*, double*, double*, float*, float*);
 extern void F77_NAME(regtauw)(double*, double*, double*, int*, int*, float*, float*, float*, float*, float*, int*, double*, double*, double*, double*, double*, double*, double*, float*, float*);
 extern void F77_NAME(rhoa)(int*, float*, float*);
-extern void F77_NAME(ribet0)(float*, int*, int*, int*, float*, float*);
-extern void F77_NAME(ribeth)(float*, int*, float*, int*, float*);
-extern void F77_NAME(riclls)(float*, float*, int*, int*, int*, int*, int*, int*, int*, float*, float*, float*, float*, float*, float*, float*, float*, int*);
-extern void F77_NAME(rilars)(float*, float*, int*, int*, int*, int*, float*, int*, int*, int*, float*, float*, float*, float*, float*, float*, float*);
-extern void F77_NAME(rimtrd)(double*, int*, int*, int*, int*, double*, float*, double*, double*, double*, int*);
-extern void F77_NAME(rimtrf)(float*, int*, int*, int*, int*, float*, int*, float*, float*, float*, int*);
-extern void F77_NAME(rmvc)(float*, int*, int*, int*, int*, int*, float*, int*, float*);
 extern void F77_NAME(rpardf)(float*, int*, int*, int*, int*, float*, float*, int*, int*, int*);
-extern void F77_NAME(ruben)(float*, float*, int*, int*, float*, float*, int*, float*, float*, float*, int*, float*, float*, float*, float*);
-extern void F77_NAME(rysalg)(float*, float*, float*, float*, float*, float*, int*, int*, int*, int*, int*, float*, float*, int*, int*, int*, int*, int*, int*, int*, int*, float*, float*, float*, float*, float*, float*, float*, float*, float*, float*, int*, float*, float*);
-extern void F77_NAME(scal)(float*, float*, int*, int*, int*);
-extern void F77_NAME(scald)(double*, double*, int*, int*, int*);
-extern void F77_NAME(srt1)(float*, int*, int*, int*);
-extern void F77_NAME(srt2)(float*, float*, int*, int*, int*);
-extern void F77_NAME(stplrg)(int*, float*, float*, float*, float*, float*, int*, float*, float*, float*, int*, float*, int*, int*, int*, float*, float*, float*, float*, float*, float*);
-extern void F77_NAME(swap)(float*, float*, int*, int*, int*, int*, int*);
-extern void F77_NAME(swapd)(double*, double*, int*, int*, int*, int*, int*);
-extern void F77_NAME(tauare)(int*, int*, int*, float*, float*, float*, float*, float*, float*, int*, float*, int*);
-extern void F77_NAME(tfrn2t)(float*, float*, int*, int*, int*, int*, float*, float*, float*);
-extern void F77_NAME(tisrtc)(float*, int*, int*, int*, int*, int*, int*, int*);
-extern void F77_NAME(tquant)(float*, int*, float*);
-extern void F77_NAME(ttaskt)(float*, float*, int*, int*, int*, int*, float*, float*, float*, float*);
-extern void F77_NAME(tteign)(float*, int*, int*, int*, float*, int*, float*);
 extern void F77_NAME(ucva)(int*, float*, float*);
 extern void F77_NAME(upcva)(int*, float*, float*);
 extern void F77_NAME(wcva)(int*, float*, float*);
-extern void F77_NAME(wfshat)(float*, int*, int*, int*, float*, float*, float*);
-extern void F77_NAME(wimedv)(int*, int*, int*, int*, int*, int*, int*, int*, int*, int*);
 extern void F77_NAME(wpcva)(int*, float*, float*);
 extern void F77_NAME(wwwa)(int*, float*, float*);
-extern void F77_NAME(xerf)(int*, float*, float*);
-extern void F77_NAME(xerp)(int*, float*, float*, float*);
-extern void F77_NAME(xsy)(float*, float*, float*, int*, int*, float*);
-extern void F77_NAME(xsyd)(double*, double*, double*, int*, int*, double*);
 extern void F77_NAME(zdfvals)(int*, float*);
-extern void F77_NAME(zemll)(float*, float*, float*, int*, int*, int*, float*, float*);
 
 static const R_FortranMethodDef FortranEntries[] = {
     {"addcol",  (DL_FUNC) &F77_NAME(addcol),   9},
-    {"binprd",  (DL_FUNC) &F77_NAME(binprd),   5},
-    {"cerf",    (DL_FUNC) &F77_NAME(cerf),     2},
-    {"cerfd",   (DL_FUNC) &F77_NAME(cerfd),    2},
-    {"cfrcov",  (DL_FUNC) &F77_NAME(cfrcov),   7},
     {"chia",    (DL_FUNC) &F77_NAME(chia),     3},
-    {"chisq",   (DL_FUNC) &F77_NAME(chisq),    4},
-    {"cia2b2",  (DL_FUNC) &F77_NAME(cia2b2),   6},
-    {"cibeat",  (DL_FUNC) &F77_NAME(cibeat),   4},
-    {"cicloc",  (DL_FUNC) &F77_NAME(cicloc),   3},
-    {"cifact",  (DL_FUNC) &F77_NAME(cifact),   6},
-    {"cimedv",  (DL_FUNC) &F77_NAME(cimedv),  10},
-    {"cirock",  (DL_FUNC) &F77_NAME(cirock),   5},
-    {"comval",  (DL_FUNC) &F77_NAME(comval),  24},
-    {"cquant",  (DL_FUNC) &F77_NAME(cquant),   5},
     {"dbinom",  (DL_FUNC) &F77_NAME(dbinom),  10},
-    {"dfcomn",  (DL_FUNC) &F77_NAME(dfcomn),  24},
-    {"dotp",    (DL_FUNC) &F77_NAME(dotp),     8},
-    {"dotpd",   (DL_FUNC) &F77_NAME(dotpd),    8},
-    {"dpoiss",  (DL_FUNC) &F77_NAME(dpoiss),   9},
-    {"exch",    (DL_FUNC) &F77_NAME(exch),     5},
-    {"exchd",   (DL_FUNC) &F77_NAME(exchd),    5},
-    {"fcum",    (DL_FUNC) &F77_NAME(fcum),     5},
     {"fnexp",   (DL_FUNC) &F77_NAME(fnexp),    9},
-    {"fstord",  (DL_FUNC) &F77_NAME(fstord),   4},
-    {"gauss",   (DL_FUNC) &F77_NAME(gauss),    3},
-    {"gaussd",  (DL_FUNC) &F77_NAME(gaussd),   3},
-    {"gfedca",  (DL_FUNC) &F77_NAME(gfedca),   9},
-    {"gicstp",  (DL_FUNC) &F77_NAME(gicstp),  10},
-    {"gintac",  (DL_FUNC) &F77_NAME(gintac),  27},
-    {"glmdev",  (DL_FUNC) &F77_NAME(glmdev),  12},
-    {"gyastp",  (DL_FUNC) &F77_NAME(gyastp),  25},
-    {"gycstp",  (DL_FUNC) &F77_NAME(gycstp),   8},
-    {"gymain",  (DL_FUNC) &F77_NAME(gymain),  41},
-    {"gytstp",  (DL_FUNC) &F77_NAME(gytstp),  32},
-    {"h12",     (DL_FUNC) &F77_NAME(h12),     12},
-    {"h12d",    (DL_FUNC) &F77_NAME(h12d),    12},
-    {"hylmse",  (DL_FUNC) &F77_NAME(hylmse),  22},
-    {"hyltse",  (DL_FUNC) &F77_NAME(hyltse),  22},
-    {"ingama",  (DL_FUNC) &F77_NAME(ingama),   3},
+
+    {"binprdz", (DL_FUNC) &F77_NAME(binprdz),  5},
+    {"cerfz",   (DL_FUNC) &F77_NAME(cerfz),    2},
+    {"cerfzd",  (DL_FUNC) &F77_NAME(cerfzd),   2},
+    {"cfrcovz", (DL_FUNC) &F77_NAME(cfrcovz),  7},
+    {"chisqz",  (DL_FUNC) &F77_NAME(chisqz),   4},
+    {"cia2b2z", (DL_FUNC) &F77_NAME(cia2b2z),  6},
+    {"cibeatz", (DL_FUNC) &F77_NAME(cibeatz),  4},
+    {"ciclocz", (DL_FUNC) &F77_NAME(ciclocz),  3},
+    {"cifactz", (DL_FUNC) &F77_NAME(cifactz),  6},
+    {"cimedvz", (DL_FUNC) &F77_NAME(cimedvz), 10},
+    {"cirockz", (DL_FUNC) &F77_NAME(cirockz),  5},
+    {"comvalz", (DL_FUNC) &F77_NAME(comvalz), 24},
+    {"cquantz", (DL_FUNC) &F77_NAME(cquantz),  5},
+    {"dfcomnz", (DL_FUNC) &F77_NAME(dfcomnz), 24},
+    {"dotpz",   (DL_FUNC) &F77_NAME(dotpz),    8},
+    {"dotpzd",  (DL_FUNC) &F77_NAME(dotpzd),   8},
+    {"dpoissz", (DL_FUNC) &F77_NAME(dpoissz),  9},
+    {"exchz",   (DL_FUNC) &F77_NAME(exchz),    5},
+    {"exchzd",  (DL_FUNC) &F77_NAME(exchzd),   5},
+    {"fcumz",   (DL_FUNC) &F77_NAME(fcumz),    5},
+    {"fstordz", (DL_FUNC) &F77_NAME(fstordz),  4},
+    {"gaussz",  (DL_FUNC) &F77_NAME(gaussz),   3},
+    {"gausszd", (DL_FUNC) &F77_NAME(gausszd),  3},
+    {"gfedcaz", (DL_FUNC) &F77_NAME(gfedcaz),  9},
+    {"gicstpz", (DL_FUNC) &F77_NAME(gicstpz), 10},
+    {"gintacz", (DL_FUNC) &F77_NAME(gintacz), 27},
+    {"glmdevz", (DL_FUNC) &F77_NAME(glmdevz), 12},
+    {"gyastpz", (DL_FUNC) &F77_NAME(gyastpz), 25},
+    {"gycstpz", (DL_FUNC) &F77_NAME(gycstpz),  8},
+    {"gymainz", (DL_FUNC) &F77_NAME(gymainz), 41},
+    {"gytstpz", (DL_FUNC) &F77_NAME(gytstpz), 32},
+    {"h12z",    (DL_FUNC) &F77_NAME(h12z),    12},
+    {"h12zd",   (DL_FUNC) &F77_NAME(h12zd),   12},
+    {"hylmsez", (DL_FUNC) &F77_NAME(hylmsez), 22},
+    {"hyltsez", (DL_FUNC) &F77_NAME(hyltsez), 22},
+    {"ingamaz", (DL_FUNC) &F77_NAME(ingamaz),  3},
+
     {"int0",    (DL_FUNC) &F77_NAME(int0),    15},
     {"int10",   (DL_FUNC) &F77_NAME(int10),   27},
     {"int16",   (DL_FUNC) &F77_NAME(int16),   31},
@@ -280,69 +304,101 @@ static const R_FortranMethodDef FortranEntries[] = {
     {"int70",   (DL_FUNC) &F77_NAME(int70),    4},
     {"int9",    (DL_FUNC) &F77_NAME(int9),    22},
     {"int92",   (DL_FUNC) &F77_NAME(int92),   18},
-    {"kfascv",  (DL_FUNC) &F77_NAME(kfascv),  10},
-    {"kiascv",  (DL_FUNC) &F77_NAME(kiascv),   8},
-    {"kiedch",  (DL_FUNC) &F77_NAME(kiedch),   6},
-    {"ktaskv",  (DL_FUNC) &F77_NAME(ktaskv),   9},
-    {"ktaskw",  (DL_FUNC) &F77_NAME(ktaskw),  19},
-    {"lgama",   (DL_FUNC) &F77_NAME(lgama),    2},
-    {"libet0",  (DL_FUNC) &F77_NAME(libet0),   1},
-    {"libeth",  (DL_FUNC) &F77_NAME(libeth),   2},
-    {"liclls",  (DL_FUNC) &F77_NAME(liclls),   6},
-    {"liepsh",  (DL_FUNC) &F77_NAME(liepsh),   3},
-    {"liindh",  (DL_FUNC) &F77_NAME(liindh),   4},
-    {"liinds",  (DL_FUNC) &F77_NAME(liinds),   4},
-    {"liindw",  (DL_FUNC) &F77_NAME(liindw),   5},
-    {"lilars",  (DL_FUNC) &F77_NAME(lilars),   8},
-    {"littst",  (DL_FUNC) &F77_NAME(littst),  12},
-    {"lmdd",    (DL_FUNC) &F77_NAME(lmdd),     7},
-    {"lrfctd",  (DL_FUNC) &F77_NAME(lrfctd),  15},
-    {"lrfnct",  (DL_FUNC) &F77_NAME(lrfnct),  15},
-    {"lyhdle",  (DL_FUNC) &F77_NAME(lyhdle),   8},
-    {"lymnwt",  (DL_FUNC) &F77_NAME(lymnwt),  10},
-    {"mach",    (DL_FUNC) &F77_NAME(mach),     2},
-    {"machd",   (DL_FUNC) &F77_NAME(machd),    2},
-    {"mchl",    (DL_FUNC) &F77_NAME(mchl),     4},
-    {"mchld",   (DL_FUNC) &F77_NAME(mchld),    4},
-    {"mff",     (DL_FUNC) &F77_NAME(mff),      9},
-    {"mffd",    (DL_FUNC) &F77_NAME(mffd),     9},
-    {"mfragr",  (DL_FUNC) &F77_NAME(mfragr),  29},
-    {"mfy",     (DL_FUNC) &F77_NAME(mfy),     10},
-    {"mfyd",    (DL_FUNC) &F77_NAME(mfyd),    10},
-    {"mhat",    (DL_FUNC) &F77_NAME(mhat),     8},
-    {"minv",    (DL_FUNC) &F77_NAME(minv),     5},
-    {"minvd",   (DL_FUNC) &F77_NAME(minvd),    5},
-    {"mirtsr",  (DL_FUNC) &F77_NAME(mirtsr),  29},
-    {"mly",     (DL_FUNC) &F77_NAME(mly),      6},
-    {"mlyd",    (DL_FUNC) &F77_NAME(mlyd),     6},
-    {"msf",     (DL_FUNC) &F77_NAME(msf),      8},
-    {"msf1",    (DL_FUNC) &F77_NAME(msf1),     6},
-    {"msf1d",   (DL_FUNC) &F77_NAME(msf1d),    6},
-    {"msfd",    (DL_FUNC) &F77_NAME(msfd),     8},
-    {"mss",     (DL_FUNC) &F77_NAME(mss),      6},
-    {"mssd",    (DL_FUNC) &F77_NAME(mssd),     6},
-    {"mtt1",    (DL_FUNC) &F77_NAME(mtt1),     4},
-    {"mtt1d",   (DL_FUNC) &F77_NAME(mtt1d),    4},
-    {"mtt2",    (DL_FUNC) &F77_NAME(mtt2),     4},
-    {"mtt2d",   (DL_FUNC) &F77_NAME(mtt2d),    4},
-    {"mtt3",    (DL_FUNC) &F77_NAME(mtt3),     5},
-    {"mtt3d",   (DL_FUNC) &F77_NAME(mtt3d),    5},
-    {"mty",     (DL_FUNC) &F77_NAME(mty),      6},
-    {"mtyd",    (DL_FUNC) &F77_NAME(mtyd),     6},
-    {"myhbhe",  (DL_FUNC) &F77_NAME(myhbhe),  21},
-    {"mymvlm",  (DL_FUNC) &F77_NAME(mymvlm),  29},
-    {"nlgm",    (DL_FUNC) &F77_NAME(nlgm),     2},
+
+    {"kfascvz", (DL_FUNC) &F77_NAME(kfascvz), 10},
+    {"kiascvz", (DL_FUNC) &F77_NAME(kiascvz),  8},
+    {"kiedchz", (DL_FUNC) &F77_NAME(kiedchz),  6},
+    {"ktaskvz", (DL_FUNC) &F77_NAME(ktaskvz),  9},
+    {"ktaskwz", (DL_FUNC) &F77_NAME(ktaskwz), 19},
+    {"lgamaz",  (DL_FUNC) &F77_NAME(lgamaz),   2},
+    {"libet0z", (DL_FUNC) &F77_NAME(libet0z),  1},
+    {"libethz", (DL_FUNC) &F77_NAME(libethz),  2},
+    {"licllsz", (DL_FUNC) &F77_NAME(licllsz),  6},
+    {"liepshz", (DL_FUNC) &F77_NAME(liepshz),  3},
+    {"liindhz", (DL_FUNC) &F77_NAME(liindhz),  4},
+    {"liindsz", (DL_FUNC) &F77_NAME(liindsz),  4},
+    {"liindwz", (DL_FUNC) &F77_NAME(liindwz),  5},
+    {"lilarsz", (DL_FUNC) &F77_NAME(lilarsz),  8},
+    {"littstz", (DL_FUNC) &F77_NAME(littstz), 12},
+    {"lmddz",   (DL_FUNC) &F77_NAME(lmddz),    7},
+    {"lrfctdz", (DL_FUNC) &F77_NAME(lrfctdz), 15},
+    {"lrfnctz", (DL_FUNC) &F77_NAME(lrfnctz), 15},
+    {"lyhdlez", (DL_FUNC) &F77_NAME(lyhdlez),  8},
+    {"lymnwtz", (DL_FUNC) &F77_NAME(lymnwtz), 10},
+    {"machz",   (DL_FUNC) &F77_NAME(machz),    2},
+    {"machzd",  (DL_FUNC) &F77_NAME(machzd),   2},
+    {"mchlz",   (DL_FUNC) &F77_NAME(mchlz),    4},
+    {"mchlzd",  (DL_FUNC) &F77_NAME(mchlzd),   4},
+    {"mffz",    (DL_FUNC) &F77_NAME(mffz),     9},
+    {"mffzd",   (DL_FUNC) &F77_NAME(mffzd),    9},
+    {"mfragrz", (DL_FUNC) &F77_NAME(mfragrz), 29},
+    {"mfyz",    (DL_FUNC) &F77_NAME(mfyz),    10},
+    {"mfyzd",   (DL_FUNC) &F77_NAME(mfyzd),   10},
+    {"mhatz",   (DL_FUNC) &F77_NAME(mhatz),    8},
+    {"minvz",   (DL_FUNC) &F77_NAME(minvz),    5},
+    {"minvzd",  (DL_FUNC) &F77_NAME(minvzd),   5},
+    {"mirtsrz", (DL_FUNC) &F77_NAME(mirtsrz), 29},
+    {"mlyz",    (DL_FUNC) &F77_NAME(mlyz),     6},
+    {"mlyzd",   (DL_FUNC) &F77_NAME(mlyzd),    6},
+    {"msfz",    (DL_FUNC) &F77_NAME(msfz),     8},
+    {"msf1z",   (DL_FUNC) &F77_NAME(msf1z),    6},
+    {"msf1zd",  (DL_FUNC) &F77_NAME(msf1zd),   6},
+    {"msfzd",   (DL_FUNC) &F77_NAME(msfzd),    8},
+    {"mssz",    (DL_FUNC) &F77_NAME(mssz),     6},
+    {"msszd",   (DL_FUNC) &F77_NAME(msszd),    6},
+    {"mtt1z",   (DL_FUNC) &F77_NAME(mtt1z),    4},
+    {"mtt1zd",  (DL_FUNC) &F77_NAME(mtt1zd),   4},
+    {"mtt2z",   (DL_FUNC) &F77_NAME(mtt2z),    4},
+    {"mtt2zd",  (DL_FUNC) &F77_NAME(mtt2zd),   4},
+    {"mtt3z",   (DL_FUNC) &F77_NAME(mtt3z),    5},
+    {"mtt3zd",  (DL_FUNC) &F77_NAME(mtt3zd),   5},
+    {"mtyz",    (DL_FUNC) &F77_NAME(mtyz),     6},
+    {"mtyzd",   (DL_FUNC) &F77_NAME(mtyzd),    6},
+    {"myhbhez", (DL_FUNC) &F77_NAME(myhbhez), 21},
+    {"mymvlmz", (DL_FUNC) &F77_NAME(mymvlmz), 29},
+    {"nlgmz",   (DL_FUNC) &F77_NAME(nlgmz),    2},
+    {"nrm2z",   (DL_FUNC) &F77_NAME(nrm2z),    5},
+    {"nrm2zd",  (DL_FUNC) &F77_NAME(nrm2zd),   5},
+    {"permcz",  (DL_FUNC) &F77_NAME(permcz),   6},
+    {"permvz",  (DL_FUNC) &F77_NAME(permvz),   4},
+    {"poissnz", (DL_FUNC) &F77_NAME(poissnz),  4},
+    {"precdz",  (DL_FUNC) &F77_NAME(precdz),   1},
+    {"precsz",  (DL_FUNC) &F77_NAME(precsz),   1},
+    {"probinz", (DL_FUNC) &F77_NAME(probinz),  5},
+    {"probstz", (DL_FUNC) &F77_NAME(probstz),  3},
+    {"prpoisz", (DL_FUNC) &F77_NAME(prpoisz),  4},
+    {"ribet0z", (DL_FUNC) &F77_NAME(ribet0z),  6},
+    {"ribethz", (DL_FUNC) &F77_NAME(ribethz),  5},
+    {"ricllsz", (DL_FUNC) &F77_NAME(ricllsz), 18},
+    {"rilarsz", (DL_FUNC) &F77_NAME(rilarsz), 17},
+    {"rimtrdz", (DL_FUNC) &F77_NAME(rimtrdz), 11},
+    {"rimtrfz", (DL_FUNC) &F77_NAME(rimtrfz), 11},
+    {"rmvcz",   (DL_FUNC) &F77_NAME(rmvcz),    9},
+    {"rubenz",  (DL_FUNC) &F77_NAME(rubenz),  15},
+    {"rybifrz", (DL_FUNC) &F77_NAME(rybifrz), 21},
+    {"rysalgz", (DL_FUNC) &F77_NAME(rysalgz), 34},
+    {"scalz",   (DL_FUNC) &F77_NAME(scalz),    5},
+    {"scalzd",  (DL_FUNC) &F77_NAME(scalzd),   5},
+    {"srt1z",   (DL_FUNC) &F77_NAME(srt1z),    4},
+    {"srt2z",   (DL_FUNC) &F77_NAME(srt2z),    5},
+    {"stplrgz", (DL_FUNC) &F77_NAME(stplrgz), 21},
+    {"swapz",   (DL_FUNC) &F77_NAME(swapz),    7},
+    {"swapzd",  (DL_FUNC) &F77_NAME(swapzd),   7},
+    {"tauarez", (DL_FUNC) &F77_NAME(tauarez), 12},
+    {"tfrn2tz", (DL_FUNC) &F77_NAME(tfrn2tz),  9},
+    {"tisrtcz", (DL_FUNC) &F77_NAME(tisrtcz),  8},
+    {"tquantz", (DL_FUNC) &F77_NAME(tquantz),  3},
+    {"ttasktz", (DL_FUNC) &F77_NAME(ttasktz), 10},
+    {"tteignz", (DL_FUNC) &F77_NAME(tteignz),  7},
+    {"wfshatz", (DL_FUNC) &F77_NAME(wfshatz),  7},
+    {"wimedvz", (DL_FUNC) &F77_NAME(wimedvz), 10},
+    {"xerfz",   (DL_FUNC) &F77_NAME(xerfz),    3},
+    {"xerpz",   (DL_FUNC) &F77_NAME(xerpz),    4},
+    {"xsyz",    (DL_FUNC) &F77_NAME(xsyz),     6},
+    {"xsyzd",   (DL_FUNC) &F77_NAME(xsyzd),    6},
+    {"zemllz",  (DL_FUNC) &F77_NAME(zemllz),   8}, 
+
     {"nquant",  (DL_FUNC) &F77_NAME(nquant),   2},
-    {"nrm2",    (DL_FUNC) &F77_NAME(nrm2),     5},
-    {"nrm2d",   (DL_FUNC) &F77_NAME(nrm2d),    5},
-    {"permc",   (DL_FUNC) &F77_NAME(permc),    6},
-    {"permv",   (DL_FUNC) &F77_NAME(permv),    4},
-    {"poissn",  (DL_FUNC) &F77_NAME(poissn),   4},
-    {"precd",   (DL_FUNC) &F77_NAME(precd),    1},
-    {"precs",   (DL_FUNC) &F77_NAME(precs),    1},
-    {"probin",  (DL_FUNC) &F77_NAME(probin),   5},
-    {"probst",  (DL_FUNC) &F77_NAME(probst),   3},
-    {"prpois",  (DL_FUNC) &F77_NAME(prpois),   4},
     {"psia",    (DL_FUNC) &F77_NAME(psia),     3},
     {"pspa",    (DL_FUNC) &F77_NAME(pspa),     3},
     {"qd2func", (DL_FUNC) &F77_NAME(qd2func), 11},
@@ -351,42 +407,13 @@ static const R_FortranMethodDef FortranEntries[] = {
     {"regtau",  (DL_FUNC) &F77_NAME(regtau),  19},
     {"regtauw", (DL_FUNC) &F77_NAME(regtauw), 20},
     {"rhoa",    (DL_FUNC) &F77_NAME(rhoa),     3},
-    {"ribet0",  (DL_FUNC) &F77_NAME(ribet0),   6},
-    {"ribeth",  (DL_FUNC) &F77_NAME(ribeth),   5},
-    {"riclls",  (DL_FUNC) &F77_NAME(riclls),  18},
-    {"rilars",  (DL_FUNC) &F77_NAME(rilars),  17},
-    {"rimtrd",  (DL_FUNC) &F77_NAME(rimtrd),  11},
-    {"rimtrf",  (DL_FUNC) &F77_NAME(rimtrf),  11},
-    {"rmvc",    (DL_FUNC) &F77_NAME(rmvc),     9},
     {"rpardf",  (DL_FUNC) &F77_NAME(rpardf),  10},
-    {"ruben",   (DL_FUNC) &F77_NAME(ruben),   15},
-    {"rysalg",  (DL_FUNC) &F77_NAME(rysalg),  34},
-    {"scal",    (DL_FUNC) &F77_NAME(scal),     5},
-    {"scald",   (DL_FUNC) &F77_NAME(scald),    5},
-    {"srt1",    (DL_FUNC) &F77_NAME(srt1),     4},
-    {"srt2",    (DL_FUNC) &F77_NAME(srt2),     5},
-    {"stplrg",  (DL_FUNC) &F77_NAME(stplrg),  21},
-    {"swap",    (DL_FUNC) &F77_NAME(swap),     7},
-    {"swapd",   (DL_FUNC) &F77_NAME(swapd),    7},
-    {"tauare",  (DL_FUNC) &F77_NAME(tauare),  12},
-    {"tfrn2t",  (DL_FUNC) &F77_NAME(tfrn2t),   9},
-    {"tisrtc",  (DL_FUNC) &F77_NAME(tisrtc),   8},
-    {"tquant",  (DL_FUNC) &F77_NAME(tquant),   3},
-    {"ttaskt",  (DL_FUNC) &F77_NAME(ttaskt),  10},
-    {"tteign",  (DL_FUNC) &F77_NAME(tteign),   7},
     {"ucva",    (DL_FUNC) &F77_NAME(ucva),     3},
     {"upcva",   (DL_FUNC) &F77_NAME(upcva),    3},
     {"wcva",    (DL_FUNC) &F77_NAME(wcva),     3},
-    {"wfshat",  (DL_FUNC) &F77_NAME(wfshat),   7},
-    {"wimedv",  (DL_FUNC) &F77_NAME(wimedv),  10},
     {"wpcva",   (DL_FUNC) &F77_NAME(wpcva),    3},
     {"wwwa",    (DL_FUNC) &F77_NAME(wwwa),     3},
-    {"xerf",    (DL_FUNC) &F77_NAME(xerf),     3},
-    {"xerp",    (DL_FUNC) &F77_NAME(xerp),     4},
-    {"xsy",     (DL_FUNC) &F77_NAME(xsy),      6},
-    {"xsyd",    (DL_FUNC) &F77_NAME(xsyd),     6},
-    {"zdfvals", (DL_FUNC) &F77_NAME(zdfvals),  2},
-    {"zemll",   (DL_FUNC) &F77_NAME(zemll),    8}, //
+    {"zdfvals", (DL_FUNC) &F77_NAME(zdfvals),  2}, //
     {NULL, NULL, 0}
 };
 

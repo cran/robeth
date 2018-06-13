@@ -8,7 +8,7 @@ mda <- nrow(a)
 mdb <- nrow(b)
 mdc <- m
 c <- matrix(double(1),mdc,n)
-f.res <- .Fortran("mffd",
+f.res <- .Fortran("mffzd",
 a=as.double(a),
 b=as.double(b),
 c=as.double(c),

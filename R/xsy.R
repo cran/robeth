@@ -6,7 +6,7 @@ if (missing(s)) messagena("s")
 n <- length(x)
 nn <- length(s)
 result <- single(1)
-f.res <- .Fortran("xsy",
+f.res <- .Fortran("xsyz",
 x=to.single(x),
 y=to.single(y),
 s=to.single(s),

@@ -6,7 +6,7 @@ mdx <- nrow(x)
 ncov <- np*(np+1)/2
 a <- single(ncov)
 cov <- single(ncov)
-f.res <- .Fortran("ktaskv",
+f.res <- .Fortran("ktaskvz",
 x=to.single(x),
 n=to.integer(n),
 np=to.integer(np),

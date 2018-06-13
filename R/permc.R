@@ -4,7 +4,7 @@ if (missing(it)) messagena("it")
 np <- length(it)
 mdx <- nrow(x)
 if (missing(x)) x <- matrix(single(1),mdx,np)
-f.res <- .Fortran("permc",
+f.res <- .Fortran("permcz",
 x=to.single(x),
 it=to.integer(it),
 n=to.integer(n),

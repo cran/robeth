@@ -15,7 +15,7 @@ s2 <- single(ncov)
 ainv <- single(ncov)
 cov <- single(ncov)
 sc <- matrix(single(1),mdsc,np)
-f.res <- .Fortran("ktaskw",
+f.res <- .Fortran("ktaskwz",
 x=to.single(x),
 d=to.single(d),
 e=to.single(e),

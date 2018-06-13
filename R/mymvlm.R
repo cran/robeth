@@ -23,7 +23,7 @@ itv <- integer(nq)
 itm <- integer(nq)
 work <- single(mdw)
 iwork <- integer(mdi)
-f.res <- .Fortran("mymvlm",
+f.res <- .Fortran("mymvlmz",
 x=to.single(x),
 y=to.single(y),
 n=to.integer(n),

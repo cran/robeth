@@ -4,7 +4,7 @@ if (missing(m)) messagena("m")
 if (missing(n)) messagena("n")
 k <- integer(1)
 alpha1 <- single(1)
-f.res <- .Fortran("liindw",
+f.res <- .Fortran("liindwz",
 alpha=to.single(alpha),
 m=to.integer(m),
 n=to.integer(n),

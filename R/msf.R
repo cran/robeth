@@ -8,7 +8,7 @@ m <- ncol(b)
 mdb <- nrow(b)
 mdc <- n
 c <- matrix(single(1),mdc,m)
-f.res <- .Fortran("msf",
+f.res <- .Fortran("msfz",
 a=to.single(a),
 b=to.single(b),
 c=to.single(c),

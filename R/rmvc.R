@@ -8,7 +8,7 @@ if (missing(l)) l <- integer(1)
 sh <- single(np)
 if (missing(ip)) ip <- integer(np)
 sx <- single(n)
-f.res <- .Fortran("rmvc",
+f.res <- .Fortran("rmvcz",
 x=to.single(x),
 n=to.integer(n),
 np=to.integer(np),

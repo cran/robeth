@@ -5,7 +5,7 @@ if (missing(n)) messagena("n")
 nn <- length(a)
 ny <- length(y)
 if (missing(y)) y <- double(ny)
-f.res <- .Fortran("mlyd",
+f.res <- .Fortran("mlyzd",
 a=as.double(a),
 y=as.double(y),
 n=to.integer(n),

@@ -11,7 +11,7 @@ sigma <- single(1)
 tl <- single(1)
 tu <- single(1)
 p <- single(1)
-f.res <- .Fortran("littst",
+f.res <- .Fortran("littstz",
 x=to.single(x),
 y=to.single(y),
 m=to.integer(m),

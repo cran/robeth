@@ -6,7 +6,7 @@ theta <- single(1)
 sigma <- single(1)
 var <- single(1)
 rs <- single(n)
-f.res <- .Fortran("liclls",
+f.res <- .Fortran("licllsz",
 y=to.single(y),
 n=to.integer(n),
 theta=to.single(theta),

@@ -6,7 +6,7 @@ ncov <- nvar*(nvar+1)/2
 mdx <- nrow(x)
 a <- double(ncov)
 sc <- single(nfirst)
-f.res <- .Fortran("wimedv",
+f.res <- .Fortran("wimedvz",
 x=to.single(x),
 nobs=to.integer(nobs),
 nvar=to.integer(nvar),

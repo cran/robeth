@@ -6,7 +6,7 @@ np <- ncol(x)
 mdx <- nrow(x)
 hat <- single(n)
 sc <- single(n)
-f.res <- .Fortran("mhat",
+f.res <- .Fortran("mhatz",
 x=to.single(x),
 n=to.integer(n),
 np=to.integer(np),

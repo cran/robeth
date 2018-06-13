@@ -7,7 +7,7 @@ mdx <- nrow(x)
 a <- double(ncov)
 if (missing(t)) t <- single(nvar)
 sc <- single(nfirst)
-f.res <- .Fortran("cimedv",
+f.res <- .Fortran("cimedvz",
 x=to.single(x),
 nobs=to.integer(nobs),
 nvar=to.integer(nvar),

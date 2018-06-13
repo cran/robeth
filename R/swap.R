@@ -4,7 +4,7 @@ mdx <- length(x)
 mdy <- length(y)
 if (missing(x)) x <- single(mdx)
 if (missing(y)) y <- single(mdy)
-f.res <- .Fortran("swap",
+f.res <- .Fortran("swapz",
 x=to.single(x),
 y=to.single(y),
 n=to.integer(n),

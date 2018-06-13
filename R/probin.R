@@ -1,6 +1,6 @@
 "probin" <-
 function(k,n,p,ilg) {
-f.res <- .Fortran("probin",
+f.res <- .Fortran("probinz",
 k=to.integer(k),
 n=to.integer(n),
 p=to.double(p),
@@ -12,7 +12,7 @@ list(pk=f.res$pk)
 "prpois" <-
 function(e,k,ilg) {
 pk <- single(1)
-f.res <- .Fortran("prpois",
+f.res <- .Fortran("prpoisz",
 e=to.double(e),
 k=to.integer(k),
 ilg=to.integer(ilg),
@@ -25,7 +25,7 @@ function(icase=.dFvGet()$ics,ialg=.dFvGet()$ilg,ni,vtheta,wa,oi,n,tol=.dFvGet()$
 maxit=.dFvGet()$mxt,ci) {
 if (missing(ni)) messagena("ni")
 if (missing(wa)) messagena("wa")
-f.res <- .Fortran("gicstp",
+f.res <- .Fortran("gicstpz",
 icase=to.integer(icase),
 ialg=to.integer(ialg),
 nn=to.integer(ni),
@@ -39,12 +39,11 @@ ci=to.single(ci))
 list(ci=f.res$ci)
 }
 
-
 "lrfnct" <- 
 function(icase=.dFvGet()$ics,y,c,vtheta,oi,wa,nn,n,i0,i1,i2) {
 if (missing(y)) messagena("y")
 f0 <- f1 <- f2 <- rep(0,n)
-f.res <- .Fortran("lrfnct",
+f.res <- .Fortran("lrfnctz",
 icase=to.integer(icase),
 y=to.single(y),
 c=to.single(c),
@@ -70,7 +69,7 @@ mdx <- nrow(x)
 n   <- length(y)
 f0  <- vtheta <- rep(0,n)
 st  <- rep(0,np)
-f.res <- .Fortran("stplrg",
+f.res <- .Fortran("stplrgz",
 icase=to.integer(icase),
 x=to.single(x),
 y=to.single(y),

@@ -8,7 +8,7 @@ sf <- single(np)
 sg <- single(np)
 sh <- single(np)
 ip <- integer(np)
-f.res <- .Fortran("rimtrf",
+f.res <- .Fortran("rimtrfz",
 x=to.single(x),
 n=to.integer(n),
 np=to.integer(np),

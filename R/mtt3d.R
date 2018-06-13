@@ -5,7 +5,7 @@ if (missing(b)) messagena("b")
 if (missing(n)) messagena("n")
 nn <- length(a)
 c <- double(nn)
-f.res <- .Fortran("mtt3d",
+f.res <- .Fortran("mtt3zd",
 a=as.double(a),
 b=as.double(b),
 c=as.double(c),

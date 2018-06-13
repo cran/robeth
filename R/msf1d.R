@@ -6,7 +6,7 @@ n <- ncol(b)
 nn <- length(a)
 mdb <- nrow(b)
 c <- double(nn)
-f.res <- .Fortran("msf1d",
+f.res <- .Fortran("msf1zd",
 a=as.double(a),
 b=as.double(b),
 c=as.double(c),

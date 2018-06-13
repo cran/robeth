@@ -4,7 +4,7 @@ mdx <- length(x)
 mdy <- length(y)
 if (missing(x)) x <- double(mdx)
 if (missing(y)) y <- double(mdy)
-f.res <- .Fortran("swapd",
+f.res <- .Fortran("swapzd",
 x=as.double(x),
 y=as.double(y),
 n=to.integer(n),

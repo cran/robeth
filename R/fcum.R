@@ -5,7 +5,7 @@ if (missing(n2)) messagena("n2")
 if (missing(x)) messagena("x")
 p <- single(1)
 ier <- integer(1)
-f.res <- .Fortran("fcum",
+f.res <- .Fortran("fcumz",
 n1=to.integer(n1),
 n2=to.integer(n2),
 x=to.single(x),

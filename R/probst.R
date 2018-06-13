@@ -3,7 +3,7 @@ function(x,ifn) {
 if (missing(x)) messagena("x")
 if (missing(ifn)) messagena("ifn")
 p <- single(1)
-f.res <- .Fortran("probst",
+f.res <- .Fortran("probstz",
 x=to.single(x),
 ifn=to.integer(ifn),
 p=to.single(p))

@@ -7,7 +7,7 @@ if (missing(x)) x <- matrix(single(1),mdx,nvar)
 np <- integer(1)
 nq <- integer(1)
 ip <- integer(nvar)
-f.res <- .Fortran("tisrtc",
+f.res <- .Fortran("tisrtcz",
 x=to.single(x),
 iv=to.integer(iv),
 n=to.integer(n),

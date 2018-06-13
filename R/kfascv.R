@@ -7,7 +7,7 @@ if (missing(cov)) cov <- single(ncov)
 se <- single(np)
 if (missing(sg)) sg <- single(np)
 if (missing(ip)) ip <- integer(np)
-f.res <- .Fortran("kfascv",
+f.res <- .Fortran("kfascvz",
 xt=to.single(xt),
 cov=to.single(cov),
 k=to.integer(k),

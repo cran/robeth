@@ -8,7 +8,7 @@ ncov <- length(cov)
 covtau <- matrix(single(1),mdc,np)
 sc1 <- single(ncov)
 sc2 <- single(ncov)
-f.res <- .Fortran("ttaskt",
+f.res <- .Fortran("ttasktz",
 cov=to.single(cov),
 ainv=to.single(ainv),
 np=to.integer(np),

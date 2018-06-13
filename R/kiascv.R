@@ -4,7 +4,7 @@ if (missing(xt)) messagena("xt")
 np <- ncol(xt)
 ncov <- np*(np+1)/2
 cov <- single(ncov)
-f.res <- .Fortran("kiascv",
+f.res <- .Fortran("kiascvz",
 xt=to.single(xt),
 k=to.integer(k),
 np=to.integer(np),

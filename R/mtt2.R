@@ -4,7 +4,7 @@ if (missing(a)) messagena("a")
 if (missing(n)) messagena("n")
 nn <- length(a)
 b <- single(nn)
-f.res <- .Fortran("mtt2",
+f.res <- .Fortran("mtt2z",
 a=to.single(a),
 b=to.single(b),
 n=to.integer(n),

@@ -25,7 +25,7 @@ sc7 <- single(ncov)
 ia <- integer(np)
 ib <- integer(np)
 ic <- integer(np)
-f.res <- .Fortran("mfragr",
+f.res <- .Fortran("mfragrz",
 x=to.single(x),
 y=to.single(y),
 vp=to.single(vp),

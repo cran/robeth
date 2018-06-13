@@ -6,7 +6,7 @@ np <- ncol(covtau)
 xlmbda <- single(np)
 iv <- integer(np)
 sv <- single(np)
-f.res <- .Fortran("tteign",
+f.res <- .Fortran("tteignz",
 covtau=to.single(covtau),
 np=to.integer(np),
 nq=to.integer(nq),

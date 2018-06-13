@@ -7,7 +7,7 @@ mda <- nrow(a)
 ny <- length(y)
 nz <- ize*(m-1)+1
 z <- double(nz)
-f.res <- .Fortran("mfyd",
+f.res <- .Fortran("mfyzd",
 a=as.double(a),
 y=as.double(y),
 z=as.double(z),

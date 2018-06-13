@@ -3,7 +3,7 @@ function(p,ifn,tol=0.5e-5,maxit=50) {
 if (missing(p)) messagena("p")
 if (missing(ifn)) messagena("ifn")
 x <- single(1)
-f.res <- .Fortran("cquant",
+f.res <- .Fortran("cquantz",
 p=to.single(p),
 ifn=to.integer(ifn),
 tol=to.single(tol),

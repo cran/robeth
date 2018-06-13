@@ -44,7 +44,8 @@ c       call intpr('i',1,i,1)
       DO 100 K=1,2
       IK=IND(K)
       SX(K)=X(IK)
-  100 SY(K)=Y(IK)
+      SY(K)=Y(IK)
+  100 CONTINUE 
       SB(I)=(SY(2)-SY(1))/(SX(2)-SX(1))
       SA(I)=SY(1)-SB(I)*SX(1)
       DO 120 J=1,N
@@ -53,13 +54,13 @@ c       call intpr('i',1,i,1)
       TMP1(J)=SNGL(SRJ)
       TMP2(J)=FLOAT(J)
   120 CONTINUE
-      CALL SRT2(TMP1,TMP2,N,1,N)
+      CALL SRT2Z(TMP1,TMP2,N,1,N)
       SUMXX=0.D0
       SUMXY=0.D0
       SUMX=0.D0
       SUMY=0.D0
       DO 140 J=1,N1
-      K=TMP2(J)
+      K=INT(TMP2(J))
       SUMXX=SUMXX+X(K)*X(K)
       SUMXY=SUMXY+X(K)*Y(K)
       SUMX=SUMX+X(K)
@@ -72,7 +73,7 @@ c       call intpr('i',1,i,1)
       SRJ=DABS(RS(J))
       TMP1(J)=SNGL(SRJ)
   160 CONTINUE
-      CALL SRT1(TMP1,N,1,N)
+      CALL SRT1Z(TMP1,N,1,N)
       S0=TMP1(N1+1)
       IF (2*N1.EQ.N) S0=(TMP1(N1)+S0)/2.0
       S0=S0/0.6745
@@ -87,7 +88,8 @@ c      call realpr('s0',2,s0,1)
 C     RHO(S)=RHO(-S) !!
       DO 200 J=1,N
       U=TMP1(J)
-  200 SUM=SUM+RHO(U/S0)
+      SUM=SUM+RHO(U/S0)
+  200 CONTINUE 
       S1=SUM/(FLOAT(N)*B1)
       S1=S0*SQRT(S1)
       H=ABS(S1-S0)/S0
@@ -101,7 +103,8 @@ c      call intpr('it',2,it,1)
       XK=C2
       DO 320 J=1,N
       U=TMP1(J)
-  320 SUM=SUM+RHO(U/S0)
+      SUM=SUM+RHO(U/S0)
+  320 CONTINUE 
       S1=SUM/(FLOAT(N)*B2)
       TAU=S0*SQRT(S1)      
   400 TA(I)=DBLE(TAU)
@@ -163,7 +166,8 @@ c       call intpr('i',1,i,1)
       DO 100 K=1,2
       IK=IND(K)
       SX(K)=X(IK)
-  100 SY(K)=Y(IK)
+      SY(K)=Y(IK)
+  100 CONTINUE 
       SB(I)=(SY(2)-SY(1))/(SX(2)-SX(1))
       SA(I)=SY(1)-SB(I)*SX(1)
       DO 120 J=1,N
@@ -172,13 +176,13 @@ c       call intpr('i',1,i,1)
       TMP1(J)=SNGL(SRJ)
       TMP2(J)=FLOAT(J)
   120 CONTINUE
-      CALL SRT2(TMP1,TMP2,N,1,N)
+      CALL SRT2Z(TMP1,TMP2,N,1,N)
       SUMXX=0.D0
       SUMXY=0.D0
       SUMX=0.D0
       SUMY=0.D0
       DO 140 J=1,N1
-      K=TMP2(J)
+      K=INT(TMP2(J))
       SUMXX=SUMXX+X(K)*X(K)
       SUMXY=SUMXY+X(K)*Y(K)
       SUMX=SUMX+X(K)
@@ -191,7 +195,7 @@ c       call intpr('i',1,i,1)
       SRJ=DABS(RS(J)*W(J))
       TMP1(J)=SNGL(SRJ)
   160 CONTINUE
-      CALL SRT1(TMP1,N,1,N)
+      CALL SRT1Z(TMP1,N,1,N)
       S0=TMP1(N1+1)
       IF (2*N1.EQ.N) S0=(TMP1(N1)+S0)/2.0
       S0=S0/0.6745
@@ -206,7 +210,8 @@ c      call realpr('s0',2,s0,1)
 C     RHO(S)=RHO(-S) !!
       DO 200 J=1,N
       U=TMP1(J)
-  200 SUM=SUM+RHO(U/S0)
+      SUM=SUM+RHO(U/S0)
+  200 CONTINUE 
       S1=SUM/(FLOAT(N)*B1)
       S1=S0*SQRT(S1)
       H=ABS(S1-S0)/S0
@@ -220,7 +225,8 @@ c      call intpr('it',2,it,1)
       XK=C2
       DO 320 J=1,N
       U=TMP1(J)
-  320 SUM=SUM+RHO(U/S0)
+      SUM=SUM+RHO(U/S0)
+  320 CONTINUE 
       S1=SUM/(FLOAT(N)*B2)
       TAU=S0*SQRT(S1)      
   400 TA(I)=DBLE(TAU)

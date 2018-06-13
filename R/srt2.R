@@ -3,7 +3,7 @@ function(a,b,k1=1,k2=n) {
 n <- length(a)
 if (missing(a)) a <- single(n)
 if (missing(b)) b <- single(n)
-f.res <- .Fortran("srt2",
+f.res <- .Fortran("srt2z",
 a=to.single(a),
 b=to.single(b),
 n=to.integer(n),

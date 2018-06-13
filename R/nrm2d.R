@@ -3,7 +3,7 @@ function(x,n=nrow(x),incx=1) {
 if (missing(x)) messagena("x")
 mdx <- length(x)
 xnrm <- double(1)
-f.res <- .Fortran("nrm2d",
+f.res <- .Fortran("nrm2zd",
 x=as.double(x),
 n=to.integer(n),
 incx=to.integer(incx),

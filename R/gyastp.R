@@ -18,7 +18,7 @@ su <- double(nobs)
 sa <- double(ncov)
 st <- double(ncov)
 sd <- double(nvar)
-f.res <- .Fortran("gyastp",
+f.res <- .Fortran("gyastpz",
 x=to.single(x),
 y=to.single(y),
 ni=to.integer(ni),

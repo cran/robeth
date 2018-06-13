@@ -1,4 +1,5 @@
 \name{robeth-package}
+\alias{robeth-package}
 \alias{robeth}
 \docType{package}
 \title{
@@ -29,6 +30,7 @@ Maintainer: A. Randriamiharisoa <Alex.Randriamiharisoa@chuv.ch>
   Marazzi A., (1993) \emph{Algorithm, Routines, and S functions for Robust Statistics}.  
   Wadsworth & Brooks/cole, Pacific Grove, California.
 }
+\keyword{ package }
 \keyword{ robust}
 \examples{
 library(robeth)
@@ -1015,14 +1017,14 @@ library(robeth)
   y     <- xx[,"y"]
   wgt   <- vector("numeric",length(y))
   n     <- 56; np <- 7
- dfvals(); .dFv   <- .dFvGet()
+ dfvals()
 # Compute classical sigma and the t-statistics
- dfrpar(x,"ols",-1,-1)
+ dfrpar(x,"ols",-1,-1); .dFv   <- .dFvGet()
  z     <- mirtsr(x,y,.dFv$ite)
  sigmc <- z$sigma; tstac <- z$t
  
 # Compute robust sigma and the t-statistics
- dfrpar(x,"huber",-1,-1)
+ dfrpar(x,"huber",-1,-1); .dFv   <- .dFvGet()
  z     <- mirtsr(x,y,.dFv$ite)
  sigmr <- z$sigma; tstar <- z$t
 #
@@ -1135,7 +1137,7 @@ library(robeth)
 #
 # Initial theta, A (A0) and c (c0)
 #
- ni     <- vector("integer",n)
+ ni     <- rep.int(1,n)
  z      <- gintac(x,y,ni,icase=1,b=upar,c=1.5)
  theta0 <- z$theta[1:np]; A0 <- z$a; c0 <- z$ci
 # Initial distances |Ax_i| and cut off points a_i (wa)

@@ -13,7 +13,7 @@ function(y, ni, ci, wa, vtheta, offset=0, icase = .dFvGet()$ics)
         li  <- double(n)      
         sc  <- double(n)  
 #       sink("GLMini.tmp")
-        f.res <- .Fortran("glmdev",
+        f.res <- .Fortran("glmdevz",
                 y = to.single(y),
                 ni = to.integer(ni),
                 ci = to.single(ci),

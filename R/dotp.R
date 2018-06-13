@@ -5,7 +5,7 @@ if (missing(y)) messagena("y")
 nx <- length(x)
 ny <- length(y)
 result <- single(1)
-f.res <- .Fortran("dotp",
+f.res <- .Fortran("dotpz",
 x=to.single(x),
 y=to.single(y),
 n=to.integer(n),

@@ -26,7 +26,7 @@ rw1 <- single(5*ncov+3*n)
 rw2 <- matrix(single(1),mdx,np)
 iw1 <- integer(np)
 dw1 <- double(2*ncov+np+n)
-f.res <- .Fortran("gymain",
+f.res <- .Fortran("gymainz",
 x=to.single(x),
 y=to.single(y),
 ni=to.integer(ni),

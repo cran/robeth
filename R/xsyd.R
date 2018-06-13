@@ -6,7 +6,7 @@ if (missing(s)) messagena("s")
 n <- length(x)
 nn <- length(s)
 result <- double(1)
-f.res <- .Fortran("xsyd",
+f.res <- .Fortran("xsyzd",
 x=as.double(x),
 y=as.double(y),
 s=as.double(s),

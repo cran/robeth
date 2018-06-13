@@ -3,7 +3,7 @@ function(eps=.dFvGet()$esp,nvar,tol=.dFvGet()$tlo,maxit=.dFvGet()$mxt) {
 if (missing(nvar)) messagena("nvar")
 a2 <- single(1)
 b2 <- single(1)
-f.res <- .Fortran("cia2b2",
+f.res <- .Fortran("cia2b2z",
 eps=to.single(eps),
 nvar=to.integer(nvar),
 tol=to.single(tol),

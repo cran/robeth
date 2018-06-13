@@ -7,7 +7,7 @@ m <- length(x)
 n <- length(y)
 nit <- integer(1)
 tmnwt <- single(1)
-f.res <- .Fortran("lymnwt",
+f.res <- .Fortran("lymnwtz",
 x=to.single(x),
 y=to.single(y),
 m=to.integer(m),

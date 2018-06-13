@@ -2,7 +2,7 @@
 function(c=.dFvGet()$ccc) {
 epsi2 <- single(1)
 epsip <- single(1)
-f.res <- .Fortran("liepsh",
+f.res <- .Fortran("liepshz",
 c=to.single(c),
 epsi2=to.single(epsi2),
 epsip=to.single(epsip))

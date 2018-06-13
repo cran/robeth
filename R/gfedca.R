@@ -8,7 +8,7 @@ n <- length(vtheta)
 d <- single(n)
 e <- single(n)
 if (length(oi)==1) oi <- rep(0,n)
-f.res <- .Fortran("gfedca",
+f.res <- .Fortran("gfedcaz",
 vtheta=to.single(vtheta),
 ci=to.single(ci),
 wa=to.single(wa),

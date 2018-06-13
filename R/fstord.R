@@ -4,7 +4,7 @@ if (missing(j)) messagena("j")
 n <- length(y)
 if (missing(y)) y <- single(n)
 yj <- single(1)
-f.res <- .Fortran("fstord",
+f.res <- .Fortran("fstordz",
 y=to.single(y),
 n=to.integer(n),
 j=to.integer(j),

@@ -8,7 +8,7 @@ if (missing(f0)) messagena("f0")
 n <- length(y)
 d <- single(n)
 if(length(oi)==1) oi <- rep(0,n)
-f.res <- .Fortran("dpoiss",
+f.res <- .Fortran("dpoissz",
 y=to.single(y),
 ci=to.single(ci),
 vtheta=to.single(vtheta),

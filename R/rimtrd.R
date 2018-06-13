@@ -8,7 +8,7 @@ sf <- double(np)
 sg <- double(np)
 sh <- double(np)
 ip <- integer(np)
-f.res <- .Fortran("rimtrd",
+f.res <- .Fortran("rimtrdz",
 x=as.double(x),
 n=to.integer(n),
 np=to.integer(np),

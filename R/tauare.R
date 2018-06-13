@@ -7,7 +7,7 @@ if (missing(bb)) messagena("bb")
 nit <- integer(1)
 beta <- single(1)
 are <- single(1)
-f.res <- .Fortran("tauare",
+f.res <- .Fortran("tauarez",
 itype=to.integer(itype),
 mu=to.integer(mu),
 maxit=to.integer(maxit),

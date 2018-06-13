@@ -25,7 +25,7 @@ hessnv <- single(ncov)
 rw1 <- single(5*np)
 rw2 <- matrix(single(1),mdx,np)
 iw1 <- integer(np)
-f.res <- .Fortran("gytstp",
+f.res <- .Fortran("gytstpz",
 x=to.single(x),
 y=to.single(y),
 ci=to.single(ci),

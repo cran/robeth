@@ -8,7 +8,7 @@ np <- length(theta)
 ncov <- length(cov)
 rn2t <- single(1)
 sa <- single(ncov)
-f.res <- .Fortran("tfrn2t",
+f.res <- .Fortran("tfrn2tz",
 cov=to.single(cov),
 theta=to.single(theta),
 n=to.integer(n),

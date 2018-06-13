@@ -16,7 +16,7 @@ rs <- single(n)
 it1 <- integer(nq)
 work <- single(mdw)
 iwork <- integer(mdi)
-f.res <- .Fortran("hyltse",
+f.res <- .Fortran("hyltsez",
 x=to.single(x),
 y=to.single(y),
 n=to.integer(n),

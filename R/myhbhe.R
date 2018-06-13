@@ -20,7 +20,7 @@ it1 <- integer(np)
 cov <- single(ncov)
 work <- single(mdw)
 iwork <- integer(mdi)
-f.res <- .Fortran("myhbhe",
+f.res <- .Fortran("myhbhez",
 x=to.single(x),
 y=to.single(y),
 n=to.integer(n),

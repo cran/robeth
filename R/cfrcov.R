@@ -6,7 +6,7 @@ if (missing(fc)) messagena("fc")
 ncov <- nvar*(nvar+1)/2
 ainv <- single(ncov)
 cov <- single(ncov)
-f.res <- .Fortran("cfrcov",
+f.res <- .Fortran("cfrcovz",
 a=as.double(a),
 nvar=to.integer(nvar),
 ncov=to.integer(ncov),
