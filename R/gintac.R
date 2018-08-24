@@ -17,10 +17,6 @@ if (length(oi)==1) oi <- rep(0,n)
 theta <- single(mdt)
 ci <- single(n)
 dist <- single(n)
-rw1 <- single(5*ncov+3*n)
-rw2 <- matrix(single(1),mdx,np)
-iw1 <- integer(np)
-dw1 <- double(2*ncov+np+n)
 f.res <- .Fortran("gintacz",
 x=to.single(x),
 y=to.single(y),
@@ -44,11 +40,7 @@ sigma=to.single(sigma),
 a=as.double(a),
 theta=to.single(theta),
 ci=to.single(ci),
-dist=to.single(dist),
-rw1=to.single(rw1),
-rw2=to.single(rw2),
-iw1=to.integer(iw1),
-dw1=as.double(dw1))
+dist=to.single(dist))
 list(nitt=f.res$nitt,nita=f.res$nita,sigma=f.res$sigma,a=f.res$a,
 theta=f.res$theta,ci=f.res$ci,dist=f.res$dist)
 }

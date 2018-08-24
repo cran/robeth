@@ -1,4 +1,4 @@
-125bf6419f00a8c49844dee940002b73 *DESCRIPTION
+73a12f6debb717b9a550655515e9c1c5 *DESCRIPTION
 70d5ef6ef72776994eb7047a625b3e4b *NAMESPACE
 ec900b6d79bdf21ec6d016646971db01 *R/Dbinom.R
 b99e7b9c03a526f63a56d130dfc7ac9d *R/Fn.Exp.f.R
@@ -42,7 +42,7 @@ a86c2d7b702ecbf01b5f202e95a22a48 *R/fcum.R
 8194744f83579416e7ff22a8aced2480 *R/gauss.R
 06e9fc7c96629a5b1f5d7cbcfea3ab18 *R/gaussd.R
 85c16ce145ae90a30dc54b84693e936c *R/gfedca.R
-13beb63a725e7b621b4d023d88a2ffc0 *R/gintac.R
+02802d0f51826da5e24cf5effb5ef696 *R/gintac.R
 8e48f0810af1c1f77577226270ff2d56 *R/glmdev.R
 11802f4a141f188241a4e982442bfc94 *R/gyastp.R
 e1825a9ba2fa2cda4d2597e4a045cf6d *R/gycstp.R
@@ -329,7 +329,7 @@ f417b0d601cf6929ab0e9ef8415506b7 *man/rilars.Rd
 3bc6d8b641f812c450af2fd376d1f7cc *man/rimtrd.Rd
 9d1d0f7ce02388578ef067ad18d85a3f *man/rimtrf.Rd
 dd5994c15e9eeab8d0c89d4de48935d2 *man/rmvc.Rd
-eba52a83504c26dfd9b43679e675f495 *man/robeth.package.Rd
+b434b1ea942690868210134578f195bb *man/robeth.package.Rd
 a32baf0731b5060cc97f439cd35663ba *man/ruben.Rd
 2b8ced0c8201046095af3dc2caabc951 *man/rybifr.Rd
 ba9a9723041c4ba7d8d1748d27a95945 *man/ryhalg.Rd
@@ -381,6 +381,6 @@ f2d96521d01bedab856b7c6acb640f0f *man/xerp.Rd
 a89619b4ee9e4056dfeac7a8be342f94 *man/xsyd.Rd
 440593272e71c3a0ea318c0571a24876 *man/zemll.Rd
 9b107204340a899d73469bf5c77318c9 *src/fastcens.f
-528b86683310f78b5284f41c1d8da28b *src/init.c
+01b1de2916f641995ec89589ff9ba3ee *src/init.c
 11456b1237909839885b63b248a2ed60 *src/regtau.f
-2fb501c67b2f581b1a6d10cd179e1462 *src/robeth.f
+1b0c1d2acf1b939e68ad1fd35edba337 *src/robeth.f

@@ -58,7 +58,7 @@ extern void F77_NAME(gaussz)(int*, float*, float*);
 extern void F77_NAME(gausszd)(int*, double*, double*);
 extern void F77_NAME(gfedcaz)(float*, float*, float*, int*, float*, int*, int*, float*, float*);
 extern void F77_NAME(gicstpz)(int*, int*, int*, float*, float*, float*, int*, float*, int*, float*);
-extern void F77_NAME(gintacz)(float*, float*, int*, float*, int*, int*, int*, int*, int*, int*, int*, int*, float*, float*, float*, float*, int*, int*, float*, double*, float*, float*, float*, float*, float*, int*, double*);
+extern void F77_NAME(gintacz)(float*, float*, int*, float*, int*, int*, int*, int*, int*, int*, int*, int*, float*, float*, float*, float*, int*, int*, float*, double*, float*, float*, float*);
 extern void F77_NAME(glmdevz)(float*, int*, float*, float*, float*, float*, int*, int*, double*, double*, double*, double*);
 extern void F77_NAME(gyastpz)(float*, float*, int*, float*, float*, double*, float*, float*, int*, int*, int*, int*, int*, int*, float*, int*, int*, int*, float*, int*, float*, double*, double*, double*, double*);
 extern void F77_NAME(gycstpz)(int*, int*, int*, float*, float*, float*, int*, float*);
@@ -252,7 +252,7 @@ static const R_FortranMethodDef FortranEntries[] = {
     {"gausszd", (DL_FUNC) &F77_NAME(gausszd),  3},
     {"gfedcaz", (DL_FUNC) &F77_NAME(gfedcaz),  9},
     {"gicstpz", (DL_FUNC) &F77_NAME(gicstpz), 10},
-    {"gintacz", (DL_FUNC) &F77_NAME(gintacz), 27},
+    {"gintacz", (DL_FUNC) &F77_NAME(gintacz), 23},
     {"glmdevz", (DL_FUNC) &F77_NAME(glmdevz), 12},
     {"gyastpz", (DL_FUNC) &F77_NAME(gyastpz), 25},
     {"gycstpz", (DL_FUNC) &F77_NAME(gycstpz),  8},

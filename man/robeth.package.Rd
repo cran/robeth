@@ -1141,11 +1141,7 @@ library(robeth)
  z      <- gintac(x,y,ni,icase=1,b=upar,c=1.5)
  theta0 <- z$theta[1:np]; A0 <- z$a; c0 <- z$ci
 # Initial distances |Ax_i| and cut off points a_i (wa)
-# for (i in 1:n)
-# {ax    <- mlyd(A0,x[i,],np)               # See Chpt. 12 for mlyd 
-#  znr   <- ax$y \%*\% t(ax$y)
-#  wa[i] <- upar/sqrt(znr)}
- wa     <- upar/sqrt(z$dist)     # ==> Modif. in gintac
+ wa     <- upar/z$dist  
  vtheta <- x \%*\% theta0
  z      <- gfedca(vtheta, c0, wa, ni, icase=1)
  zc     <- ktaskw(x, z$d, z$e, f=1/n)      # See Chpt. 4
