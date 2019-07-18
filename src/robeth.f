@@ -7148,7 +7148,7 @@ C
       DOUBLE PRECISION E,PK,LPL,LGE,ESML,XLMN,YLMN,PAR 
       INTEGER K,ILG
       LOGICAL NPRCHK
-	  DATA LPL,LGE,ESML,XLMN,YLMN/0.D0,0.D0,0.D0,0.D0,0.D0/
+      DATA LPL,LGE,ESML,XLMN,YLMN/0.D0,0.D0,0.D0,0.D0,0.D0/
       DATA NCALL,KL/0,0/
 C
       PK=0.D0
@@ -17791,7 +17791,7 @@ C
 C
 C-----------------------------------------------------------------------
 C
-      SUBROUTINE RYBIFRZ(X,Y,N,NP,NTHET,ITCP,NCOV,ITYPE,ICOLL,ISIGMA,
+      SUBROUTINE RYBIFRZ(X,Y,N,NP,NTHET,NCOV,ITYPE,ICOLL,ISIGMA,
      *           CH,CK,BM,TOL,TAU,MAXITT,MAXITW,SIGMAF,THETA,
      *           RS,WGT,COV)
 C.......................................................................
@@ -17824,7 +17824,7 @@ C STEP 0: INITIALIZATIONS
 C ------
 C 
 C   ADD COLUMN IF (ITCP=1)
-	  ITCP=NTHET-NP
+      ITCP=NTHET-NP
       NP=MP
       DO 10 J=1,NP
       THETA(J)=0. 

@@ -1,11 +1,11 @@
 Package: robeth
 Type: Package
 Title: R Functions for Robust Statistics
-Version: 2.7-4
-Date: 2018-08-21
+Version: 2.7-5
+Date: 2019-07-17
 Depends: R (>= 3.2.0)
-Author: Alfio Marazzi <Alfio.Marazzi@chuv.ch>
-Maintainer: A. Randriamiharisoa <Alex.Randriamiharisoa@chuv.ch>
+Author: Alfio Marazzi <Alfio.Marazzi@unisante.ch>
+Maintainer: A. Randriamiharisoa <exelami@gmail.com>
 Description: Locations problems, M-estimates of coefficients and scale
         in linear regression, Weights for bounded influence regression,
         Covariance matrix of the coefficient estimates, Asymptotic
@@ -16,6 +16,6 @@ Description: Locations problems, M-estimates of coefficients and scale
 License: GPL (>= 2)
 LazyLoad: yes
 NeedsCompilation: yes
-Packaged: 2018-08-23 06:39:46 UTC; arandria
 Repository: CRAN
-Date/Publication: 2018-08-24 14:10:03 UTC
+Packaged: 2019-07-17 14:23:46 UTC; arandria
+Date/Publication: 2019-07-18 06:35:50 UTC

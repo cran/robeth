@@ -1,4 +1,4 @@
-73a12f6debb717b9a550655515e9c1c5 *DESCRIPTION
+92434df8d62fd1ae6daf70858b3e305b *DESCRIPTION
 70d5ef6ef72776994eb7047a625b3e4b *NAMESPACE
 ec900b6d79bdf21ec6d016646971db01 *R/Dbinom.R
 b99e7b9c03a526f63a56d130dfc7ac9d *R/Fn.Exp.f.R
@@ -381,6 +381,6 @@ f2d96521d01bedab856b7c6acb640f0f *man/xerp.Rd
 a89619b4ee9e4056dfeac7a8be342f94 *man/xsyd.Rd
 440593272e71c3a0ea318c0571a24876 *man/zemll.Rd
 9b107204340a899d73469bf5c77318c9 *src/fastcens.f
-01b1de2916f641995ec89589ff9ba3ee *src/init.c
+f01b736baddd10c8c4b3da52efca961f *src/init.c
 11456b1237909839885b63b248a2ed60 *src/regtau.f
-1b0c1d2acf1b939e68ad1fd35edba337 *src/robeth.f
+7aa09c553d226f66c459592689a1f8c1 *src/robeth.f
