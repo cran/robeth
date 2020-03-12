@@ -1,8 +1,8 @@
 Package: robeth
 Type: Package
 Title: R Functions for Robust Statistics
-Version: 2.7-5
-Date: 2019-07-17
+Version: 2.7-6
+Date: 2020-03-02
 Depends: R (>= 3.2.0)
 Author: Alfio Marazzi <Alfio.Marazzi@unisante.ch>
 Maintainer: A. Randriamiharisoa <exelami@gmail.com>
@@ -17,5 +17,5 @@ License: GPL (>= 2)
 LazyLoad: yes
 NeedsCompilation: yes
 Repository: CRAN
-Packaged: 2019-07-17 14:23:46 UTC; arandria
-Date/Publication: 2019-07-18 06:35:50 UTC
+Packaged: 2020-03-04 13:14:24 UTC; Alex
+Date/Publication: 2020-03-12 17:50:03 UTC

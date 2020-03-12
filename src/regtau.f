@@ -26,6 +26,9 @@ C
       IO=N
       TAI=1.D6
       KSEED=ISEED
+      IND(1)=1  ! added by A.R. 28.02.2020 
+      IND(2)=2  ! added by A.R. 28.02.2020
+      IND1=1    ! added by A.R. 28.02.2020
       DO 500 I=1,NN
 c       call intpr('i',1,i,1)
         DO 30 K=1,2
@@ -148,6 +151,9 @@ C
       IO=N
       TAI=1.D6
       KSEED=ISEED
+      IND(1)=1  ! added by A.R. 28.02.2020 
+      IND(2)=2  ! added by A.R. 28.02.2020
+      IND1=1    ! added by A.R. 28.02.2020
       DO 500 I=1,NN
 c       call intpr('i',1,i,1)
         DO 30 K=1,2

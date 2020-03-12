@@ -1832,6 +1832,7 @@ C
 C
 C  BEGIN MAIN LOOP
 C
+      XMAX=ZERO
       I=1
    20 DXI=DBLE(X(I))
 C     GOTO (30,50,70,110) NEXT
@@ -1939,6 +1940,7 @@ C
 C
 C  BEGIN MAIN LOOP
 C
+      XMAX=ZERO
       I=1
    20 DXI=X(I)
 C     GOTO (30,50,70,110) NEXT
@@ -4197,6 +4199,7 @@ C
       S=SNGL(DS)
       Z=SQRT(ZBAR2+BET2*S*S)
       WGT(I)=SNGL(EXW(Z))
+      INS1=0.D0
 C
 C  WEIGHTS FOR SCHWEPPE ESTIMATORS WHEN FUNCTION PSI IS NOT FROM HUBER TYP
 C
@@ -4253,6 +4256,7 @@ C
       S=SNGL(DS)
       Z=SQRT(ZBAR2+BET2*S*S)
       WGT(I)=SNGL(EXW(Z))
+      INS2=0.D0
 C
 C  WEIGHTS FOR SCHWEPPE ESTIMATORS (FUNCTION PSI IS NOT FROM HUBER TYPE)
 C
@@ -4357,12 +4361,12 @@ C
 C   AUTHORS : A. MARAZZI / C. RUFFIEUX
 C.......................................................................
 C
-      DIMENSION WGT(1),IWORK(40)
-      DOUBLE PRECISION EXU,EXW,UZED,UZED2,
-     *      INS1,INS2,INS3,INS4,WORK(80),
-     *      UPERD,TILD,ERRSTD,ANS1,ANS2,ANS3,ANS4,DS
-      LOGICAL NPRCHK
       EXTERNAL UZED,UZED2,EXPSI,EXU,EXW,INS1,INS2,INS3,INS4
+      REAL WGT(1)
+      INTEGER IWORK(40)
+      DOUBLE PRECISION EXU,EXW,UZED,UZED2,INS1,INS2,INS3,INS4,
+     *       UPERD,TILD,ERRSTD,ANS1,ANS2,ANS3,ANS4,DS,WORK(80)
+      LOGICAL NPRCHK
       COMMON/ALBEC/ALF2,BET2,IPP,ITP,XLCNST,SIGM
       COMMON/INTEG/UUPER,TTIL,IWORK,WORK,IER1,ERRST1
       COMMON/INTPAR/ITYP,I,NEVAL,LIMIT,KEY
@@ -4525,12 +4529,12 @@ C
 C   AUTHORS : A. MARAZZI / C. RUFFIEUX
 C.......................................................................
 C
-      DIMENSION T(MDX,NU),SZ(MDZ,NU),DL(NOBS),EL(NOBS),WGT(NOBS),
-     *      SS(5*NCOV),IWORK(40)
+      EXTERNAL UZED2,EXPSI,EXU,EXW,ESPUK,INS1,INS2,INS3,INS4,ICNVA
+      REAL T(MDX,NU),SZ(MDZ,NU),DL(NOBS),EL(NOBS),WGT(NOBS),SS(5*NCOV)
+      INTEGER IWORK(40)
       DOUBLE PRECISION EXU,EXW,UZED2,ESPUK,INS1,INS2,INS3,INS4,
      *      UPERD,TILD,ERRSTD,ANS1,ANS2,ANS3,ANS4,DS,
      *      A(NCOV),SA(NCOV),SA0(NCOV),SU1(NCOV),SD(NU),WORK(80)
-      EXTERNAL UZED2,EXPSI,EXU,EXW,ESPUK,INS1,INS2,INS3,INS4,ICNVA
       LOGICAL NPRCHK
       COMMON/ALBEC/ZBAR2,BET2,IPP,ITP,XLCNST,SIGM
       COMMON/INTEG/UUPER,TTIL,IWORK,WORK,IER1,ERRST1
@@ -4549,6 +4553,7 @@ C
       IF (.NOT.NPRCHK) CALL MESSGE(501,'AIREFQ',1)
       P=FLOAT(MU)
       Q=FLOAT(NU)
+      FH=1.0
       SIGM=SIGMX
       ITYP=ITYPE
       LIMIT=20
@@ -4829,6 +4834,7 @@ C
       S1=0.D0
       S1P=0.D0
       S2=0.D0
+      W=0.D0
       DO 10 I=1,NP
       SR(I)=0.D0
    10 CONTINUE
@@ -7774,6 +7780,7 @@ C  STEP 0.   SET NIT=1
 C  ------
 C
    10 NIT=1
+      PI=0.
 C
 C  STEP 1.   COMPUTE CURRENT OBJECTIVE FUNCTION VALUE 
 C  ------
@@ -7975,10 +7982,11 @@ C.......................................................................
 C
 C  NEWTON ALGORITHM FOR ROBUST LOGISTIC REGRESSION : THETA-STEP
 C
-      DIMENSION X(MDX,NP),Y(N),THETA(NP),WA(N),COV(NCOV),DELTA(NP),
-     1          F0(N),F1(N),F2(N),CI(N),VTHETA(N),GRAD(NP),HESSNV(NCOV),
-     2          SE(NP),SF(NP),SG(NP),SH(NP),ST(NP),SX(MDX,NP),OI(N)
-      INTEGER NI(N),IP(NP)
+      CHARACTER CC*28
+      REAL  X(MDX,NP),Y(N),THETA(NP),WA(N),COV(NCOV),DELTA(NP),
+     1      F0(N),F1(N),F2(N),CI(N),VTHETA(N),GRAD(NP),HESSNV(NCOV),
+     2      SE(NP),SF(NP),SG(NP),SH(NP),ST(NP),SX(MDX,NP),OI(N)
+      INTEGER NI(N),IP(NP),III(1)
       LOGICAL NPRCHK,FIRST,NULF2
 C
 C  PARAMETER CHECK
@@ -8043,7 +8051,10 @@ C
         CALL RIMTRFZ(SX,N,NP,MDX,INTCH,TAU,K,SF,SG,SH,IP)
         IF (K.NE.NP) THEN
 c          CALL MESSGE(111,'GYTSTP',0)
-           call intpr('GYTSTP: Inverse hessian rank',28,K,1)
+           III(1)=K
+           CC="GYTSTP: Inverse hessian rank"
+           L=LEN(CC)
+           call intpr(CC,L,III,1)
         ENDIF
         CALL KIASCVZ(SX,K,NP,MDX,NCOV,1.,1.,HESSNV)
         CALL KFASCVZ(SX,HESSNV,K,NP,MDX,NCOV,1.,DELTA,SG,IP) 
@@ -12409,6 +12420,7 @@ C
       M=N*(N+1)/2
       NPRCHK=K.LT.M.AND.K.GT.1
       IF (ISORT.NE.0) CALL SRT1Z(Y,N,1,N)
+      KK=0
       IF (NPRCHK) GO TO 30
       IF (K.EQ.1) GOTO 10
       IF (K.EQ.M) GOTO 20
@@ -12832,6 +12844,7 @@ C
       NPRCHK=M.GT.0.AND.N.GT.0.AND.MAXIT.GT.0.AND.TOL.GT.0.
       IF (.NOT.NPRCHK) CALL MESSGE(500,'LYMNWT',1)
       NPRCHK=K.LT.MN.AND.K.GT.0
+      KK=0
       SCONST=FLOAT(K-MN)-ZETA
       IF (ISORT.EQ.0) GOTO 5
       CALL SRT1Z(X,M,1,M)
@@ -13175,6 +13188,7 @@ C
 C
 C  INITIALIZATION
 C
+      ALPHA=0.0
       IF (ITYPE.EQ.0) GOTO 10
       IPSI=1
       CC=C
@@ -16434,6 +16448,7 @@ C
      2       .AND.(ISQW.EQ.-1.OR.ISQW.EQ.0.OR.ISQW.EQ.1)))
       IF (.NOT.NPRCHK) CALL MESSGE(500,'RIBET0',1)
       P=.75
+      E=1.0
       CALL NQUANT(P,BET0)
       BT0=BET0
       IF (ITYPE.NE.2) RETURN
@@ -16536,6 +16551,7 @@ C
       KOUNT=0
       KR=1
       KL=1
+      IN=1
    70 VMAX=-1.
       DO 80 J=KR,NP
         IF (ABS(SC4(J)).GT.FLOAT(NP)) GOTO 80
@@ -18433,6 +18449,10 @@ C  THE SMALLEST POSITIVE REAL NUMBER SUCH THAT (1.0+PREC).GT.1.0
 C
       CALL MACHZ(2,PREC)
       IERR=0
+      P=0.  ! added by A.R. 28.02.2020
+      Q=0.  ! added by A.R. 28.02.2020
+      R=0.  ! added by A.R. 28.02.2020
+      IM=0  ! added by A.R. 28.02.2020
 C
 C  STORE ROOTS ISOLATED BY BALANX
 C
@@ -19764,8 +19784,10 @@ C   AUTHOR : A. RANDRIAMIHARISOA
 C.......................................................................
 C
       CHARACTER ITEXT*64 
-      J=LEN(ITEXT)
-      CALL REALPR(ITEXT,J,VAR,1)
+      REAL TMP(1)
+      L=LEN(ITEXT)
+      TMP(1)=VAR
+      CALL REALPR(ITEXT,L,TMP,1)
       RETURN
       END
 C
@@ -19778,9 +19800,9 @@ C   AUTHOR : A. RANDRIAMIHARISOA
 C.......................................................................
 C
       CHARACTER ITEXT*64 
-      DIMENSION DIM(N)
-      J=LEN(ITEXT)
-      CALL REALPR(ITEXT,J,DIM,N)
+      REAL DIM(N)
+      L=LEN(ITEXT)
+      CALL REALPR(ITEXT,L,DIM,N)
       RETURN
       END
 C
@@ -19793,9 +19815,11 @@ C   AUTHOR : A. RANDRIAMIHARISOA
 C.......................................................................
 C
       CHARACTER ITEXT*64 ,C*1
-      DIMENSION DIM(MDX,N)
-      J=LEN(ITEXT)
-      CALL INTPR(ITEXT,J,M,1)
+      REAL DIM(MDX,N)
+      INTEGER III(1)
+      L=LEN(ITEXT)
+      III(1)=M
+      CALL INTPR(ITEXT,L,III,1)
       J=ICHAR('0')
       DO 10 I=1,N
        IF (I.EQ.10) J=J-10
@@ -19815,9 +19839,9 @@ C   AUTHOR : A. RANDRIAMIHARISOA
 C.......................................................................
 C
       CHARACTER ITEXT*64 
-      DIMENSION COV(NCOV)
-      J=LEN(ITEXT) + 0*N
-      CALL REALPR(ITEXT,J,COV,NCOV)
+      REAL COV(NCOV)
+      L=LEN(ITEXT) + 0*N
+      CALL REALPR(ITEXT,L,COV,NCOV)
       RETURN
       END
 C
@@ -19831,8 +19855,8 @@ C.......................................................................
 C
       CHARACTER ITEXT*64 
       DOUBLE PRECISION DIM(N)
-      J=LEN(ITEXT)
-      CALL DBLEPR(ITEXT,J,DIM,N)
+      L=LEN(ITEXT)
+      CALL DBLEPR(ITEXT,L,DIM,N)
       RETURN
       END
 C
@@ -19846,8 +19870,10 @@ C.......................................................................
 C
       CHARACTER ITEXT*64 ,C*1
       DOUBLE PRECISION DIM(MDX,N)
-      J=LEN(ITEXT)
-      CALL INTPR(ITEXT,J,M,1)
+      INTEGER III(19)
+      L=LEN(ITEXT)
+      III(1)=M
+      CALL INTPR(ITEXT,L,III,1)
       J=ICHAR('0')
       DO 10 I=1,N
        IF (I.EQ.10) J=J-10
@@ -19868,8 +19894,8 @@ C.......................................................................
 C
       CHARACTER ITEXT*64 
       DOUBLE PRECISION COV(NCOV)
-      J=LEN(ITEXT)+ 0*N
-      CALL DBLEPR(ITEXT,J,COV,NCOV)
+      L=LEN(ITEXT) + 0*N
+      CALL DBLEPR(ITEXT,L,COV,NCOV)
       RETURN
       END
 C
@@ -19882,8 +19908,10 @@ C   AUTHOR : A. RANDRIAMIHARISOA
 C.......................................................................
 C
       CHARACTER ITEXT*64 
-      J=LEN(ITEXT)
-      CALL INTPR(ITEXT,J,I,1)
+      INTEGER III(1)
+      L=LEN(ITEXT)
+      III(1)=I
+      CALL INTPR(ITEXT,L,III,1)
       RETURN
       END
 C
@@ -19897,8 +19925,8 @@ C.......................................................................
 C
       CHARACTER ITEXT*64 
       INTEGER IDIM(N)
-      J=LEN(ITEXT)
-      CALL INTPR(ITEXT,J,IDIM,N)
+      L=LEN(ITEXT)
+      CALL INTPR(ITEXT,L,IDIM,N)
       RETURN
       END
 C
@@ -19910,7 +19938,8 @@ C
 C   AUTHOR : A. RANDRIAMIHARISOA
 C.......................................................................
 C
-      CHARACTER ITEXT*6 , CC*34
+      CHARACTER ITEXT*6, CC*36
+      INTEGER III(1)
       IF (ISTOP.EQ.1) THEN
 C
 C Error exit from R
@@ -19919,7 +19948,9 @@ C
        CALL REXIT(CC)
       ELSE
        CC='Warning message in '//ITEXT
-       CALL INTPR(CC,25,NUMBER,1)
+       III(1)=NUMBER
+       L=LEN(CC)
+       CALL INTPR(CC,L,III,1)
       ENDIF
       RETURN
       END
@@ -19932,19 +19963,26 @@ C
 C   AUTHOR : A. RANDRIAMIHARISOA
 C.......................................................................
 C
-      DIMENSION THETA(NP),DELTA(NP),TMP(2)
+      CHARACTER CC*51
+      REAL THETA(NP),DELTA(NP),TMP(2),SSS(1)
+      INTEGER III(1)
       DATA NEXT,INIT/0,0/
+      III(1)=NIT
       IF (NEXT.NE.NIT) NEXT=0
       IF (NEXT.EQ.0) INIT=NIT
-      IF (NEXT.EQ.0) CALL INTPR
-     + ('* * * I T E R A T I O N   M O N I T O R I N G * * *',51,0,0)
+      CC="* * * I T E R A T I O N   M O N I T O R I N G * * *"
+      L=LEN(CC)
+      IF (NEXT.EQ.0) CALL INTPR(CC,L,III,0)
       NEXT=NIT+INIT
       TMP(1)=Q
       TMP(2)=GAM
-      CALL INTPR('Nb of iterations',16,NIT,1)
+      SSS(1)=SIGMA
+      CC="Nb of iterations"
+      L=LEN(CC)
+      CALL INTPR(CC,L,III,1)
       CALL REALPR('Qs, Gamma',9,TMP,2)
       CALL REALPR('Theta',5,THETA,NP)
-      CALL REALPR('Sigma',5,SIGMA,1)
+      CALL REALPR('Sigma',5,SSS,1)
       CALL REALPR('Delta',5,DELTA,NP)
       RETURN
       END
@@ -19957,16 +19995,24 @@ C
 C   AUTHOR : A. RANDRIAMIHARISOA
 C.......................................................................
 C
+      CHARACTER CC*51
       DOUBLE PRECISION A(NCOV)
+      INTEGER III(1)
+      REAL TMP(1)
       DATA NEXT,INIT/0,0/
-      TMP=NP
+      III(1)=NP
       IF (NEXT.NE.NIT) NEXT=0
       IF (NEXT.EQ.0) INIT=NIT
-      IF (NEXT.EQ.0) CALL INTPR
-     + ('* * * I T E R A T I O N   M O N I T O R I N G * * *',51,0,0)
+      CC="* * * I T E R A T I O N   M O N I T O R I N G * * *"
+      L=LEN(CC)
+      IF (NEXT.EQ.0) CALL INTPR(CC,L,III,0)
       NEXT=NIT+INIT
-      CALL INTPR('Nb of iterations',16,NIT,1)
-      CALL REALPR('TOLA',4,TOLA,1)
+      III(1)=NIT
+      CC="Nb of iterations"
+      L=LEN(CC)
+      CALL INTPR(CC,L,III,1)
+      TMP(1)=TOLA
+      CALL REALPR('TOLA',4,TMP,1)
       CALL DBLEPR('A matrix',8,A,NCOV)
       RETURN
       END
@@ -19979,19 +20025,26 @@ C
 C   AUTHOR : A. RANDRIAMIHARISOA
 C.......................................................................
 C
+      CHARACTER CC*51
       DOUBLE PRECISION A(NCOV)
       REAL B(NVAR),TOL(2)
+      INTEGER III(1)
       DATA NEXT,INIT/0,0/
       TOL(1)=TOLA
       TOL(2)=TOLB
+      III(1)=NIT
       IF (NEXT.NE.NIT) NEXT=0
       IF (NEXT.EQ.0) INIT=NIT
-      IF (NEXT.EQ.0) CALL INTPR
-     + ('* * * I T E R A T I O N   M O N I T O R I N G * * *',51,0,0)
+      CC="* * * I T E R A T I O N   M O N I T O R I N G * * *"
+      L=LEN(CC)
+      IF (NEXT.EQ.0) CALL INTPR(CC,L,III,0)
       NEXT=NIT+INIT
-      CALL INTPR('Nb of iterations',16,NIT,1)
+      CC="Nb of iterations"
+      L=LEN(CC)
+      CALL INTPR(CC,L,III,1)
       CALL DBLEPR('A matrix',8,A,NCOV)
       CALL REALPR('B vector',8,B,NVAR)
+      CALL REALPR(' ',1,TOL,0)
       RETURN
       END
 C
@@ -20003,19 +20056,26 @@ C
 C   AUTHOR : A. RANDRIAMIHARISOA
 C.......................................................................
 C
+      CHARACTER CC*51
       DOUBLE PRECISION A(NCOV)
-      REAL B,TMP(3)
+      REAL B,TMP(4)
+      INTEGER III(1)
       DATA NEXT,INIT/0,0/
-      TMP(1)=TOLA
-      TMP(2)=TOLB
-      TMP(3)=NVAR
+      TMP(1)=B
+      TMP(2)=TOLA
+      TMP(3)=TOLB
+      TMP(4)=NVAR
+      III(1)=NIT
       IF (NEXT.NE.NIT) NEXT=0
       IF (NEXT.EQ.0) INIT=NIT
-      IF (NEXT.EQ.0) CALL INTPR
-     + ('* * * I T E R A T I O N   M O N I T O R I N G * * *',51,0,0)
+      CC="* * * I T E R A T I O N   M O N I T O R I N G * * *"
+      L=LEN(CC)
+      IF (NEXT.EQ.0) CALL INTPR(CC,L,III,0)
       NEXT=NIT+INIT
-      CALL INTPR('Nb of iterations',16,NIT,1)
-      CALL REALPR('B',1,B,1)
+      CC="Nb of iterations"
+      L=LEN(CC)
+      CALL INTPR(CC,L,III,1)
+      CALL REALPR('B',1,TMP,1)
       CALL DBLEPR('A matrix',8,A,NCOV)
       RETURN
       END
@@ -20028,17 +20088,23 @@ C
 C   AUTHOR : A. RANDRIAMIHARISOA
 C.......................................................................
 C
-      DIMENSION THETA(NP),DELTA(NP),TMP(2)
+      CHARACTER CC*51
+      REAL THETA(NP),DELTA(NP),TMP(2)
+      INTEGER III(1)
       COMMON/OUT/IOUT
       DATA NEXT,INIT/0,0/
       IF (NEXT.NE.NIT) NEXT=0
       IF (NEXT.EQ.0) INIT=NIT
-      IF (NEXT.EQ.0) CALL INTPR
-     + ('* * * I T E R A T I O N   M O N I T O R I N G * * *',51,0,0)
+      III(1)=NIT
+      CC="* * * I T E R A T I O N   M O N I T O R I N G * * *"
+      L=LEN(CC)
+      IF (NEXT.EQ.0) CALL INTPR(CC,L,III,0)
       NEXT=NIT+INIT
       TMP(1)=Q
       TMP(2)=GAM
-      CALL INTPR('Nb of iterations',16,NIT,1)
+      CC="Nb of iterations"
+      L=LEN(CC)
+      CALL INTPR(CC,L,III,1)
       CALL REALPR('Q0, Gamma',9,TMP,2)
       CALL REALPR('Theta',5,THETA,NP)
       CALL REALPR('Delta',5,DELTA,NP)
