@@ -153,7 +153,7 @@ C
         SS=SS+NUM/DEN
       ENDIF
   300 CONTINUE
-      RES=SS/DFLOAT(N)
+      RES=SS/DBLE(N)
       RETURN
       END
 C

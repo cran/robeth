@@ -3,7 +3,7 @@ importFrom("stats", "lsfit", "median", "ppoints", "qgamma", "qnorm","var")
 
 export(Dbinom, dpoiss, Random, addc, airef0, airefq, binprd, cerf, cerfd, cfrcov, chi, Chi)
 export(chisq, cia2b2, cibeat, cicloc, cifact, cimedv, cirock, comval, cquant)
-export(cyfalg, cygalg, cynalg, dfcomn, dfrpar, dfvals, .dFvGet, .dFvSet, .dFvPut, dotp, dotpd)
+export(cyfalg, cygalg, cynalg, dfcomn, dfrpar, dfvals, .dFvGet, .dFvPut, dotp, dotpd)
 export(exch,exchd, fcum, fstord, gauss, gaussd, gfedca, gintac, glmdev, gyastp, gycstp)
 export(gymain, gytstp, h12, h12d, hylmse, hyltse, hysest, hysestw, ingama, kfascv)
 export(kfedcb, kfedcc, kffacv, kiascv, kiedch, kiedcu, ktaskv, ktaskw, lgama)

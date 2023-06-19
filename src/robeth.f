@@ -1991,7 +1991,7 @@ C
 C
 C  SET HITEST=CUTHI/N
 C
-   85 HITEST=CUTHI/DFLOAT(N)
+   85 HITEST=CUTHI/DBLE(N)
 C
 C  PHASE3.  SUM IS MID-RANGE.  NO SCALING.
 C
@@ -3220,8 +3220,8 @@ C
       RETURN
    10 CONTINUE
       CALL PRECDZ(EPS)
-      AN1=DFLOAT(N1)
-      AN2=DFLOAT(N2)
+      AN1=DBLE(N1)
+      AN2=DBLE(N2)
       A=AN1*Z/(AN1*Z+AN2)
       A1=1.D0-A
       IF (A1.LT.EPS) A1=EPS
@@ -4047,7 +4047,7 @@ C
       DATA XN/0.D0/
 C
       IF (NIT.GT.1) GOTO 10
-      XN=DFLOAT(N)
+      XN=DBLE(N)
    10 ZMAX=0.0
       DO 50 IJ=1,NCOV
       SU1(IJ)=0.D0
@@ -4170,7 +4170,7 @@ C
    10 CONTINUE
       SBAR=S/SIGM
       CALL XERPZ(IPP,XLCNST,SBAR,ANS)
-      XN=DFLOAT(N)*SIGM
+      XN=DBLE(N)*SIGM
       UZED2=(U/XN)*DS*DS*DBLE(ANS)
       RETURN
       END
@@ -4313,7 +4313,7 @@ C
       ZBAR2=WGT(I)
       SUM=SUM+INS1(DS,WGT,N,EXW,EXPSI)
    10 CONTINUE
-      INS3=SUM*DS*DS/DFLOAT(N)
+      INS3=SUM*DS*DS/DBLE(N)
       RETURN
       END
 C
@@ -4341,7 +4341,7 @@ C
       ZBAR2=WGT(I)
       SUM=SUM+INS2(DS,WGT,N,EXW,EXPSI)
    10 CONTINUE
-      INS4=SUM*DS*DS/DFLOAT(N)
+      INS4=SUM*DS*DS/DBLE(N)
       RETURN
       END
 C-----------------------------------------------------------------------
@@ -6841,7 +6841,7 @@ C
       DATA XN/0.D0/
 C
       IF (NIT.GT.1) GOTO 10
-      XN=DFLOAT(N)
+      XN=DBLE(N)
    10 ZMAX=0.0
       DO 20 IJ=1,NCOV
       ST(IJ)=0.D0
@@ -6907,10 +6907,10 @@ C==>    LOGISTIC BERNOUILLI OR BINOMIAL
         IF (GI.LE.ZMIN) THEN
           GFUN=0.D0
         ELSEIF (GI.GE.ZMAX) THEN
-          GFUN=DFLOAT(NI)
+          GFUN=DBLE(NI)
         ELSE
           EXGI=DEXP(GI)
-          GFUN=DFLOAT(NI)*EXGI/(1.D0+EXGI)
+          GFUN=DBLE(NI)*EXGI/(1.D0+EXGI)
         ENDIF
       ELSE
 C==>    LOGISTIC POISSON (ICASE=3)
@@ -7106,36 +7106,36 @@ c       ALP=ALSML
 c       P1=P
 c       IF (P1.GT.SML) ALP=DLOG(P1)
         PL=0.D0
-        LPL=DFLOAT(N)*ALQ
+        LPL=DBLE(N)*ALQ
         IF (LPL.GT.EMIN) PL=DEXP(LPL)
       ELSEIF (KL+1.NE.K.OR.LPL.LE.ALSML) THEN 
 c       CALL BINPRDZ(K,N,P,S1,PK)
         P1 = P
         Q1 = 1.D0-P
         K1 = K
-        XN = DFLOAT(N)
+        XN = DBLE(N)
         XX = XN*P
         LPL = 0.D0
-        IF (DFLOAT(K) .LE. XX) GO TO 25
+        IF (DBLE(K) .LE. XX) GO TO 25
         P1 = Q1
         Q1 = P
         K1 = N-K
    25   ALQ = ALSML
         IF (Q1.GT.SML) ALQ=DLOG(Q1)
-        XK=DFLOAT(K1)
+        XK=DBLE(K1)
         ICNT = 1.D0
         ALP = ALSML
         IF (P1.GT.SML) ALP=DLOG(P1)
         IF (K1 .EQ. 0 .OR. K1 .EQ. N) GO TO 35
         DO 30 J = 1,K1
-         ICNT=ICNT*DFLOAT(N-J+1)/DFLOAT(J)
+         ICNT=ICNT*DBLE(N-J+1)/DBLE(J)
    30   CONTINUE
    35   LPL = DLOG(ICNT) + XK*ALP + (XN-XK)*ALQ 
         PL=0.D0
         IF (LPL.GT.EMIN) PL=DEXP(LPL)
         GOTO 950 
       ELSE
-        LPL=LPL+DLOG(DFLOAT(N-K+1))+ALP-DLOG(DFLOAT(K))-ALQ
+        LPL=LPL+DLOG(DBLE(N-K+1))+ALP-DLOG(DBLE(K))-ALQ
         PL=0.D0
         IF (LPL.GT.EMIN) PL=DEXP(LPL)
       ENDIF
@@ -7190,7 +7190,7 @@ C       problems
         IF (K.EQ.0) PK = 1.D0
         IF (K.EQ.1) PK = E
         IF (K.GT.1) THEN
-          LPL=DFLOAT(K)*LGE
+          LPL=DBLE(K)*LGE
           GOTO 700
         ENDIF
         IF (PK.GT.0.D0.AND.PK.GT.XLMN) LPL = DLOG(PK) 
@@ -7202,16 +7202,16 @@ C       problems
 C       CALL POISSNZ(E,K,S1,PK) 
         LGE = YLMN
         IF (E.GT.XLMN) LGE = DLOG(E)
-        LPL=DFLOAT(K)*LGE - E
+        LPL=DBLE(K)*LGE - E
         GOTO 700
       ELSE
 c       IF (K.LE.4) CALL DBLEPR('LPL',3,LPL,1)
 c       IF (K.LE.4) CALL DBLEPR('LGE',3,LGE,1)
-        LPL=LPL+LGE-DLOG(DFLOAT(K))
+        LPL=LPL+LGE-DLOG(DBLE(K))
       ENDIF
       GOTO 800
   700 DO 750 I=1,K
-        LPL=LPL-DLOG(DFLOAT(I))
+        LPL=LPL-DLOG(DBLE(I))
   750 CONTINUE    
   800 PK=0.
       IF (LPL.GT.ESML) PK = DEXP(LPL)
@@ -7250,13 +7250,13 @@ C
       IF (.NOT.NPRCHK) CALL MESSGE(500,'GLMDEV',1)
       CALL LRFCTDZ(ICASE,Y,CI,VTHETA,OI,WA,NI,N,1,0,0,LI,LI,LI,Q)
       DO 700 I=1,N
-      TMP=DBLE(Y(I)-CI(I))/DFLOAT(NI(I))
+      TMP=DBLE(Y(I)-CI(I))/DBLE(NI(I))
       THETAS(I)=FLINK(ICASE,TMP)-DBLE(OI(I))
   700 CONTINUE 
 c     CALL LRFNCTZ(ICASE,Y,CI,THETAS,OI,WA,NI,N,1,0,0,SC,WA,WA,QS)
       QS=0.D0
       DO 800 I=1,N
-      ENI=DFLOAT(NI(I))
+      ENI=DBLE(NI(I))
       YI=DBLE(Y(I))
       IF (ICASE.LE.2) THEN
         TMP=ENI*DLOG(ENI)
@@ -7698,7 +7698,7 @@ C==>    LOGISTIC BERNOUILLI OR BINOMIAL
             EXGI=DEXP(GI)
             PROBI=EXGI/(1.D0+EXGI)
           ENDIF
-          GFUN=PROBI*DFLOAT(NN)
+          GFUN=PROBI*DBLE(NN)
         ELSE
 C==>    LOGISTIC POISSON (ICASE=3)
           IF (GI.LE.ZMIN) THEN
@@ -7717,7 +7717,7 @@ C==>    LOGISTIC BERNOUILLI OR BINOMIAL
 C==>    LOGISTIC POISSON (ICASE=3)
           CALL PRPOISZ(GFUN,J,ILG,LPIJ)
         ENDIF
-        TMP=DFLOAT(J)-CC-GFUN
+        TMP=DBLE(J)-CC-GFUN
         TMPSI=DMIN1(AA,TMP)
         TMPSI=DMAX1(-AA,TMPSI)
         TMP=TMPSI**2 
@@ -7725,7 +7725,7 @@ C==>    LOGISTIC POISSON (ICASE=3)
         IF (TMP.GT.SML) ETERM = DLOG(TMP) + LPIJ
         ETERM = DEXP(ETERM)
         SUME = SUME + ETERM
-        TMPSI=TMPSI*(DFLOAT(J)-GFUN)
+        TMPSI=TMPSI*(DBLE(J)-GFUN)
         IF (TMPSI.GT.0.D0) THEN
           DTERM = ALSML + LPIJ
           IF (TMPSI.GT.SML) DTERM = DLOG(TMPSI) + LPIJ
@@ -7836,7 +7836,7 @@ C==>    LOGISTIC BINOMIAL
           TEMP=AMIN1(A,ABS(DEN))
           IF (DEN.LT.0.) TEMP=-TEMP
           T1=T1+DBLE(TEMP)*PJ
-          E1=E1+DFLOAT(J)*PJ
+          E1=E1+DBLE(J)*PJ
           IF (IABS(IALG).NE.2) GOTO 220
           DJ=SNGL(PJ)
           IF (ABS(DEN).GT.1.E-6) DJ=TEMP*SNGL(PJ)/DEN
@@ -7856,7 +7856,7 @@ C==>    LOGISTIC POISSON
           TMP=TEMP*SNGL(PJ)
           IF (ABS(TMP).LT.PREC) TMP=0. 
           T1=T1+DBLE(TMP)
-          TMPJ=DFLOAT(J)*PJ
+          TMPJ=DBLE(J)*PJ
           IF (DABS(TMPJ).LT.DPREC) TMPJ=0.D0
           E1=E1+TMPJ
           IF (IABS(IALG).NE.2) GOTO 225
@@ -20142,7 +20142,7 @@ C
       S0Z=SIG0*SC(I)
       SUM=SUM+(DBLE(S0Z))**2*UCV(S0Z)
   400 CONTINUE
-      IF (SUM.GT.DFLOAT(NOBS)) THEN
+      IF (SUM.GT.DBLE(NOBS)) THEN
         IF (SIG0.GT.0.01) THEN
           SIG0=SIG0-0.01
         ELSE
@@ -20187,7 +20187,7 @@ C
       DATA XN,SQPMQ,NQP1/2*0.,0/
 C
       IF (NIT.GT.1) GOTO 10
-      XN=DFLOAT(N)
+      XN=DBLE(N)
       SQPMQ=SQRT(FLOAT(NP-NQ))
       NQP1=NQ+1
    10 ZMAX=0.0
@@ -20355,7 +20355,7 @@ C  STEP 0 : INITIALIZATION
 C  ------
       IALG=2
       NU=NOBS
-      XN=DFLOAT(NOBS)
+      XN=DBLE(NOBS)
       NIT=0
       NVARQ=0
       IF (ICNV.EQ.1) THEN
@@ -20441,7 +20441,7 @@ C  STEP 0 : INITIALIZATION
 C  ------
       IALG=3
       NU=NOBS
-      XN=DFLOAT(NOBS)
+      XN=DBLE(NOBS)
       NIT=0
       NVARQ=0
       IF (ICNV.EQ.1) THEN
@@ -20530,7 +20530,7 @@ C  ------
       IALG=1
       NU=1
       NIT=0
-      XN=DFLOAT(NOBS)
+      XN=DBLE(NOBS)
       IF (ICNV.EQ.1) THEN
         L=0
         DO 20 I=1,NVAR
@@ -20649,7 +20649,7 @@ C --------   A <=> T until step 5
       INTCH=1
       MDXP1=MDX+1
       KCOV=NCOV
-      SQN=DFLOAT(NOBS)
+      SQN=DBLE(NOBS)
       SQN=DSQRT(SQN)
       NIT=0
       K0=NVAR
@@ -21408,7 +21408,7 @@ C==>      LOGISTIC BINOMIAL
           T2=0.D0
           DO 200 J=0,NI
             CALL PROBINZ(J,NI,PI,0,PJ)
-            TEMP=DABS(DFLOAT(J)-(DNI*PP)-CC)
+            TEMP=DABS(DBLE(J)-(DNI*PP)-CC)
             T1=AA**2
             IF (TEMP.LT.AA) T1=TEMP**2
             T2=T2+T1*PJ
@@ -21424,12 +21424,12 @@ C==>      LOGISTIC POISSON
           T2=0.D0
           DO 300 J=0,MI
             CALL PRPOISZ(PI,J,0,PJ)
-c           FJME=DFLOAT(J)-PI
-            TEMP=DABS(DFLOAT(J)-PI-CC)
+c           FJME=DBLE(J)-PI
+            TEMP=DABS(DBLE(J)-PI-CC)
             T1=AA**2
             IF (TEMP.LT.A) T1=TEMP**2
             T2=T2+T1*PJ
-            IF (DFLOAT(J).GT.PI.AND.T1*PJ.LT.PREC) GOTO 350
+            IF (DBLE(J).GT.PI.AND.T1*PJ.LT.PREC) GOTO 350
   300     CONTINUE
   350     UGL=T2
         ENDIF

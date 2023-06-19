@@ -14,15 +14,15 @@
   as.list(z)
 }
 
-.dFvSet <- function(def)
-{
-  f.res <- .Fortran("zdfvals",io=to.integer(1),dfv=to.single(def))
-  return()
-}
+#.dFvSet <- function(def)
+#{
+#  f.res <- .Fortran("zdfvals",io=to.integer(1),dfv=to.single(def))
+#  return()
+#}
 
 .dFvPut <- function(vals,nams)
 {
-  alldef <-  c(
+  alldef <-  c(     
      "tlo", "gma", "mxs", "mxt", "ntm", "tua", "tlu", "iop", "ix1", "iy1",
      "ic1", "ini", "isr", "itc", "icn", "alf", "ccc", "upr", "tli", "isq",
      "isg", "ite", "itw", "mxf", "mxn", "mxg", "iwg", "apr", "icv", "xfd",

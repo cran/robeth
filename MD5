@@ -1,5 +1,5 @@
-2d943a3d9ccee34c472e8ab3ff593426 *DESCRIPTION
-70d5ef6ef72776994eb7047a625b3e4b *NAMESPACE
+f2a94fc09dd3b85a540a8feae58c969f *DESCRIPTION
+dd4cf325dffeacce6e205a2f4e197b6a *NAMESPACE
 ec900b6d79bdf21ec6d016646971db01 *R/Dbinom.R
 b99e7b9c03a526f63a56d130dfc7ac9d *R/Fn.Exp.f.R
 66c7728c91e385ec3b534982d54a010d *R/QD2coef.f.R
@@ -31,7 +31,7 @@ abdec0209c3c7628d3712c97024f68f1 *R/cquant.R
 ae8ab63b8e87876d0b1632ee7e4ef84c *R/cynalg.R
 cc2a90bf665f84c054f7fb8dafdb1965 *R/dfcomn.R
 cb7307eebb50aca8d3d0af8921ed1eb9 *R/dfrpar.R
-a2e63f4a5dbb2582078427355945f1dc *R/dfvals.R
+6be7dbf6bfd21a30b5dddf78b6706e2b *R/dfvals.R
 413a467d0c375f2e8a20819e308c1065 *R/dotp.R
 13d1d8714911f5de912cc26bcae9f694 *R/dotpd.R
 a39e52d0fd723b0b8474bbf3bfe6c9cf *R/dpoiss.R
@@ -224,6 +224,8 @@ dabf5ae63b86ff7ff0ba77aef9f79b84 *man/cynalg.Rd
 f9e1770328e9ec943ac042482887b5a2 *man/dfcomn.Rd
 211af870de4f72638a25ebd03fa1695c *man/dfrpar.Rd
 a3f187d89d5d8a5840b1e049470fc313 *man/dfvals.Rd
+93ecabc48dd263db05a24ae5f0208aaf *man/dfvget.Rd
+fb4761565e30f5544e8b5076d7516477 *man/dfvput.Rd
 776600e2571cbd9467ebebdcd4c70154 *man/dotp.Rd
 ee265eb35eafece82d7bc8e0642110a3 *man/dotpd.Rd
 dbb3ba903abb1f5825e6d96730ec047c *man/dpoiss.Rd
@@ -380,7 +382,7 @@ f2d96521d01bedab856b7c6acb640f0f *man/xerp.Rd
 99979b50a74cc3707c0fff872255f869 *man/xsy.Rd
 a89619b4ee9e4056dfeac7a8be342f94 *man/xsyd.Rd
 440593272e71c3a0ea318c0571a24876 *man/zemll.Rd
-9b107204340a899d73469bf5c77318c9 *src/fastcens.f
+fb3685eea5a69e8c18b3ea948602ed5f *src/fastcens.f
 f01b736baddd10c8c4b3da52efca961f *src/init.c
-af63925a8508ace8d6f04a484fa6a62e *src/regtau.f
-749b4bd3957f730945bc4c5077a7bf34 *src/robeth.f
+4c145aa9d1bdc79cada207d6fd9f3401 *src/regtau.f
+6a66bf36202f063c76a68aac24c963fc *src/robeth.f

@@ -69,8 +69,8 @@ c       call intpr('i',1,i,1)
       SUMX=SUMX+X(K)
       SUMY=SUMY+Y(K)
   140 CONTINUE 
-      SB(I)=(SUMXY-SUMX*SUMY/DFLOAT(N1))/(SUMXX-SUMX*SUMX/DFLOAT(N1))
-      SA(I)=(SUMY-SB(I)*SUMX)/DFLOAT(N1)
+      SB(I)=(SUMXY-SUMX*SUMY/DBLE(N1))/(SUMXX-SUMX*SUMX/DBLE(N1))
+      SA(I)=(SUMY-SB(I)*SUMX)/DBLE(N1)
       DO 160 J=1,N
       RS(J)=Y(J)-SB(I)*X(J)-SA(I)
       SRJ=DABS(RS(J))
@@ -194,8 +194,8 @@ c       call intpr('i',1,i,1)
       SUMX=SUMX+X(K)
       SUMY=SUMY+Y(K)
   140 CONTINUE 
-      SB(I)=(SUMXY-SUMX*SUMY/DFLOAT(N1))/(SUMXX-SUMX*SUMX/DFLOAT(N1))
-      SA(I)=(SUMY-SB(I)*SUMX)/DFLOAT(N1)
+      SB(I)=(SUMXY-SUMX*SUMY/DBLE(N1))/(SUMXX-SUMX*SUMX/DBLE(N1))
+      SA(I)=(SUMY-SB(I)*SUMX)/DBLE(N1)
       DO 160 J=1,N
       RS(J)=Y(J)-SB(I)*X(J)-SA(I)
       SRJ=DABS(RS(J)*W(J))
