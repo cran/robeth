@@ -1,4 +1,4 @@
-f2a94fc09dd3b85a540a8feae58c969f *DESCRIPTION
+db3756489d237dc352d3bcf436c9502c *DESCRIPTION
 dd4cf325dffeacce6e205a2f4e197b6a *NAMESPACE
 ec900b6d79bdf21ec6d016646971db01 *R/Dbinom.R
 b99e7b9c03a526f63a56d130dfc7ac9d *R/Fn.Exp.f.R
@@ -331,7 +331,7 @@ f417b0d601cf6929ab0e9ef8415506b7 *man/rilars.Rd
 3bc6d8b641f812c450af2fd376d1f7cc *man/rimtrd.Rd
 9d1d0f7ce02388578ef067ad18d85a3f *man/rimtrf.Rd
 dd5994c15e9eeab8d0c89d4de48935d2 *man/rmvc.Rd
-b434b1ea942690868210134578f195bb *man/robeth.package.Rd
+6e306ee2795f64034a67afd884f43b11 *man/robeth.package.Rd
 a32baf0731b5060cc97f439cd35663ba *man/ruben.Rd
 2b8ced0c8201046095af3dc2caabc951 *man/rybifr.Rd
 ba9a9723041c4ba7d8d1748d27a95945 *man/ryhalg.Rd

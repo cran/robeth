@@ -16,8 +16,8 @@ Interface for the FORTRAN programs developed at the ETH-Zuerich and then at IUMS
 \tabular{ll}{
 Package: \tab robeth\cr
 Type: \tab Package\cr
-Version: \tab 2.0\cr
-Date: \tab 2007-09-01\cr
+#Version: \tab 2.7-7\cr
+#Date: \tab 2023-06-19\cr
 License: \tab GPL version 2 or later\cr
 }
 }
